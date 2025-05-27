@@ -162,7 +162,7 @@ uint64_t Temperature::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Temperature::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Temperature::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Temperature::getHash };
 
     uint64_t hash = 0x39cc1dc52d6ca13dLL +
          std_msgs::Header::_computeHash(&cp);

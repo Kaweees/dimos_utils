@@ -199,7 +199,7 @@ uint64_t FrameTransform::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == FrameTransform::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, FrameTransform::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)FrameTransform::getHash };
 
     uint64_t hash = 0x16cb223d6329d1f0LL +
          builtin_interfaces::Time::_computeHash(&cp) +

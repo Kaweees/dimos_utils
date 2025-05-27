@@ -156,7 +156,7 @@ uint64_t TwistWithCovariance::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == TwistWithCovariance::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, TwistWithCovariance::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)TwistWithCovariance::getHash };
 
     uint64_t hash = 0xaba0a9d55e98da5dLL +
          geometry_msgs::Twist::_computeHash(&cp);

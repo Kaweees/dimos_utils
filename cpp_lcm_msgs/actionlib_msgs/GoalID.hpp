@@ -162,7 +162,7 @@ uint64_t GoalID::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == GoalID::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, GoalID::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)GoalID::getHash };
 
     uint64_t hash = 0xef36683ef0767e95LL +
          std_msgs::Time::_computeHash(&cp);

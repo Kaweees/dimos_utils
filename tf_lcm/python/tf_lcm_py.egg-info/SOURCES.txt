@@ -4,12 +4,12 @@ pyproject.toml
 setup.py
 ./tf_lcm_py/__init__.py
 ./tf_lcm_py/_tf_lcm_py.cpython-310-darwin.so
+./tf_lcm_py/_tf_lcm_py.cpython-310-x86_64-linux-gnu.so
 ./tf_lcm_py/_tf_lcm_py.cpython-311-darwin.so
 ./tf_lcm_py/_tf_lcm_py.cpython-312-darwin.so
 ./tf_lcm_py/_tf_lcm_py.so
-./tf_lcm_py/direct_import.py
+./tf_lcm_py/direct_import_depr.py
 ./tf_lcm_py/tf_lcm_py.cpython-310-darwin.so
-examples/correct_robot_link_test.py
 examples/direct_lcm_test.py
 examples/final_robot_link_test.py
 examples/lcm_monitor.py
@@ -25,10 +25,11 @@ examples/transform_benchmark.py
 test/test_tf_lcm.py
 tf_lcm_py/__init__.py
 tf_lcm_py/_tf_lcm_py.cpython-310-darwin.so
+tf_lcm_py/_tf_lcm_py.cpython-310-x86_64-linux-gnu.so
 tf_lcm_py/_tf_lcm_py.cpython-311-darwin.so
 tf_lcm_py/_tf_lcm_py.cpython-312-darwin.so
 tf_lcm_py/_tf_lcm_py.so
-tf_lcm_py/direct_import.py
+tf_lcm_py/direct_import_depr.py
 tf_lcm_py/tf_lcm_py.cpython-310-darwin.so
 tf_lcm_py.egg-info/PKG-INFO
 tf_lcm_py.egg-info/SOURCES.txt

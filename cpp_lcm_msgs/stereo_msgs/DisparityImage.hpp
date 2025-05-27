@@ -209,7 +209,7 @@ uint64_t DisparityImage::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == DisparityImage::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, DisparityImage::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)DisparityImage::getHash };
 
     uint64_t hash = 0xdeb7a557a2b9258aLL +
          std_msgs::Header::_computeHash(&cp) +

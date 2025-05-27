@@ -351,7 +351,7 @@ uint64_t ImageMarker::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == ImageMarker::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, ImageMarker::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)ImageMarker::getHash };
 
     uint64_t hash = 0x3a3ea371b474d924LL +
          std_msgs::Header::_computeHash(&cp) +

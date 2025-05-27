@@ -316,7 +316,7 @@ uint64_t InteractiveMarkerControl::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == InteractiveMarkerControl::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, InteractiveMarkerControl::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)InteractiveMarkerControl::getHash };
 
     uint64_t hash = 0x9e1db7d7740da609LL +
          geometry_msgs::Quaternion::_computeHash(&cp) +

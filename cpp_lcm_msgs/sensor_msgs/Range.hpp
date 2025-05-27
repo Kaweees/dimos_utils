@@ -201,7 +201,7 @@ uint64_t Range::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Range::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Range::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Range::getHash };
 
     uint64_t hash = 0xaaf9249a1465f86aLL +
          std_msgs::Header::_computeHash(&cp);

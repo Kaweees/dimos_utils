@@ -190,7 +190,7 @@ uint64_t ArrowPrimitive::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == ArrowPrimitive::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, ArrowPrimitive::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)ArrowPrimitive::getHash };
 
     uint64_t hash = 0xb1f9d32968e60fbbLL +
          geometry_msgs::Pose::_computeHash(&cp) +

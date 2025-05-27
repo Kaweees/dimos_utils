@@ -260,7 +260,7 @@ uint64_t CameraCalibration::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == CameraCalibration::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, CameraCalibration::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)CameraCalibration::getHash };
 
     uint64_t hash = 0x89c275083a857ce2LL +
          builtin_interfaces::Time::_computeHash(&cp);

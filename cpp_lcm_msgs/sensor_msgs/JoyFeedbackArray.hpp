@@ -168,7 +168,7 @@ uint64_t JoyFeedbackArray::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == JoyFeedbackArray::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, JoyFeedbackArray::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)JoyFeedbackArray::getHash };
 
     uint64_t hash = 0xde2a78c20ffefa04LL +
          sensor_msgs::JoyFeedback::_computeHash(&cp);

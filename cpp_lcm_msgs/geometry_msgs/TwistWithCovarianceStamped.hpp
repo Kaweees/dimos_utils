@@ -154,7 +154,7 @@ uint64_t TwistWithCovarianceStamped::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == TwistWithCovarianceStamped::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, TwistWithCovarianceStamped::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)TwistWithCovarianceStamped::getHash };
 
     uint64_t hash = 0xf01245422c7b28c2LL +
          std_msgs::Header::_computeHash(&cp) +

@@ -218,7 +218,7 @@ uint64_t MultiDOFJointTrajectory::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == MultiDOFJointTrajectory::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, MultiDOFJointTrajectory::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)MultiDOFJointTrajectory::getHash };
 
     uint64_t hash = 0xf09db31afe774086LL +
          std_msgs::Header::_computeHash(&cp) +

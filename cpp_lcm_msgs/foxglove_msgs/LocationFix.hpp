@@ -232,7 +232,7 @@ uint64_t LocationFix::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == LocationFix::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, LocationFix::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)LocationFix::getHash };
 
     uint64_t hash = 0xc7c172f7d2332f54LL +
          builtin_interfaces::Time::_computeHash(&cp);

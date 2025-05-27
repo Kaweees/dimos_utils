@@ -166,7 +166,7 @@ uint64_t MagneticField::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == MagneticField::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, MagneticField::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)MagneticField::getHash };
 
     uint64_t hash = 0xbfeb021e4751ed88LL +
          std_msgs::Header::_computeHash(&cp) +

@@ -235,7 +235,7 @@ uint64_t ModelPrimitive::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == ModelPrimitive::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, ModelPrimitive::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)ModelPrimitive::getHash };
 
     uint64_t hash = 0x23cd41ba898fa1faLL +
          geometry_msgs::Pose::_computeHash(&cp) +

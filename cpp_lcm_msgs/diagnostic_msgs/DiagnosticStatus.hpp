@@ -251,7 +251,7 @@ uint64_t DiagnosticStatus::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == DiagnosticStatus::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, DiagnosticStatus::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)DiagnosticStatus::getHash };
 
     uint64_t hash = 0x3e3fb00c69778dfbLL +
          diagnostic_msgs::KeyValue::_computeHash(&cp);

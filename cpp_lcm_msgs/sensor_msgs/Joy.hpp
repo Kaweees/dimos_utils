@@ -197,7 +197,7 @@ uint64_t Joy::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Joy::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Joy::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Joy::getHash };
 
     uint64_t hash = 0x209d2c19077a692fLL +
          std_msgs::Header::_computeHash(&cp);

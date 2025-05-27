@@ -171,7 +171,7 @@ uint64_t Int8MultiArray::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Int8MultiArray::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Int8MultiArray::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Int8MultiArray::getHash };
 
     uint64_t hash = 0xdcc1940b891be505LL +
          std_msgs::MultiArrayLayout::_computeHash(&cp);

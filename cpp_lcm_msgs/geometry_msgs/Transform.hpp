@@ -154,7 +154,7 @@ uint64_t Transform::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Transform::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Transform::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Transform::getHash };
 
     uint64_t hash = 0x1275bd1ccbdaf47fLL +
          geometry_msgs::Vector3::_computeHash(&cp) +

@@ -275,7 +275,7 @@ uint64_t InteractiveMarkerFeedback::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == InteractiveMarkerFeedback::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, InteractiveMarkerFeedback::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)InteractiveMarkerFeedback::getHash };
 
     uint64_t hash = 0xd44e20643fb0d4f7LL +
          std_msgs::Header::_computeHash(&cp) +

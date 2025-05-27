@@ -172,7 +172,7 @@ uint64_t PoseInFrame::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == PoseInFrame::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, PoseInFrame::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)PoseInFrame::getHash };
 
     uint64_t hash = 0x84c6ef3a0a4c5cd6LL +
          builtin_interfaces::Time::_computeHash(&cp) +

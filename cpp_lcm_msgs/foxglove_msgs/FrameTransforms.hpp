@@ -168,7 +168,7 @@ uint64_t FrameTransforms::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == FrameTransforms::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, FrameTransforms::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)FrameTransforms::getHash };
 
     uint64_t hash = 0x37bc5cbce50a5ce2LL +
          foxglove_msgs::FrameTransform::_computeHash(&cp);

@@ -59,18 +59,20 @@ public:
     /**
      * @brief Look up a transform
      * 
-     * @param target_frame The target frame
-     * @param source_frame The source frame
-     * @param time The time at which to look up the transform
-     * @param timeout How long to wait for the transform to be available
-     * @return The transform from source_frame to target_frame
-     * @throw tf_lcm::LookupException if the transform is not available
+     * @param target_frame The frame to transform to
+     * @param source_frame The frame to transform from
+     * @param time The time at which to transform
+     * @param timeout How long to block waiting for the transform
+     * @param time_tolerance Time tolerance for lookups (allows finding transforms within this window of the requested time)
+     * @return The transform between the frames
+     * @throw tf_lcm::TimeoutException if transformation not available within timeout
      */
     geometry_msgs::TransformStamped lookupTransform(
         const std::string& target_frame,
         const std::string& source_frame,
         const std::chrono::system_clock::time_point& time,
-        const std::chrono::duration<double>& timeout = std::chrono::duration<double>(0.0));
+        const std::chrono::duration<double>& timeout = std::chrono::duration<double>(0.0),
+        const std::chrono::duration<double>& time_tolerance = std::chrono::duration<double>(0.1));
     
     /**
      * @brief Look up a transform with a fixed frame
@@ -98,14 +100,16 @@ public:
      * @param target_frame The target frame
      * @param source_frame The source frame
      * @param time The time at which to check
-     * @param error_msg Error message if transform is not possible
-     * @return true if the transform is possible
+     * @param error_msg If not nullptr and the transform is not available, an error message will be stored here
+     * @param time_tolerance Time tolerance for lookups (allows finding transforms within this window of the requested time)
+     * @return true if the transform is possible, false otherwise
      */
     bool canTransform(
         const std::string& target_frame,
         const std::string& source_frame,
         const std::chrono::system_clock::time_point& time,
-        std::string* error_msg = nullptr);
+        std::string* error_msg = nullptr,
+        const std::chrono::duration<double>& time_tolerance = std::chrono::duration<double>(0.1));
     
     /**
      * @brief Check if a transform with a fixed frame is possible
@@ -134,6 +138,13 @@ public:
     std::vector<std::string> getAllFrameNames() const;
     
     /**
+     * @brief Get a valid timestamp from the buffer (useful for log playback)
+     * 
+     * @return A valid timestamp from the buffer
+     */
+    std::chrono::system_clock::time_point getValidTimestamp() const;
+    
+    /**
      * @brief Clear all transforms from the buffer
      */
     void clear();
@@ -149,19 +160,21 @@ private:
         const std::string& target_frame,
         const std::string& source_frame,
         const std::chrono::system_clock::time_point& time,
-        std::string* error_msg = nullptr);
-    
+        std::string* error_msg,
+        const std::chrono::duration<double>& time_tolerance = std::chrono::duration<double>(0.1));
+        
     geometry_msgs::TransformStamped _lookupTransformNoLock(
         const std::string& target_frame,
         const std::string& source_frame,
-        const std::chrono::system_clock::time_point& time);
-    
+        const std::chrono::system_clock::time_point& time,
+        const std::chrono::duration<double>& time_tolerance = std::chrono::duration<double>(0.1));
+        
     void _waitForTransform(
         const std::string& target_frame,
         const std::string& source_frame,
         const std::chrono::system_clock::time_point& time,
         const std::chrono::duration<double>& timeout);
-    
+        
     /**
      * @brief Look up a direct transform between two frames
      * 
@@ -170,13 +183,15 @@ private:
      * @param source_frame Source frame
      * @param target_frame Target frame
      * @param time Time point for the transform
+     * @param time_tolerance Time tolerance for lookups (allows finding transforms within this window of the requested time)
      * @return The direct transform
      * @throws LookupException if no direct transform exists
      */
     geometry_msgs::TransformStamped _lookupDirectTransform(
         const std::string& source_frame,
         const std::string& target_frame,
-        const std::chrono::system_clock::time_point& time);
+        const std::chrono::system_clock::time_point& time,
+        const std::chrono::duration<double>& time_tolerance = std::chrono::duration<double>(0.1));
     
     /**
      * @brief Invert a transform

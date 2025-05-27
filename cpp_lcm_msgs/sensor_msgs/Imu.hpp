@@ -210,7 +210,7 @@ uint64_t Imu::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Imu::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Imu::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Imu::getHash };
 
     uint64_t hash = 0x55c1e238541325f6LL +
          std_msgs::Header::_computeHash(&cp) +

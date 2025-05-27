@@ -154,7 +154,7 @@ uint64_t Accel::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Accel::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Accel::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Accel::getHash };
 
     uint64_t hash = 0x3a4144772922add7LL +
          geometry_msgs::Vector3::_computeHash(&cp) +

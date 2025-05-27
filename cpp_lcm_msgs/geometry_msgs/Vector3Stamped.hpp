@@ -154,7 +154,7 @@ uint64_t Vector3Stamped::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Vector3Stamped::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Vector3Stamped::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Vector3Stamped::getHash };
 
     uint64_t hash = 0xecb8cfd985d1cbe0LL +
          std_msgs::Header::_computeHash(&cp) +

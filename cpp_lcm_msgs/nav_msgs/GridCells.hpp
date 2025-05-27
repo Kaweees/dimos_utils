@@ -196,7 +196,7 @@ uint64_t GridCells::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == GridCells::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, GridCells::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)GridCells::getHash };
 
     uint64_t hash = 0xb855326533062750LL +
          std_msgs::Header::_computeHash(&cp) +

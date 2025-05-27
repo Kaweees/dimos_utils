@@ -276,7 +276,7 @@ uint64_t PointsAnnotation::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == PointsAnnotation::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, PointsAnnotation::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)PointsAnnotation::getHash };
 
     uint64_t hash = 0x97465363cc7c2a18LL +
          builtin_interfaces::Time::_computeHash(&cp) +

@@ -291,7 +291,7 @@ uint64_t LinePrimitive::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == LinePrimitive::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, LinePrimitive::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)LinePrimitive::getHash };
 
     uint64_t hash = 0x3b39f8eb653b3cd3LL +
          geometry_msgs::Pose::_computeHash(&cp) +

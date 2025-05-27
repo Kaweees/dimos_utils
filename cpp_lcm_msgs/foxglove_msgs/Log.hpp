@@ -246,7 +246,7 @@ uint64_t Log::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Log::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Log::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Log::getHash };
 
     uint64_t hash = 0x623dae456e90a1c7LL +
          builtin_interfaces::Time::_computeHash(&cp);

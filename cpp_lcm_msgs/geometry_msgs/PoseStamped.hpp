@@ -154,7 +154,7 @@ uint64_t PoseStamped::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == PoseStamped::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, PoseStamped::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)PoseStamped::getHash };
 
     uint64_t hash = 0xe10feebec5c97663LL +
          std_msgs::Header::_computeHash(&cp) +

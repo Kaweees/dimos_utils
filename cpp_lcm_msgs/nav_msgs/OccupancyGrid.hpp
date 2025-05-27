@@ -181,7 +181,7 @@ uint64_t OccupancyGrid::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == OccupancyGrid::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, OccupancyGrid::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)OccupancyGrid::getHash };
 
     uint64_t hash = 0x9e67f3f149308d87LL +
          std_msgs::Header::_computeHash(&cp) +

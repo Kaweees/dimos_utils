@@ -189,7 +189,7 @@ uint64_t CompressedImage::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == CompressedImage::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, CompressedImage::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)CompressedImage::getHash };
 
     uint64_t hash = 0xac8cf79b462311d9LL +
          std_msgs::Header::_computeHash(&cp);

@@ -25,6 +25,19 @@ This library implements transform (TF) functionality similar to ROS2's TF2 packa
 - LCM (Lightweight Communications and Marshalling)
 - Python 3 (for Python bindings)
 
+## Cross-Platform Compatibility
+
+The LCM-generated C++ message files require a small modification for cross-platform compatibility between Linux and macOS. A utility script is provided to automatically patch these files:
+
+```bash
+# Run the patching script to fix function pointer conversions in LCM message files
+./patch_lcm_messages.sh
+```
+
+This script adds explicit `(void*)` casts to function pointers in the `_computeHash` methods, ensuring the code compiles correctly on both Linux and macOS systems. The script automatically detects and patches all affected files in the `cpp_lcm_msgs` directory.
+
+> **Note:** You should run this patching script whenever you regenerate the LCM message files.
+
 ## Building
 
 ```bash
@@ -656,6 +669,36 @@ The Python API mirrors the C++ API but with Python naming conventions (snake_cas
 - `Buffer.set_transform(transform, authority, is_static=False)`
 - `Buffer.lookup_transform(target_frame, source_frame, time, timeout=0.0)`
 - etc.
+
+## Troubleshooting
+
+### Function Pointer Conversion Errors
+
+If you encounter errors like this during compilation:
+
+```
+error: invalid conversion from 'int64_t (*)()' {aka 'long int (*)()'} to 'void*' [-fpermissive]
+```
+
+This is related to platform-specific type safety rules for function pointer conversions. Run the provided patching script to fix these issues:
+
+```bash
+./patch_lcm_messages.sh
+```
+
+The script adds proper explicit casts to function pointers in the LCM message files, making the code compatible with both Linux and macOS.
+
+### LCM Library Not Found
+
+If CMake can't find the LCM library, you may need to install it:
+
+```bash
+# On Ubuntu/Debian
+sudo apt-get install liblcm-dev
+
+# On macOS with Homebrew
+brew install lcm
+```
 
 ## License
 

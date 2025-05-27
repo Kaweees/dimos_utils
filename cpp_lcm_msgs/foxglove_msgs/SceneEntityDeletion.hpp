@@ -183,7 +183,7 @@ uint64_t SceneEntityDeletion::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == SceneEntityDeletion::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, SceneEntityDeletion::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)SceneEntityDeletion::getHash };
 
     uint64_t hash = 0xa6b01fa4694da548LL +
          builtin_interfaces::Time::_computeHash(&cp);

@@ -168,7 +168,7 @@ uint64_t MarkerArray::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == MarkerArray::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, MarkerArray::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)MarkerArray::getHash };
 
     uint64_t hash = 0xd9e3851dad1e0d9eLL +
          visualization_msgs::Marker::_computeHash(&cp);

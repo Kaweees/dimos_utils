@@ -68,13 +68,28 @@ int main(int argc, char** argv) {
             lcm->handleTimeout(100);  // 100ms timeout
             
             // Try to look up the transform
-            // First check if we can transform
-            auto now = std::chrono::system_clock::now();
-            bool can_transform = buffer.canTransform(target_frame, source_frame, now);
+            // Instead of using current time, use a valid timestamp from the buffer
+            // This is crucial for playback of log files where timestamps are from recording time
+            auto lookup_time = buffer.getValidTimestamp();
+            
+            // Log the timestamp we're using for debugging
+            auto time_sec = std::chrono::duration_cast<std::chrono::seconds>(lookup_time.time_since_epoch()).count();
+            auto time_nsec = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                lookup_time.time_since_epoch() % std::chrono::seconds(1)).count();
+            std::cout << "Looking up transform at timestamp: " << time_sec << "." 
+                      << std::setfill('0') << std::setw(9) << time_nsec << std::endl;
+                      
+            // Define a very large time tolerance for log playback (10000 seconds = ~2.8 hours)
+            // This is necessary because the timestamps in log files can be very different from current time
+            const std::chrono::duration<double> large_time_tolerance(10000.0);
+            
+            // Now we have a canTransform overload that takes time_tolerance
+            // Check if we can transform with the large time tolerance
+            bool can_transform = buffer.canTransform(target_frame, source_frame, lookup_time, nullptr, large_time_tolerance);
             
             if (can_transform) {
-                // Look up the transform
-                auto transform = buffer.lookupTransform(target_frame, source_frame, now);
+                // Look up the transform using the same timestamp with the large time tolerance
+                auto transform = buffer.lookupTransform(target_frame, source_frame, lookup_time, std::chrono::duration<double>(0.0), large_time_tolerance);
                 print_transform(transform);
                 found_transform = true;
                 

@@ -192,7 +192,7 @@ uint64_t CircleAnnotation::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == CircleAnnotation::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, CircleAnnotation::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)CircleAnnotation::getHash };
 
     uint64_t hash = 0x5a3219098258887cLL +
          builtin_interfaces::Time::_computeHash(&cp) +
