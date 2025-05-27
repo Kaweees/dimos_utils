@@ -131,11 +131,21 @@ public:
         std::string* error_msg = nullptr);
     
     /**
-     * @brief Get all frame IDs known to the buffer
+     * @brief Get all frame names in the buffer
      * 
-     * @return Vector of frame IDs
+     * @return A vector of all frame names
      */
     std::vector<std::string> getAllFrameNames() const;
+    
+    /**
+     * @brief Get the most recent timestamp in the buffer
+     * 
+     * This is useful for transform lookups during log playback when current time is
+     * not relevant to the transforms in the buffer.
+     * 
+     * @return The timestamp of the most recently received transform, or current time if buffer is empty
+     */
+    std::chrono::system_clock::time_point getMostRecentTimestamp() const;
     
     /**
      * @brief Get a valid timestamp from the buffer (useful for log playback)

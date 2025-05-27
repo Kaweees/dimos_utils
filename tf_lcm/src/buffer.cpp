@@ -208,6 +208,19 @@ bool Buffer::_canTransformNoLock(
     std::string* error_msg,
     const std::chrono::duration<double>& time_tolerance) {
     
+    // AUTO-DETECT LOG PLAYBACK MODE
+    // Check if we have any transforms with significantly older timestamps (log playback)
+    bool log_playback_mode = false;
+    auto now = std::chrono::system_clock::now();
+    double time_since_now = std::abs(std::chrono::duration<double>(time - now).count());
+    if (time_since_now > 1000.0) {
+        // If requested time is more than 1000 seconds different from current time,
+        // we're almost certainly in log playback mode
+        log_playback_mode = true;
+        std::cerr << "DEBUG: Detected log playback mode (requested time differs from now by " 
+                  << time_since_now << " seconds)" << std::endl;
+    }
+    
     // If frames are the same, we can transform
     if (target_frame == source_frame) {
         return true;
@@ -217,8 +230,9 @@ bool Buffer::_canTransformNoLock(
     if (buffer_.count(target_frame) && buffer_[target_frame].count(source_frame)) {
         auto& transforms = buffer_[target_frame][source_frame];
         if (!transforms.empty()) {
-            // For log playback with large time tolerance, just return true if any transform exists
-            if (time_tolerance.count() > 1000.0) {
+            // For log playback mode, just return true if any transform exists
+            if (log_playback_mode || time_tolerance.count() > 1000.0) {
+                std::cerr << "DEBUG: Found forward transform in log playback mode, using it" << std::endl;
                 return true;
             }
             
@@ -581,8 +595,9 @@ geometry_msgs::TransformStamped Buffer::_lookupDirectTransform(
             std::cerr << "DEBUG: Found transform with time diff: " << time_diff << ", tolerance: " << time_tolerance.count() << std::endl;
             
             // With large tolerance for log playback, just use the transform regardless of time
-            if (time_tolerance.count() > 1000.0) {
-                std::cerr << "DEBUG: Using transform due to large tolerance" << std::endl;
+            // This applies to any difference larger than ~2 hours (typical for log playback scenarios)
+            if (time_diff > 1000.0 || time_tolerance.count() > 1000.0) {
+                std::cerr << "DEBUG: Using transform despite large time difference (log playback mode)" << std::endl;
                 return closest->toTransformStamped();
             }
             
@@ -616,8 +631,12 @@ geometry_msgs::TransformStamped Buffer::_lookupDirectTransform(
                 });
             
             // With large tolerance for log playback, just use the transform regardless of time
-            if (time_tolerance.count() > 1000.0) {
-                std::cerr << "DEBUG: Using INVERSE transform due to large tolerance" << std::endl;
+            // This applies to any difference larger than ~2 hours (typical for log playback scenarios)
+            double inverse_time_diff = std::abs(std::chrono::duration<double>(closest->stamp - time).count());
+            std::cerr << "DEBUG: Found INVERSE transform with time diff: " << inverse_time_diff << ", tolerance: " << time_tolerance.count() << std::endl;
+            
+            if (inverse_time_diff > 1000.0 || time_tolerance.count() > 1000.0) {
+                std::cerr << "DEBUG: Using INVERSE transform despite large time difference (log playback mode)" << std::endl;
                 // Invert the transform since we found target -> source but need source -> target
                 auto transform = closest->toTransformStamped();
                 return _inverseTransform(transform);
@@ -870,6 +889,47 @@ std::chrono::system_clock::time_point Buffer::getValidTimestamp() const {
     
     // If no transforms found at all, return current time
     return now;
+}
+
+std::chrono::system_clock::time_point Buffer::getMostRecentTimestamp() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Find the most recent timestamp in the buffer
+    std::chrono::system_clock::time_point most_recent = std::chrono::system_clock::time_point::min();
+    bool found = false;
+    
+    // Check all transforms in dynamic buffer
+    for (const auto& parent_map : buffer_) {
+        for (const auto& child_map : parent_map.second) {
+            const auto& transforms = child_map.second;
+            for (const auto& transform : transforms) {
+                if (transform.stamp > most_recent) {
+                    most_recent = transform.stamp;
+                    found = true;
+                }
+            }
+        }
+    }
+    
+    // Check static transforms too (though these are less likely to have recent timestamps)
+    for (const auto& parent_map : static_buffer_) {
+        for (const auto& child_map : parent_map.second) {
+            const auto& transforms = child_map.second;
+            for (const auto& transform : transforms) {
+                if (transform.stamp > most_recent) {
+                    most_recent = transform.stamp;
+                    found = true;
+                }
+            }
+        }
+    }
+    
+    // If no timestamp found, return current time
+    if (!found) {
+        return std::chrono::system_clock::now();
+    }
+    
+    return most_recent;
 }
 
 } // namespace tf_lcm

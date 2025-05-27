@@ -128,17 +128,29 @@ def main():
                     if not lcm_instance.good():
                         print("WARNING: LCM instance is no longer in a good state")
                 
-                # Get current time
-                now = datetime.now()
-                if not hasattr(now, 'timestamp'):
-                    now.timestamp = lambda: time.mktime(now.timetuple()) + now.microsecond / 1e6
+                # Get the most recent timestamp from the buffer instead of using current time
+                # This is much more reliable for log playback since it uses the actual timestamp
+                # from the transform messages
+                try:
+                    timestamp = buffer.get_most_recent_timestamp()
+                    if attempts % 10 == 0:
+                        print(f"Using timestamp from buffer: {timestamp}")
+                except Exception as e:
+                    # Fall back to current time if get_most_recent_timestamp fails
+                    timestamp = datetime.now()
+                    if not hasattr(timestamp, 'timestamp'):
+                        timestamp.timestamp = lambda: time.mktime(timestamp.timetuple()) + timestamp.microsecond / 1e6
+                    if attempts % 10 == 0:
+                        print(f"Falling back to current time: {timestamp}")
                 
                 # Check if we can find the transform
-                if buffer.can_transform(target_frame, source_frame, now):
+                if buffer.can_transform(target_frame, source_frame, timestamp):
                     print(f"Found transform between '{target_frame}' and '{source_frame}'!")
                     
-                    # Look up the transform
-                    transform = buffer.lookup_transform(target_frame, source_frame, now, lcm_module=lcm_msgs)
+                    # Look up the transform with the timestamp from the buffer
+                    # Since we're using the actual timestamp from the transforms, we can use a smaller time tolerance
+                    transform = buffer.lookup_transform(target_frame, source_frame, timestamp, 
+                                                       timeout=10.0, time_tolerance=0.1, lcm_module=lcm_msgs)
                     
                     # Print details
                     print(f"  Translation: ({transform.transform.translation.x:.6f}, "
