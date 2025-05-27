@@ -150,9 +150,19 @@ public:
     /**
      * @brief Get a valid timestamp from the buffer (useful for log playback)
      * 
-     * @return A valid timestamp from the buffer
+     * @return A timestamp from the buffer, or current time if buffer is empty
      */
     std::chrono::system_clock::time_point getValidTimestamp() const;
+    
+    /**
+     * @brief Enable or disable debug output
+     * 
+     * When enabled, the buffer will print debug information to stderr.
+     * By default, debug output is disabled.
+     * 
+     * @param enabled Whether to enable debug output
+     */
+    void setDebugEnabled(bool enabled);
     
     /**
      * @brief Clear all transforms from the buffer
@@ -164,6 +174,14 @@ private:
     std::unordered_map<std::string, std::unordered_map<std::string, std::vector<TransformStorage>>> static_buffer_;
     double cache_time_;
     mutable std::mutex mutex_;
+    
+    // Cache for the most recent timestamp to avoid scanning all transforms each time
+    // Marked as mutable to allow updates in const methods
+    mutable std::chrono::system_clock::time_point cached_most_recent_timestamp_;
+    mutable bool cached_timestamp_valid_;
+    
+    // Debug flag to control debug output
+    bool debug_enabled_;
     
     // Helper methods
     bool _canTransformNoLock(
