@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from contextlib import contextmanager
 import numpy as np
 import lcm
 import threading
@@ -15,11 +16,22 @@ from pydrake.perception import DepthImageToPointCloud
 from pydrake.systems.framework import Context, LeafSystem
 from pydrake.common.value import AbstractValue
 from pydrake.geometry import SceneGraph
+from pydrake.math import RigidTransform
+from pydrake.common.eigen_geometry import Quaternion
+
+# Imports for tf_lcm_py
+import tf_lcm_py
+import lcm_msgs
+import signal
+import sys
+import atexit
+import open3d as o3d
 
 class DrakeDepthToPointcloudConverter:
     def __init__(self, swap_y_z=False):
         self.lc = lcm.LCM()
         self.lc_thread = None
+
         self.running = True
         
         # Initialize last received messages
@@ -99,6 +111,135 @@ class DrakeDepthToPointcloudConverter:
         print(f"  Center: ({cx:.1f}, {cy:.1f})")
         
         return True
+
+    @contextmanager
+    def safe_lcm_instance(self):
+        """Context manager for safely managing LCM instance lifecycle"""
+        lcm_instance = tf_lcm_py.LCM()
+        try:
+            yield lcm_instance
+        finally:
+            pass
+
+    def cleanup_resources(self):
+        """Clean up resources before exiting"""
+        # Force cleanup of resources in reverse order (last created first)
+        for resource in reversed(self._resources_to_cleanup):
+            try:
+                # For objects like TransformListener that might have a close or shutdown method
+                if hasattr(resource, 'close'):
+                    resource.close()
+                elif hasattr(resource, 'shutdown'):
+                    resource.shutdown()
+                
+                # Explicitly delete the resource
+                del resource
+            except Exception as e:
+                print(f"Error during cleanup: {e}")
+        
+        # Clear the resources list
+        self._resources_to_cleanup = []
+
+    # def signal_handler(sig, frame):
+    #     print("\nInterrupt received, cleaning up...")
+    #     self.cleanup_resources()
+    #     sys.exit(1)
+
+    def get_transform(self, target_frame, source_frame):
+        self._resources_to_cleanup = []
+
+        atexit.register(self.cleanup_resources)
+
+        buffer = tf_lcm_py.Buffer(30.0)
+        self._resources_to_cleanup.append(buffer)
+
+        # Use context manager for LCM instance
+        with self.safe_lcm_instance() as lcm_instance:
+            self._resources_to_cleanup.append(lcm_instance)
+            
+            # Create a TransformListener with our LCM instance and buffer
+            listener = tf_lcm_py.TransformListener(lcm_instance, buffer)
+            self._resources_to_cleanup.append(listener)
+            
+            # print(f"Looking for transforms between '{target_frame}' and '{source_frame}'...")
+            
+            attempts = 0
+            max_attempts = 120  # Same as C++ test
+            
+            while attempts < max_attempts:
+                try:
+                    # Process LCM messages with error handling
+                    if not lcm_instance.handle_timeout(100):  # 100ms timeout
+                        # If handle_timeout returns false, we might need to re-check if LCM is still good
+                        if not lcm_instance.good():
+                            print("WARNING: LCM instance is no longer in a good state")
+                    
+                    # Get the most recent timestamp from the buffer instead of using current time
+                    # This is much more reliable for log playback since it uses the actual timestamp
+                    # from the transform messages
+                    try:
+                        timestamp = buffer.get_most_recent_timestamp()
+                        if attempts % 10 == 0:
+                            print(f"Using timestamp from buffer: {timestamp}")
+                    except Exception as e:
+                        # Fall back to current time if get_most_recent_timestamp fails
+                        timestamp = datetime.now()
+                        if not hasattr(timestamp, 'timestamp'):
+                            timestamp.timestamp = lambda: time.mktime(timestamp.timetuple()) + timestamp.microsecond / 1e6
+                        if attempts % 10 == 0:
+                            print(f"Falling back to current time: {timestamp}")
+                    
+                    # Check if we can find the transform
+                    if buffer.can_transform(target_frame, source_frame, timestamp):
+                        print(f"Found transform between '{target_frame}' and '{source_frame}'!")
+                        
+                        # Look up the transform with the timestamp from the buffer
+                        # Since we're using the actual timestamp from the transforms, we can use a smaller time tolerance
+                        transform = buffer.lookup_transform(target_frame, source_frame, timestamp, 
+                                                        timeout=10.0, time_tolerance=0.1, lcm_module=lcm_msgs)
+                        
+                        # Print details
+                        # print(f"  Translation: ({transform.transform.translation.x:.6f}, "
+                        #     f"{transform.transform.translation.y:.6f}, "
+                        #     f"{transform.transform.translation.z:.6f})")
+                        # print(f"  Rotation: ({transform.transform.rotation.w:.6f}, "
+                        #     f"{transform.transform.rotation.x:.6f}, "
+                        #     f"{transform.transform.rotation.y:.6f}, "
+                        #     f"{transform.transform.rotation.z:.6f})")
+                        
+                        # Get all frames
+                        # frames = buffer.get_all_frame_names()
+                        # print(f"All frames in buffer ({len(frames)} total):")
+                        # for frame in sorted(frames):
+                        #     print(f"  {frame}")
+                        
+                        # print("\n✅ SUCCESS: Test passed!")
+                        # self.cleanup_resources()
+                        return transform
+                    
+                    # Increment counter and report status every 10 attempts
+                    attempts += 1
+                    if attempts % 10 == 0:
+                        print(f"Still waiting... (attempt {attempts}/{max_attempts})")
+                        frames = buffer.get_all_frame_names()
+                        if frames:
+                            print(f"Frames received so far ({len(frames)} total):")
+                            for frame in sorted(frames):
+                                print(f"  {frame}")
+                        else:
+                            print("No frames received yet")
+                    
+                    # Brief pause
+                    time.sleep(0.5)
+                    
+                except Exception as e:
+                    print(f"Error during main loop: {e}")
+                    attempts += 1
+                    time.sleep(1)  # Longer pause after an error
+            
+            print(f"\n❌ ERROR: No transform found after {max_attempts} attempts")
+            # self.cleanup_resources()
+            return None
         
     def depth_callback(self, channel, data):
         try:
@@ -182,7 +323,10 @@ class DrakeDepthToPointcloudConverter:
             cloud_msg.header = Header()
             cloud_msg.header.stamp = int(time.time() * 1e9)  # Current time in nanoseconds
         
-        cloud_msg.header.frame_id = self.frame_id
+        if self.cloud_frame_id is None:
+            cloud_msg.header.frame_id = self.frame_id
+        else:
+            cloud_msg.header.frame_id = self.cloud_frame_id
         
         # Set basic properties
         N = points.shape[0]
@@ -302,11 +446,9 @@ class DrakeDepthToPointcloudConverter:
         reshaped_depth = depth_image_filtered.reshape(depth_image_filtered.shape[0], depth_image_filtered.shape[1], 1)
         drake_depth_image.mutable_data[:] = reshaped_depth
         image_create_time = time.time() - start_image_create
-        
         # Set the depth image as an input to the system
         start_drake_process = time.time()
-        self.depth_to_pc_system.depth_image_input_port().FixValue(
-            self.context, drake_depth_image)
+        self.depth_to_pc_system.depth_image_input_port().FixValue(self.context, drake_depth_image)
         
         # Get the output point cloud
         output_port = self.depth_to_pc_system.point_cloud_output_port()
@@ -357,6 +499,42 @@ class DrakeDepthToPointcloudConverter:
         
         return result
     
+
+    def transform_point_cloud_with_open3d(self, points_np: np.ndarray, tf: RigidTransform) -> np.ndarray:
+        """
+        Transforms a point cloud using Open3D given a Drake RigidTransform.
+        
+        Args:
+            points_np (np.ndarray): Nx3 array of 3D points.
+            tf (RigidTransform): Drake transform to apply.
+
+        Returns:
+            np.ndarray: Nx3 array of transformed 3D points.
+        """
+        if points_np.shape[1] != 3:
+            print("Input point cloud must have shape Nx3.")
+            return points_np
+
+        # Convert Drake RigidTransform to 4x4 numpy matrix
+        print("Transform matrix:")
+        tf_matrix = np.eye(4)
+        tf_matrix[:3, :3] = tf.rotation().matrix()
+        tf_matrix[:3, 3] = tf.translation()
+
+        # Create Open3D point cloud
+        print("Creating point cloud")
+        pcd = o3d.geometry.PointCloud()
+        print("Points shape:", points_np.shape)
+        assert points_np.shape[1] == 3, "Point cloud must be Nx3"
+        points_np = points_np.astype(np.float64)
+        pcd.points = o3d.utility.Vector3dVector(points_np)
+
+        # Apply transformation
+        pcd.transform(tf_matrix)
+
+        # Return as NumPy array
+        return np.asarray(pcd.points)
+    
     def process_depth_image(self, depth_image, header):
         """
         Process depth image and publish point cloud
@@ -365,9 +543,23 @@ class DrakeDepthToPointcloudConverter:
         """
         try:
             start_time = time.time()
-            
+
+            # Create Drake pose from transform
+            drake_pose = RigidTransform()
+            self.cloud_frame_id = "world"
+            # transform = self.get_transform(self.cloud_frame_id, self.frame_id)
+            transform = self.get_transform(self.cloud_frame_id, self.frame_id)
+            translation = np.array([transform.transform.translation.x, transform.transform.translation.y, transform.transform.translation.z])
+            rotation = np.array([transform.transform.rotation.w, transform.transform.rotation.x, transform.transform.rotation.y, transform.transform.rotation.z])
+            drake_rotation = Quaternion(rotation)
+            drake_pose.set_translation(translation)
+            drake_pose.set_rotation(drake_rotation)
+            print(drake_pose)
+            # self.cloud_frame_id = None
+        
             # Convert depth image to point cloud using Drake
-            points = self.drake_depth_to_pointcloud(depth_image)
+            initial_points = self.drake_depth_to_pointcloud(depth_image)
+            points = self.transform_point_cloud_with_open3d(initial_points, drake_pose)
             
             if points is not None and len(points) > 0:
                 # Create PointCloud2 message
@@ -398,7 +590,7 @@ def main():
     
     # Parse command line arguments
     parser = argparse.ArgumentParser(description='Convert depth images to point clouds using Drake')
-    parser.add_argument('--swap-y-z', action='store_true', help='Swap Y and Z axes for visualization')
+    parser.add_argument('--swap-y-z', type=bool, default=True, help='Swap Y and Z axes for visualization')
     parser.add_argument('--downsample', type=int, default=1, help='Downsample factor (1=no downsampling, 2=half resolution, etc.)')
     parser.add_argument('--max-depth', type=float, default=10.0, help='Maximum depth to include in meters')
     parser.add_argument('--min-depth', type=float, default=0.1, help='Minimum depth to include in meters')

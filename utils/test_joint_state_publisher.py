@@ -71,7 +71,7 @@ for i, joint_name in enumerate(msg.name):
     ttk.Label(frame, text=joint_name, width=20).grid(column=0, row=0, sticky=tk.W, padx=5)
     
     # Add slider
-    slider = ttk.Scale(frame, from_=-1.0, to=1.0, orient=tk.HORIZONTAL, length=300)
+    slider = ttk.Scale(frame, from_=-3.14, to=3.14, orient=tk.HORIZONTAL, length=300)
     slider.grid(column=1, row=0, sticky=(tk.W, tk.E))
     slider.set(0.0)  # Initial value
     
