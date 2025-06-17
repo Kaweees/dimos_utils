@@ -737,54 +737,113 @@ geometry_msgs::TransformStamped Buffer::_inverseTransform(
     // Copy timestamp
     inverted.header.stamp = transform.header.stamp;
     
-    // Invert rotation (conjugate quaternion) 
-    // For a unit quaternion q = [w, x, y, z], the inverse is q^-1 = [w, -x, -y, -z]
-    // Check if we have a valid quaternion first
-    double magnitude = std::sqrt(
-        transform.transform.rotation.x * transform.transform.rotation.x +
-        transform.transform.rotation.y * transform.transform.rotation.y +
-        transform.transform.rotation.z * transform.transform.rotation.z +
-        transform.transform.rotation.w * transform.transform.rotation.w);
+    // Extract original transform values
+    double tx = transform.transform.translation.x;
+    double ty = transform.transform.translation.y;
+    double tz = transform.transform.translation.z;
     
-    if (magnitude > 1e-10) {
-        // Normalize the input quaternion first
-        double w = transform.transform.rotation.w / magnitude;
-        double x = transform.transform.rotation.x / magnitude;
-        double y = transform.transform.rotation.y / magnitude;
-        double z = transform.transform.rotation.z / magnitude;
-        
-        // Set the conjugate (inverse for unit quaternion)
-        inverted.transform.rotation.w = w;
-        inverted.transform.rotation.x = -x;
-        inverted.transform.rotation.y = -y;
-        inverted.transform.rotation.z = -z;
+    double qw = transform.transform.rotation.w;
+    double qx = transform.transform.rotation.x;
+    double qy = transform.transform.rotation.y;
+    double qz = transform.transform.rotation.z;
+    
+    // Debug output original
+    std::cout << "Original transform:" << std::endl;
+    std::cout << "  Frame: " << transform.header.frame_id << " -> " << transform.child_frame_id << std::endl;
+    std::cout << "  Rotation (w,x,y,z): " << qw << " " << qx << " " << qy << " " << qz << std::endl;
+    std::cout << "  Translation (x,y,z): " << tx << " " << ty << " " << tz << std::endl;
+    
+    // Create rotation matrix from quaternion - similar to tf2::Matrix3x3 setRotation
+    // This will help us visualize what's happening with rotation
+    double s = qw*qw + qx*qx + qy*qy + qz*qz;    // squared length
+    
+    if (s < 1e-6) {
+        // Default to identity for near-zero length
+        s = 1.0;
+        qw = 1.0;
+        qx = qy = qz = 0.0;
     } else {
-        // Default to identity if the quaternion is invalid
-        inverted.transform.rotation.w = 1.0;
-        inverted.transform.rotation.x = 0.0;
-        inverted.transform.rotation.y = 0.0;
-        inverted.transform.rotation.z = 0.0;
+        // Normalize quaternion if needed
+        s = 2.0 / s;  // This is the normalizing factor times 2 used in Matrix3x3::setRotation
     }
     
-    // Invert translation
-    // For pure translations, we just negate
-    // For translations with rotation, we need to apply the inverse rotation
-    if (std::abs(transform.transform.rotation.x) < 1e-6 &&
-        std::abs(transform.transform.rotation.y) < 1e-6 &&
-        std::abs(transform.transform.rotation.z) < 1e-6 &&
-        std::abs(transform.transform.rotation.w - 1.0) < 1e-6) {
-        // Identity rotation, just negate translation
-        inverted.transform.translation.x = -transform.transform.translation.x;
-        inverted.transform.translation.y = -transform.transform.translation.y;
-        inverted.transform.translation.z = -transform.transform.translation.z;
-    } else {
-        // Rotation is present, apply rotation to translation
-        // For simplicity, we'll assume identity rotation here
-        // A full implementation would apply quaternion rotation to the negated translation vector
-        inverted.transform.translation.x = -transform.transform.translation.x;
-        inverted.transform.translation.y = -transform.transform.translation.y;
-        inverted.transform.translation.z = -transform.transform.translation.z;
+    // Create rotation matrix for debug visualization
+    double xs = qx * s,   ys = qy * s,   zs = qz * s;
+    double wx = qw * xs,  wy = qw * ys,  wz = qw * zs;
+    double xx = qx * xs,  xy = qx * ys,  xz = qx * zs;
+    double yy = qy * ys,  yz = qy * zs,  zz = qz * zs;
+    
+    std::cout << "  Rotation Matrix:" << std::endl;
+    std::cout << "    [" << (1.0 - (yy + zz)) << ", " << (xy - wz) << ", " << (xz + wy) << "]" << std::endl;
+    std::cout << "    [" << (xy + wz) << ", " << (1.0 - (xx + zz)) << ", " << (yz - wx) << "]" << std::endl;
+    std::cout << "    [" << (xz - wy) << ", " << (yz + wx) << ", " << (1.0 - (xx + yy)) << "]" << std::endl;
+    
+    // 1. Invert rotation - for unit quaternion, the inverse is the conjugate
+    double inv_qw = qw;
+    double inv_qx = -qx;
+    double inv_qy = -qy;
+    double inv_qz = -qz;
+    
+    // 2. Negate and rotate translation
+    double nx = -tx;
+    double ny = -ty;
+    double nz = -tz;
+    
+    // Apply rotation using q * v * q^-1 (quatRotate from tf2)
+    // Using the expanded formula for rotating a vector by a quaternion
+    double tw2 = qw*qw;
+    double tx2 = qx*qx;
+    double ty2 = qy*qy;
+    double tz2 = qz*qz;
+    
+    // Calculate components of quaternion rotation matrix
+    double t0 = tx2 + ty2 + tz2 + tw2;  // Should be 1 if normalized
+    if (std::abs(t0 - 1.0) > 1e-6 && t0 > 1e-10) {
+        // Normalize if needed
+        double t = 1.0 / std::sqrt(t0);
+        qw *= t; qx *= t; qy *= t; qz *= t;
+        tw2 = qw*qw;
+        tx2 = qx*qx;
+        ty2 = qy*qy;
+        tz2 = qz*qz;
     }
+    
+    // Calculate coefficients for rotation matrix
+    double R11 = tw2 + tx2 - ty2 - tz2; // 1 - 2*(qy²+qz²)
+    double R12 = 2.0 * (qx*qy - qw*qz);  // 2*(qx*qy-qw*qz)
+    double R13 = 2.0 * (qx*qz + qw*qy);  // 2*(qx*qz+qw*qy)
+    double R21 = 2.0 * (qx*qy + qw*qz);  // 2*(qx*qy+qw*qz)
+    double R22 = tw2 - tx2 + ty2 - tz2;  // 1 - 2*(qx²+qz²)
+    double R23 = 2.0 * (qy*qz - qw*qx);  // 2*(qy*qz-qw*qx) 
+    double R31 = 2.0 * (qx*qz - qw*qy);  // 2*(qx*qz-qw*qy)
+    double R32 = 2.0 * (qy*qz + qw*qx);  // 2*(qy*qz+qw*qx)
+    double R33 = tw2 - tx2 - ty2 + tz2;  // 1 - 2*(qx²+qy²)
+    
+    // Rotate negated translation (R^T * (-t)) where R^T is transpose of rotation matrix
+    // For inverting a rigid transform, we apply inv_R to negated translation
+    double rx = R11 * nx + R21 * ny + R31 * nz;
+    double ry = R12 * nx + R22 * ny + R32 * nz;
+    double rz = R13 * nx + R23 * ny + R33 * nz;
+    
+    // Store results
+    inverted.transform.translation.x = rx;
+    inverted.transform.translation.y = ry;
+    inverted.transform.translation.z = rz;
+    
+    inverted.transform.rotation.w = inv_qw;
+    inverted.transform.rotation.x = inv_qx;
+    inverted.transform.rotation.y = inv_qy;
+    inverted.transform.rotation.z = inv_qz;
+    
+    // Debug output inverted
+    std::cout << "Inverted transform:" << std::endl;
+    std::cout << "  Frame: " << inverted.header.frame_id << " -> " << inverted.child_frame_id << std::endl;
+    std::cout << "  Rotation (w,x,y,z): " << inv_qw << " " << inv_qx << " " << inv_qy << " " << inv_qz << std::endl;
+    std::cout << "  Translation (x,y,z): " << rx << " " << ry << " " << rz << std::endl;
+    std::cout << "  Rotation coefficients:" << std::endl;
+    std::cout << "    R11: " << R11 << " R12: " << R12 << " R13: " << R13 << std::endl;
+    std::cout << "    R21: " << R21 << " R22: " << R22 << " R23: " << R23 << std::endl;
+    std::cout << "    R31: " << R31 << " R32: " << R32 << " R33: " << R33 << std::endl;
     
     return inverted;
 }
@@ -802,6 +861,12 @@ geometry_msgs::TransformStamped Buffer::_composeTransforms(
     // Note: For this to work correctly, t1.child_frame_id should equal t2.header.frame_id
     result.header.frame_id = t1.header.frame_id;
     result.child_frame_id = t2.child_frame_id;
+    
+    // Debug info for frame composition
+    std::cout << "\nComposing transforms:" << std::endl;
+    std::cout << "  T1 frame: " << t1.header.frame_id << " -> " << t1.child_frame_id << std::endl; 
+    std::cout << "  T2 frame: " << t2.header.frame_id << " -> " << t2.child_frame_id << std::endl;
+    std::cout << "  Result frame: " << result.header.frame_id << " -> " << result.child_frame_id << std::endl;
     
     // Use the latest timestamp
     if ((t1.header.stamp.sec > t2.header.stamp.sec) ||
@@ -822,62 +887,111 @@ geometry_msgs::TransformStamped Buffer::_composeTransforms(
     double t2y = t2.transform.rotation.y;
     double t2z = t2.transform.rotation.z;
     
-    // Compose rotations by applying t1's rotation followed by t2's rotation
-    // This is done by quaternion multiplication
-    result.transform.rotation.w = t1w*t2w - t1x*t2x - t1y*t2y - t1z*t2z;
-    result.transform.rotation.x = t1w*t2x + t1x*t2w + t1y*t2z - t1z*t2y;
-    result.transform.rotation.y = t1w*t2y - t1x*t2z + t1y*t2w + t1z*t2x;
-    result.transform.rotation.z = t1w*t2z + t1x*t2y - t1y*t2x + t1z*t2w;
+    // Extract translation components
+    double t1_tx = t1.transform.translation.x;
+    double t1_ty = t1.transform.translation.y;
+    double t1_tz = t1.transform.translation.z;
     
-    // Normalize rotation quaternion
-    double magnitude = std::sqrt(
+    double t2_tx = t2.transform.translation.x;
+    double t2_ty = t2.transform.translation.y;
+    double t2_tz = t2.transform.translation.z;
+    
+    // Debug input details
+    std::cout << "  T1 rotation (w,x,y,z): " << t1w << " " << t1x << " " << t1y << " " << t1z << std::endl;
+    std::cout << "  T1 translation (x,y,z): " << t1_tx << " " << t1_ty << " " << t1_tz << std::endl;
+    std::cout << "  T2 rotation (w,x,y,z): " << t2w << " " << t2x << " " << t2y << " " << t2z << std::endl;
+    std::cout << "  T2 translation (x,y,z): " << t2_tx << " " << t2_ty << " " << t2_tz << std::endl;
+    
+    // First ensure both quaternions are normalized
+    double t1_len_sq = t1w*t1w + t1x*t1x + t1y*t1y + t1z*t1z;
+    double t2_len_sq = t2w*t2w + t2x*t2x + t2y*t2y + t2z*t2z;
+    
+    if (std::abs(t1_len_sq - 1.0) > 1e-6 && t1_len_sq > 1e-10) {
+        double t1_scale = 1.0 / std::sqrt(t1_len_sq);
+        t1w *= t1_scale; t1x *= t1_scale; t1y *= t1_scale; t1z *= t1_scale;
+    }
+    
+    if (std::abs(t2_len_sq - 1.0) > 1e-6 && t2_len_sq > 1e-10) {
+        double t2_scale = 1.0 / std::sqrt(t2_len_sq);
+        t2w *= t2_scale; t2x *= t2_scale; t2y *= t2_scale; t2z *= t2_scale;
+    }
+    
+    // 1. Generate rotation matrix for t1
+    // We'll use this to rotate t2's translation
+    double xs = t1x * 2.0;  // Pre-calculated 2*x
+    double ys = t1y * 2.0;  // Pre-calculated 2*y
+    double zs = t1z * 2.0;  // Pre-calculated 2*z
+    
+    double wx = t1w * xs;
+    double wy = t1w * ys;
+    double wz = t1w * zs;
+    double xx = t1x * xs;
+    double xy = t1x * ys;
+    double xz = t1x * zs;
+    double yy = t1y * ys;
+    double yz = t1y * zs;
+    double zz = t1z * zs;
+    
+    // Components of rotation matrix from t1's quaternion
+    double t1_R11 = 1.0 - (yy + zz);
+    double t1_R12 = xy - wz;
+    double t1_R13 = xz + wy;
+    double t1_R21 = xy + wz;
+    double t1_R22 = 1.0 - (xx + zz);
+    double t1_R23 = yz - wx;
+    double t1_R31 = xz - wy;
+    double t1_R32 = yz + wx;
+    double t1_R33 = 1.0 - (xx + yy);
+    
+    // Debug rotation matrix for t1
+    std::cout << "  T1 Rotation Matrix:" << std::endl;
+    std::cout << "    [" << t1_R11 << ", " << t1_R12 << ", " << t1_R13 << "]" << std::endl;
+    std::cout << "    [" << t1_R21 << ", " << t1_R22 << ", " << t1_R23 << "]" << std::endl;
+    std::cout << "    [" << t1_R31 << ", " << t1_R32 << ", " << t1_R33 << "]" << std::endl;
+    
+    // 2. Rotate t2's translation using t1's rotation matrix
+    double t2_tx_rotated = t1_R11 * t2_tx + t1_R12 * t2_ty + t1_R13 * t2_tz;
+    double t2_ty_rotated = t1_R21 * t2_tx + t1_R22 * t2_ty + t1_R23 * t2_tz;
+    double t2_tz_rotated = t1_R31 * t2_tx + t1_R32 * t2_ty + t1_R33 * t2_tz;
+    
+    // 3. Combine rotations by multiplying quaternions
+    // result_q = t1_q * t2_q
+    result.transform.rotation.w = t1w * t2w - t1x * t2x - t1y * t2y - t1z * t2z;
+    result.transform.rotation.x = t1w * t2x + t1x * t2w + t1y * t2z - t1z * t2y;
+    result.transform.rotation.y = t1w * t2y - t1x * t2z + t1y * t2w + t1z * t2x;
+    result.transform.rotation.z = t1w * t2z + t1x * t2y - t1y * t2x + t1z * t2w;
+    
+    // Normalize the resulting quaternion
+    double result_len_sq = 
+        result.transform.rotation.w * result.transform.rotation.w +
         result.transform.rotation.x * result.transform.rotation.x +
         result.transform.rotation.y * result.transform.rotation.y +
-        result.transform.rotation.z * result.transform.rotation.z +
-        result.transform.rotation.w * result.transform.rotation.w);
+        result.transform.rotation.z * result.transform.rotation.z;
     
-    if (magnitude > 0.0) {
-        result.transform.rotation.x /= magnitude;
-        result.transform.rotation.y /= magnitude;
-        result.transform.rotation.z /= magnitude;
-        result.transform.rotation.w /= magnitude;
-    } else {
-        // Default to identity if magnitude is zero
-        result.transform.rotation.w = 1.0;
-        result.transform.rotation.x = 0.0;
-        result.transform.rotation.y = 0.0;
-        result.transform.rotation.z = 0.0;
+    if (std::abs(result_len_sq - 1.0) > 1e-6 && result_len_sq > 1e-10) {
+        double scale = 1.0 / std::sqrt(result_len_sq);
+        result.transform.rotation.w *= scale;
+        result.transform.rotation.x *= scale;
+        result.transform.rotation.y *= scale;
+        result.transform.rotation.z *= scale;
     }
     
-    // First apply t1's translation
-    double x = t1.transform.translation.x;
-    double y = t1.transform.translation.y;
-    double z = t1.transform.translation.z;
+    // 4. Calculate final translation
+    // This is t1's translation plus t2's translation rotated by t1's rotation
+    result.transform.translation.x = t1_tx + t2_tx_rotated;
+    result.transform.translation.y = t1_ty + t2_ty_rotated;
+    result.transform.translation.z = t1_tz + t2_tz_rotated;
     
-    // Now apply t2's translation, rotated by t1's rotation
-    // For identity rotation, this simplifies to adding the translations
-    // For non-identity rotations, this properly rotates t2's translation by t1's rotation
-    if (std::abs(t1.transform.rotation.x) < 1e-6 &&
-        std::abs(t1.transform.rotation.y) < 1e-6 &&
-        std::abs(t1.transform.rotation.z) < 1e-6 &&
-        std::abs(t1.transform.rotation.w - 1.0) < 1e-6) {
-        // Identity rotation, just add translations
-        result.transform.translation.x = x + t2.transform.translation.x;
-        result.transform.translation.y = y + t2.transform.translation.y;
-        result.transform.translation.z = z + t2.transform.translation.z;
-    } else {
-        // Apply quaternion rotation to t2's translation
-        // This is a simplified implementation for the common case
-        // A full implementation would use proper quaternion rotation of the translation vector
-        double t2x_rot = t2.transform.translation.x;
-        double t2y_rot = t2.transform.translation.y;
-        double t2z_rot = t2.transform.translation.z;
-        
-        // Apply simplified rotation since we're mostly dealing with identity rotations in this library
-        result.transform.translation.x = x + t2x_rot;
-        result.transform.translation.y = y + t2y_rot;
-        result.transform.translation.z = z + t2z_rot;
-    }
+    // Debug output for intermediate and final results
+    std::cout << "  T2 translation after rotation by T1: " << t2_tx_rotated 
+              << " " << t2_ty_rotated << " " << t2_tz_rotated << std::endl;
+    std::cout << "  Composed rotation (w,x,y,z): " << result.transform.rotation.w << " " 
+              << result.transform.rotation.x << " "
+              << result.transform.rotation.y << " "
+              << result.transform.rotation.z << std::endl;
+    std::cout << "  Final translation (x,y,z): " << result.transform.translation.x << " "
+              << result.transform.translation.y << " "
+              << result.transform.translation.z << std::endl;
     
     return result;
 }

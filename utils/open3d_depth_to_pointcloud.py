@@ -7,8 +7,13 @@ import time
 import cv2
 import multiprocessing
 from concurrent.futures import ThreadPoolExecutor
-from lcm_msgs.sensor_msgs import Image, CameraInfo, PointCloud2, PointField
+from lcm_msgs.sensor_msgs import Image, CameraInfo, PointCloud2, PointField, JointState
 from lcm_msgs.std_msgs import Header
+from pydrake.all import MinimumDistanceLowerBoundConstraint, MultibodyPlant, Parser, DiagramBuilder, AddMultibodyPlantSceneGraph, MeshcatVisualizer, StartMeshcat, RigidTransform, Role, RollPitchYaw, RotationMatrix, Solve, InverseKinematics, MeshcatVisualizerParams, MinimumDistanceLowerBoundConstraint, DoDifferentialInverseKinematics, DifferentialInverseKinematicsStatus, DifferentialInverseKinematicsParameters, DepthImageToPointCloud
+import traceback
+import os
+from pydrake.multibody.tree import RevoluteJoint, PrismaticJoint
+from typing import Optional
 
 # Open3D imports
 import open3d as o3d
@@ -69,7 +74,8 @@ class Open3DDepthToPointcloudConverter:
         
         # Subscribe to topics
         self.lc.subscribe("head_cam_depth#sensor_msgs.Image", self.depth_callback)
-        self.lc.subscribe("head_cam_depth_info#sensor_msgs.CameraInfo", self.camera_info_callback)
+        self.lc.subscribe("head_cam_info#sensor_msgs.CameraInfo", self.camera_info_callback)
+        self.lc.subscribe("joint_states#sensor_msgs.JointState", self._joint_states_callback)
         
         # Start LCM thread
         self.start_lcm_thread()
@@ -138,8 +144,102 @@ class Open3DDepthToPointcloudConverter:
         
         # Clear the resources list
         self._resources_to_cleanup = []
+    
+    def _joint_states_callback(self, channel, data):
+        """
+        Callback for joint states. Builds a dict: joint_name -> joint_position.
+        """
+        try:
+            msg = JointState.decode(data)
+            # msg.name is a list of joint‐names, msg.position is a list of floats
+            self.joint_states_dict = {
+                name: pos for name, pos in zip(msg.name, msg.position)
+            }
+            # For debugging:
+            # print(f"Received joint states dict: {self.joint_states_dict}")
+        except Exception as e:
+            print(f"Error decoding joint states: {e}")
+            traceback.print_exc()
+
+    def drake_get_transform(self,
+                      source_frame: str,
+                      target_frame: str,
+                      urdf_path: Optional[str] = os.path.abspath("../assets/devkit_base_descr.urdf")
+                      ) -> RigidTransform:
+        """
+        Build a small MultibodyPlant from the given URDF, set all joints
+        according to whatever was most recently stored in self.joint_states_dict,
+        and return the RigidTransform from source_frame --> target_frame.
+
+        Assumes that self.joint_states_dict was populated by _joint_states_callback,
+        which maps joint_name -> position.
+
+        Args:
+            source_frame:  name of the “from” frame (as defined in the URDF).
+            target_frame:  name of the “to” frame (as defined in the URDF).
+            urdf_path:     absolute (or relative) path to your URDF file.
+
+        Returns:
+            RigidTransform: pose of `target_frame` expressed in `source_frame` coordinates.
+        """
+        # List all joints in the correct kinematic order:
+        kinematic_chain_joints = [
+            "pillar_platform_joint",
+            "pan_tilt_pan_joint",
+            "pan_tilt_head_joint",   
+            "joint1",
+            "joint2",
+            "joint3",
+            "joint4",
+            "joint5",
+            "joint6",
+        ]
+
+        # 1) Build a brand‐new MultibodyPlant + SceneGraph from the URDF:
+        builder = DiagramBuilder()
+        plant, scene_graph = AddMultibodyPlantSceneGraph(builder, time_step=0.0)
+        parser = Parser(plant)
+        parser.AddModelsFromUrl(f"file://{urdf_path}")
+        plant.Finalize()
+
+        # 2) Create a fresh Context:
+        context = plant.CreateDefaultContext()
+
+        # 3) For each joint in our 7-DOF chain, check if we've got a value in self.joint_states_dict.
+        #    If so, set it; otherwise leave at default (zero).
+        for joint_name in kinematic_chain_joints:
+            if joint_name in self.joint_states_dict:
+                pos = self.joint_states_dict[joint_name]
+                joint = plant.GetJointByName(joint_name)
+
+                # If it's a revolute joint, use set_angle(...)
+                if isinstance(joint, RevoluteJoint):
+                    joint.set_angle(context, pos)
+
+                # If it's a prismatic joint, use set_translation(...)
+                elif isinstance(joint, PrismaticJoint):
+                    joint.set_translation(context, pos)
+
+                # Otherwise (e.g. multi-DOF), fall back to set_positions([...]) if available:
+                else:
+                    # joint.num_positions() should tell you how many DOFs this joint has.
+                    joint.set_positions(context, np.array([pos] * joint.num_positions()))
+
+            # If joint_name not in dictionary, we leave it at its default (zero)
+            else:
+                pass
+
+        # 4) Look up the two Frame objects by name:
+        frame_A = plant.GetFrameByName(source_frame)
+        frame_B = plant.GetFrameByName(target_frame)
+
+        # 5) Compute the relative transform X_A_B = pose_of(B) in A’s coords:
+        X_A_B = plant.CalcRelativeTransform(context, frame_A, frame_B)
+
+        return X_A_B
 
     def get_transform(self, target_frame, source_frame):
+        print("Getting transform from", source_frame, "to", target_frame)
         attempts = 0
         max_attempts = 20  # Reduced from 120 to avoid long blocking
         
@@ -198,6 +298,7 @@ class Open3DDepthToPointcloudConverter:
         return None
         
     def depth_callback(self, channel, data):
+        print(f"Received depth image on channel: {channel}")
         try:
             # Decode LCM message
             img_msg = Image.decode(data)
@@ -495,6 +596,50 @@ class Open3DDepthToPointcloudConverter:
 
         # Return as NumPy array
         return np.asarray(pcd.points)
+
+    def drake_transform_point_cloud_with_open3d(self,
+                                          points_np: np.ndarray,
+                                          tf: RigidTransform) -> np.ndarray:
+        """
+        Transforms a point cloud using Open3D given a Drake RigidTransform.
+
+        Args:
+            points_np (np.ndarray): Nx3 array of 3D points.
+            tf (RigidTransform): Drake transform to apply.
+
+        Returns:
+            np.ndarray: Nx3 array of transformed 3D points.
+        """
+        if points_np.ndim != 2 or points_np.shape[1] != 3:
+            print("Input point cloud must have shape Nx3.")
+            return points_np
+
+        # 1) Convert Drake RigidTransform --> 4×4 NumPy matrix
+        tf_matrix = np.eye(4)
+
+        # rotation() is a RotationMatrix.  To get the 3×3 matrix:
+        R_mat = tf.rotation().matrix()      # type: ignore[attr-defined]
+        t_vec = tf.translation()            # returns a length-3 NumPy array
+
+        tf_matrix[:3, :3] = R_mat
+        tf_matrix[:3, 3] = t_vec
+
+        # (Optional) If you want to log the quaternion for debugging:
+        # q = tf.rotation().ToQuaternion()   # This is a pydrake.common.eigen_geometry.Quaternion
+        # qw, qx, qy, qz = q.w(), q.x(), q.y(), q.z()
+        #
+        # print(f"Quaternion = (w={qw:.6f}, x={qx:.6f}, y={qy:.6f}, z={qz:.6f})")
+        # print(f"Translation = ({t_vec[0]:.6f}, {t_vec[1]:.6f}, {t_vec[2]:.6f})")
+
+        # 2) Create an Open3D point cloud from points_np
+        pcd = o3d.geometry.PointCloud()
+        pcd.points = o3d.utility.Vector3dVector(points_np.astype(np.float64))
+
+        # 3) Apply the 4×4 transform matrix
+        pcd.transform(tf_matrix)
+
+        # 4) Return the transformed points as an Nx3 NumPy array
+        return np.asarray(pcd.points)
     
     def process_depth_image(self, depth_image, header):
         """
@@ -515,15 +660,23 @@ class Open3DDepthToPointcloudConverter:
                 print("No points generated from depth image")
                 return
                 
+            native_transform = self.get_transform(self.cloud_frame_id, self.frame_id)
+            # transform = self.drake_get_transform(self.cloud_frame_id, self.frame_id)
+            print("Native transform:")
+            print(native_transform.transform.translation.x, native_transform.transform.translation.y, native_transform.transform.translation.z)
+            print(native_transform.transform.rotation.w, native_transform.transform.rotation.x, native_transform.transform.rotation.y, native_transform.transform.rotation.z)
             # Get transform from camera frame to world frame
-            transform = self.get_transform(self.cloud_frame_id, self.frame_id)
+            # print("Drake transform:")
+            # print(transform)
+            transform = native_transform
             
             if transform is None:
                 # print("No transform found, using untransformed point cloud")
                 points = initial_points
             else:
                 # Transform points to world frame
-                points = self.transform_point_cloud_with_open3d(initial_points, transform)
+                # points = self.drake_transform_point_cloud_with_open3d(initial_points, transform)
+                points = self.transform_point_cloud_with_open3d(initial_points, native_transform)
             
             if points is not None and len(points) > 0:
                 # Create PointCloud2 message

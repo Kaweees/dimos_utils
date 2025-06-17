@@ -168,7 +168,7 @@ uint64_t TFMessage::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == TFMessage::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, (void*)TFMessage::getHash };
+    const __lcm_hash_ptr cp = { p, (int64_t(*)())TFMessage::getHash };
 
     uint64_t hash = 0x37bc5cbce50a5ce2LL +
          geometry_msgs::TransformStamped::_computeHash(&cp);

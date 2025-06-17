@@ -171,7 +171,7 @@ uint64_t Header::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Header::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, (void*)Header::getHash };
+    const __lcm_hash_ptr cp = { p, (int64_t(*)())Header::getHash };
 
     uint64_t hash = 0xdbb33f5b4c19b8eaLL +
          std_msgs::Time::_computeHash(&cp);
