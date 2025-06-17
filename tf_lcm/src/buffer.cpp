@@ -748,10 +748,10 @@ geometry_msgs::TransformStamped Buffer::_inverseTransform(
     double qz = transform.transform.rotation.z;
     
     // Debug output original
-    std::cout << "Original transform:" << std::endl;
-    std::cout << "  Frame: " << transform.header.frame_id << " -> " << transform.child_frame_id << std::endl;
-    std::cout << "  Rotation (w,x,y,z): " << qw << " " << qx << " " << qy << " " << qz << std::endl;
-    std::cout << "  Translation (x,y,z): " << tx << " " << ty << " " << tz << std::endl;
+    // std::cout << "Original transform:" << std::endl;
+    // std::cout << "  Frame: " << transform.header.frame_id << " -> " << transform.child_frame_id << std::endl;
+    // std::cout << "  Rotation (w,x,y,z): " << qw << " " << qx << " " << qy << " " << qz << std::endl;
+    // std::cout << "  Translation (x,y,z): " << tx << " " << ty << " " << tz << std::endl;
     
     // Create rotation matrix from quaternion - similar to tf2::Matrix3x3 setRotation
     // This will help us visualize what's happening with rotation
@@ -773,10 +773,10 @@ geometry_msgs::TransformStamped Buffer::_inverseTransform(
     double xx = qx * xs,  xy = qx * ys,  xz = qx * zs;
     double yy = qy * ys,  yz = qy * zs,  zz = qz * zs;
     
-    std::cout << "  Rotation Matrix:" << std::endl;
-    std::cout << "    [" << (1.0 - (yy + zz)) << ", " << (xy - wz) << ", " << (xz + wy) << "]" << std::endl;
-    std::cout << "    [" << (xy + wz) << ", " << (1.0 - (xx + zz)) << ", " << (yz - wx) << "]" << std::endl;
-    std::cout << "    [" << (xz - wy) << ", " << (yz + wx) << ", " << (1.0 - (xx + yy)) << "]" << std::endl;
+    // std::cout << "  Rotation Matrix:" << std::endl;
+    // std::cout << "    [" << (1.0 - (yy + zz)) << ", " << (xy - wz) << ", " << (xz + wy) << "]" << std::endl;
+    // std::cout << "    [" << (xy + wz) << ", " << (1.0 - (xx + zz)) << ", " << (yz - wx) << "]" << std::endl;
+    // std::cout << "    [" << (xz - wy) << ", " << (yz + wx) << ", " << (1.0 - (xx + yy)) << "]" << std::endl;
     
     // 1. Invert rotation - for unit quaternion, the inverse is the conjugate
     double inv_qw = qw;
@@ -836,14 +836,14 @@ geometry_msgs::TransformStamped Buffer::_inverseTransform(
     inverted.transform.rotation.z = inv_qz;
     
     // Debug output inverted
-    std::cout << "Inverted transform:" << std::endl;
-    std::cout << "  Frame: " << inverted.header.frame_id << " -> " << inverted.child_frame_id << std::endl;
-    std::cout << "  Rotation (w,x,y,z): " << inv_qw << " " << inv_qx << " " << inv_qy << " " << inv_qz << std::endl;
-    std::cout << "  Translation (x,y,z): " << rx << " " << ry << " " << rz << std::endl;
-    std::cout << "  Rotation coefficients:" << std::endl;
-    std::cout << "    R11: " << R11 << " R12: " << R12 << " R13: " << R13 << std::endl;
-    std::cout << "    R21: " << R21 << " R22: " << R22 << " R23: " << R23 << std::endl;
-    std::cout << "    R31: " << R31 << " R32: " << R32 << " R33: " << R33 << std::endl;
+    // std::cout << "Inverted transform:" << std::endl;
+    // std::cout << "  Frame: " << inverted.header.frame_id << " -> " << inverted.child_frame_id << std::endl;
+    // std::cout << "  Rotation (w,x,y,z): " << inv_qw << " " << inv_qx << " " << inv_qy << " " << inv_qz << std::endl;
+    // std::cout << "  Translation (x,y,z): " << rx << " " << ry << " " << rz << std::endl;
+    // std::cout << "  Rotation coefficients:" << std::endl;
+    // std::cout << "    R11: " << R11 << " R12: " << R12 << " R13: " << R13 << std::endl;
+    // std::cout << "    R21: " << R21 << " R22: " << R22 << " R23: " << R23 << std::endl;
+    // std::cout << "    R31: " << R31 << " R32: " << R32 << " R33: " << R33 << std::endl;
     
     return inverted;
 }
@@ -863,10 +863,10 @@ geometry_msgs::TransformStamped Buffer::_composeTransforms(
     result.child_frame_id = t2.child_frame_id;
     
     // Debug info for frame composition
-    std::cout << "\nComposing transforms:" << std::endl;
-    std::cout << "  T1 frame: " << t1.header.frame_id << " -> " << t1.child_frame_id << std::endl; 
-    std::cout << "  T2 frame: " << t2.header.frame_id << " -> " << t2.child_frame_id << std::endl;
-    std::cout << "  Result frame: " << result.header.frame_id << " -> " << result.child_frame_id << std::endl;
+    // std::cout << "\nComposing transforms:" << std::endl;
+    // std::cout << "  T1 frame: " << t1.header.frame_id << " -> " << t1.child_frame_id << std::endl; 
+    // std::cout << "  T2 frame: " << t2.header.frame_id << " -> " << t2.child_frame_id << std::endl;
+    // std::cout << "  Result frame: " << result.header.frame_id << " -> " << result.child_frame_id << std::endl;
     
     // Use the latest timestamp
     if ((t1.header.stamp.sec > t2.header.stamp.sec) ||
@@ -897,10 +897,10 @@ geometry_msgs::TransformStamped Buffer::_composeTransforms(
     double t2_tz = t2.transform.translation.z;
     
     // Debug input details
-    std::cout << "  T1 rotation (w,x,y,z): " << t1w << " " << t1x << " " << t1y << " " << t1z << std::endl;
-    std::cout << "  T1 translation (x,y,z): " << t1_tx << " " << t1_ty << " " << t1_tz << std::endl;
-    std::cout << "  T2 rotation (w,x,y,z): " << t2w << " " << t2x << " " << t2y << " " << t2z << std::endl;
-    std::cout << "  T2 translation (x,y,z): " << t2_tx << " " << t2_ty << " " << t2_tz << std::endl;
+    // std::cout << "  T1 rotation (w,x,y,z): " << t1w << " " << t1x << " " << t1y << " " << t1z << std::endl;
+    // std::cout << "  T1 translation (x,y,z): " << t1_tx << " " << t1_ty << " " << t1_tz << std::endl;
+    // std::cout << "  T2 rotation (w,x,y,z): " << t2w << " " << t2x << " " << t2y << " " << t2z << std::endl;
+    // std::cout << "  T2 translation (x,y,z): " << t2_tx << " " << t2_ty << " " << t2_tz << std::endl;
     
     // First ensure both quaternions are normalized
     double t1_len_sq = t1w*t1w + t1x*t1x + t1y*t1y + t1z*t1z;
@@ -944,10 +944,10 @@ geometry_msgs::TransformStamped Buffer::_composeTransforms(
     double t1_R33 = 1.0 - (xx + yy);
     
     // Debug rotation matrix for t1
-    std::cout << "  T1 Rotation Matrix:" << std::endl;
-    std::cout << "    [" << t1_R11 << ", " << t1_R12 << ", " << t1_R13 << "]" << std::endl;
-    std::cout << "    [" << t1_R21 << ", " << t1_R22 << ", " << t1_R23 << "]" << std::endl;
-    std::cout << "    [" << t1_R31 << ", " << t1_R32 << ", " << t1_R33 << "]" << std::endl;
+    // std::cout << "  T1 Rotation Matrix:" << std::endl;
+    // std::cout << "    [" << t1_R11 << ", " << t1_R12 << ", " << t1_R13 << "]" << std::endl;
+    // std::cout << "    [" << t1_R21 << ", " << t1_R22 << ", " << t1_R23 << "]" << std::endl;
+    // std::cout << "    [" << t1_R31 << ", " << t1_R32 << ", " << t1_R33 << "]" << std::endl;
     
     // 2. Rotate t2's translation using t1's rotation matrix
     double t2_tx_rotated = t1_R11 * t2_tx + t1_R12 * t2_ty + t1_R13 * t2_tz;
@@ -983,15 +983,15 @@ geometry_msgs::TransformStamped Buffer::_composeTransforms(
     result.transform.translation.z = t1_tz + t2_tz_rotated;
     
     // Debug output for intermediate and final results
-    std::cout << "  T2 translation after rotation by T1: " << t2_tx_rotated 
-              << " " << t2_ty_rotated << " " << t2_tz_rotated << std::endl;
-    std::cout << "  Composed rotation (w,x,y,z): " << result.transform.rotation.w << " " 
-              << result.transform.rotation.x << " "
-              << result.transform.rotation.y << " "
-              << result.transform.rotation.z << std::endl;
-    std::cout << "  Final translation (x,y,z): " << result.transform.translation.x << " "
-              << result.transform.translation.y << " "
-              << result.transform.translation.z << std::endl;
+    // std::cout << "  T2 translation after rotation by T1: " << t2_tx_rotated 
+    //           << " " << t2_ty_rotated << " " << t2_tz_rotated << std::endl;
+    // std::cout << "  Composed rotation (w,x,y,z): " << result.transform.rotation.w << " " 
+    //           << result.transform.rotation.x << " "
+    //           << result.transform.rotation.y << " "
+    //           << result.transform.rotation.z << std::endl;
+    // std::cout << "  Final translation (x,y,z): " << result.transform.translation.x << " "
+    //           << result.transform.translation.y << " "
+    //           << result.transform.translation.z << std::endl;
     
     return result;
 }
