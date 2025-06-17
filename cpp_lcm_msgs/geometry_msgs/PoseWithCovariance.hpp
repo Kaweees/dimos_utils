@@ -156,7 +156,7 @@ uint64_t PoseWithCovariance::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == PoseWithCovariance::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, PoseWithCovariance::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)PoseWithCovariance::getHash };
 
     uint64_t hash = 0x42dbdfaa69371237LL +
          geometry_msgs::Pose::_computeHash(&cp);

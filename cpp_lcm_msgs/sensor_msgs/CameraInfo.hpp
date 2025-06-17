@@ -271,7 +271,7 @@ uint64_t CameraInfo::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == CameraInfo::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, CameraInfo::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)CameraInfo::getHash };
 
     uint64_t hash = 0xb4ea6258bc6d0702LL +
          std_msgs::Header::_computeHash(&cp) +

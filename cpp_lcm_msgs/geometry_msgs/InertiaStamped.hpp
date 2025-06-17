@@ -154,7 +154,7 @@ uint64_t InertiaStamped::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == InertiaStamped::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, InertiaStamped::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)InertiaStamped::getHash };
 
     uint64_t hash = 0x3a39287c292abed7LL +
          std_msgs::Header::_computeHash(&cp) +

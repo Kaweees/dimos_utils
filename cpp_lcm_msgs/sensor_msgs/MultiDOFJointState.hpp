@@ -284,7 +284,7 @@ uint64_t MultiDOFJointState::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == MultiDOFJointState::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, MultiDOFJointState::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)MultiDOFJointState::getHash };
 
     uint64_t hash = 0x15ca331f6f9f4fbcLL +
          std_msgs::Header::_computeHash(&cp) +

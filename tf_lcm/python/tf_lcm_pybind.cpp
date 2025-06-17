@@ -207,7 +207,7 @@ PYBIND11_MODULE(_tf_lcm_py, m) {
             }
             self.setTransforms(cppTransforms, authority, is_static);
         }, py::arg("transforms"), py::arg("authority"), py::arg("is_static") = false)
-        .def("lookup_transform", [](tf_lcm::Buffer& self, const std::string& target_frame, const std::string& source_frame, py::object time_obj, double timeout_seconds, py::object lcm_module) {
+        .def("lookup_transform", [](tf_lcm::Buffer& self, const std::string& target_frame, const std::string& source_frame, py::object time_obj, double timeout_seconds, double time_tolerance_seconds, py::object lcm_module) {
             // Convert Python datetime to C++ time_point
             auto time_point = std::chrono::system_clock::from_time_t(static_cast<time_t>(py::cast<double>(time_obj.attr("timestamp")()))) + 
                               std::chrono::microseconds(static_cast<long>(py::cast<double>(time_obj.attr("timestamp")()) * 1000000) % 1000000);
@@ -215,21 +215,30 @@ PYBIND11_MODULE(_tf_lcm_py, m) {
             // Convert timeout to C++ duration
             auto timeout = std::chrono::duration<double>(timeout_seconds);
             
-            // Look up the transform (C++ version)
-            geometry_msgs::TransformStamped cppTransform = self.lookupTransform(target_frame, source_frame, time_point, timeout);
+            // Convert time_tolerance to C++ duration
+            auto time_tolerance = std::chrono::duration<double>(time_tolerance_seconds);
+            
+            // Use a very large tolerance for log playback if requested
+            if (time_tolerance_seconds < 0) {
+                // Negative value means "use log playback mode" - set to a very large value
+                time_tolerance = std::chrono::duration<double>(3600.0);  // 1 hour tolerance
+            }
+            
+            // Look up the transform (C++ version with time_tolerance)
+            geometry_msgs::TransformStamped cppTransform = self.lookupTransform(target_frame, source_frame, time_point, timeout, time_tolerance);
             
             // Convert to Python and return
             return convertCppTransformToPy(cppTransform, lcm_module);
-        }, py::arg("target_frame"), py::arg("source_frame"), py::arg("time"), py::arg("timeout") = 0.0, py::arg("lcm_module") = py::none())
+        }, py::arg("target_frame"), py::arg("source_frame"), py::arg("time"), py::arg("timeout") = 0.0, py::arg("time_tolerance") = 0.0, py::arg("lcm_module") = py::none())
         .def("lookup_transform_with_fixed_frame", [](tf_lcm::Buffer& self, const std::string& target_frame, py::object target_time_obj, 
                                                  const std::string& source_frame, py::object source_time_obj, const std::string& fixed_frame, 
                                                  double timeout_seconds, py::object lcm_module) {
             // Convert Python datetimes to C++ time_points
             auto target_time = std::chrono::system_clock::from_time_t(static_cast<time_t>(py::cast<double>(target_time_obj.attr("timestamp")()))) + 
-                              std::chrono::microseconds(static_cast<long>(py::cast<double>(target_time_obj.attr("timestamp")()) * 1000000) % 1000000);
+                               std::chrono::microseconds(static_cast<long>(py::cast<double>(target_time_obj.attr("timestamp")()) * 1000000) % 1000000);
             auto source_time = std::chrono::system_clock::from_time_t(static_cast<time_t>(py::cast<double>(source_time_obj.attr("timestamp")()))) + 
-                              std::chrono::microseconds(static_cast<long>(py::cast<double>(source_time_obj.attr("timestamp")()) * 1000000) % 1000000);
-                              
+                               std::chrono::microseconds(static_cast<long>(py::cast<double>(source_time_obj.attr("timestamp")()) * 1000000) % 1000000);
+            
             // Convert timeout to C++ duration
             auto timeout = std::chrono::duration<double>(timeout_seconds);
             
@@ -287,6 +296,20 @@ PYBIND11_MODULE(_tf_lcm_py, m) {
             return result;
         }, py::arg("target_frame"), py::arg("target_time"), py::arg("source_frame"), py::arg("source_time"), py::arg("fixed_frame"), py::arg("error_msg") = py::none())
         .def("get_all_frame_names", &tf_lcm::Buffer::getAllFrameNames)
+        .def("get_most_recent_timestamp", [](tf_lcm::Buffer& self) {
+            // Get the most recent timestamp from the buffer
+            auto time_point = self.getMostRecentTimestamp();
+            
+            // Convert to Python datetime
+            auto time_value = std::chrono::system_clock::to_time_t(time_point);
+            auto us = std::chrono::duration_cast<std::chrono::microseconds>(time_point.time_since_epoch()).count() % 1000000;
+            
+            // Create a Python datetime object
+            auto datetime = py::module::import("datetime").attr("datetime");
+            struct tm* tm_info = localtime(&time_value);
+            
+            return datetime.attr("fromtimestamp")(static_cast<double>(time_value) + us / 1000000.0);
+        })
         .def("clear", &tf_lcm::Buffer::clear);
 
     // Bind TransformBroadcaster class with Python type conversion

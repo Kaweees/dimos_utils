@@ -154,7 +154,7 @@ uint64_t PointStamped::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == PointStamped::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, PointStamped::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)PointStamped::getHash };
 
     uint64_t hash = 0xf012413a2c8028c2LL +
          std_msgs::Header::_computeHash(&cp) +

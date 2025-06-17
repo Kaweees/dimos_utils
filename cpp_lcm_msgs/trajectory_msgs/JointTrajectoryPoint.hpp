@@ -249,7 +249,7 @@ uint64_t JointTrajectoryPoint::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == JointTrajectoryPoint::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, JointTrajectoryPoint::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)JointTrajectoryPoint::getHash };
 
     uint64_t hash = 0x5f17dcae9da98292LL +
          std_msgs::Duration::_computeHash(&cp);

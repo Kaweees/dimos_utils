@@ -4,11 +4,19 @@
 #include <iostream>
 #include <thread>
 #include <sstream>
+#include <cmath>
+
+// Macro to print debug messages only when debugging is enabled
+#define TF_DEBUG(buffer, msg) \
+    if ((buffer).debug_enabled_) { std::cerr << "DEBUG: " << msg << std::endl; }
 
 namespace tf_lcm {
 
 Buffer::Buffer(double cache_time)
-    : cache_time_(cache_time) {
+    : cache_time_(cache_time),
+      cached_most_recent_timestamp_(std::chrono::system_clock::now()),
+      cached_timestamp_valid_(false),
+      debug_enabled_(false) {
 }
 
 Buffer::~Buffer() {
@@ -38,6 +46,13 @@ bool Buffer::setTransform(const geometry_msgs::TransformStamped& transform, cons
     // Store the transform
     TransformStorage storage(transform, authority);
     
+    // Update cached most recent timestamp if this transform is newer
+    auto transform_time = storage.stamp;
+    if (!cached_timestamp_valid_ || transform_time > cached_most_recent_timestamp_) {
+        cached_most_recent_timestamp_ = transform_time;
+        cached_timestamp_valid_ = true;
+    }
+    
     auto& buffer = is_static ? static_buffer_ : buffer_;
     
     // Store in buffer, parent->child
@@ -48,13 +63,24 @@ bool Buffer::setTransform(const geometry_msgs::TransformStamped& transform, cons
     for (auto& parent_map : buffer) {
         for (auto& child_vec : parent_map.second) {
             auto& transforms = child_vec.second;
-            transforms.erase(
-                std::remove_if(transforms.begin(), transforms.end(),
+            
+            // Keep at least one transform regardless of age - crucial for log playback
+            if (transforms.size() > 1) {
+                // Sort by timestamp, newest first
+                std::sort(transforms.begin(), transforms.end(), 
+                    [](const TransformStorage& a, const TransformStorage& b) {
+                        return a.stamp > b.stamp;
+                    });
+                
+                // Remove old transforms but keep at least one
+                auto erase_begin = transforms.begin() + 1; // Keep the newest one
+                auto erase_end = std::remove_if(erase_begin, transforms.end(),
                     [this, now, is_static](const TransformStorage& ts) {
                         return !is_static && 
                                std::chrono::duration<double>(now - ts.stamp).count() > cache_time_;
-                    }),
-                transforms.end());
+                    });
+                transforms.erase(erase_begin, erase_end);
+            }
         }
     }
     
@@ -76,7 +102,8 @@ geometry_msgs::TransformStamped Buffer::lookupTransform(
     const std::string& target_frame,
     const std::string& source_frame,
     const std::chrono::system_clock::time_point& time,
-    const std::chrono::duration<double>& timeout) {
+    const std::chrono::duration<double>& timeout,
+    const std::chrono::duration<double>& time_tolerance) {
     
     // Check for timeout
     if (timeout > std::chrono::duration<double>(0.0)) {
@@ -84,7 +111,7 @@ geometry_msgs::TransformStamped Buffer::lookupTransform(
     }
     
     std::lock_guard<std::mutex> lock(mutex_);
-    return _lookupTransformNoLock(target_frame, source_frame, time);
+    return _lookupTransformNoLock(target_frame, source_frame, time, time_tolerance);
 }
 
 geometry_msgs::TransformStamped Buffer::lookupTransform(
@@ -126,10 +153,11 @@ bool Buffer::canTransform(
     const std::string& target_frame,
     const std::string& source_frame,
     const std::chrono::system_clock::time_point& time,
-    std::string* error_msg) {
+    std::string* error_msg,
+    const std::chrono::duration<double>& time_tolerance) {
     
     std::lock_guard<std::mutex> lock(mutex_);
-    return _canTransformNoLock(target_frame, source_frame, time, error_msg);
+    return _canTransformNoLock(target_frame, source_frame, time, error_msg, time_tolerance);
 }
 
 bool Buffer::canTransform(
@@ -181,17 +209,38 @@ std::vector<std::string> Buffer::getAllFrameNames() const {
     return frames;
 }
 
+void Buffer::setDebugEnabled(bool enabled) {
+    debug_enabled_ = enabled;
+}
+
 void Buffer::clear() {
     std::lock_guard<std::mutex> lock(mutex_);
     buffer_.clear();
     static_buffer_.clear();
+    
+    // Invalidate the cached timestamp since the buffer is now empty
+    cached_timestamp_valid_ = false;
 }
 
 bool Buffer::_canTransformNoLock(
     const std::string& target_frame,
     const std::string& source_frame,
     const std::chrono::system_clock::time_point& time,
-    std::string* error_msg) {
+    std::string* error_msg,
+    const std::chrono::duration<double>& time_tolerance) {
+    
+    // AUTO-DETECT LOG PLAYBACK MODE
+    // Check if we have any transforms with significantly older timestamps (log playback)
+    bool log_playback_mode = false;
+    auto now = std::chrono::system_clock::now();
+    double time_since_now = std::abs(std::chrono::duration<double>(time - now).count());
+    if (time_since_now > 1000.0) {
+        // If requested time is more than 1000 seconds different from current time,
+        // we're almost certainly in log playback mode
+        log_playback_mode = true;
+        TF_DEBUG(*this, "Detected log playback mode (requested time differs from now by " 
+                 << time_since_now << " seconds)");
+    }
     
     // If frames are the same, we can transform
     if (target_frame == source_frame) {
@@ -200,10 +249,21 @@ bool Buffer::_canTransformNoLock(
     
     // Check for direct transform in forward direction
     if (buffer_.count(target_frame) && buffer_[target_frame].count(source_frame)) {
-        // Find closest transform in time
         auto& transforms = buffer_[target_frame][source_frame];
         if (!transforms.empty()) {
-            return true;
+            // For log playback mode, just return true if any transform exists
+            if (log_playback_mode || time_tolerance.count() > 1000.0) {
+                TF_DEBUG(*this, "Found forward transform in log playback mode, using it");
+                return true;
+            }
+            
+            // Otherwise check if any transform is within the time tolerance
+            for (const auto& transform : transforms) {
+                double time_diff = std::abs(std::chrono::duration<double>(transform.stamp - time).count());
+                if (time_diff <= time_tolerance.count()) {
+                    return true;
+                }
+            }
         }
     }
     
@@ -211,11 +271,24 @@ bool Buffer::_canTransformNoLock(
     if (buffer_.count(source_frame) && buffer_[source_frame].count(target_frame)) {
         auto& transforms = buffer_[source_frame][target_frame];
         if (!transforms.empty()) {
-            return true;
+            // For log playback with large time tolerance, just return true if any transform exists
+            if (time_tolerance.count() > 1000.0) {
+                return true;
+            }
+            
+            // Otherwise check if any transform is within the time tolerance
+            for (const auto& transform : transforms) {
+                double time_diff = std::abs(std::chrono::duration<double>(transform.stamp - time).count());
+                if (time_diff <= time_tolerance.count()) {
+                    return true;
+                }
+            }
         }
     }
     
     // Check static transforms in forward direction
+    // Static transforms don't need time tolerance checks since they're always valid,
+    // but we'll use the same pattern for consistency
     if (static_buffer_.count(target_frame) && static_buffer_[target_frame].count(source_frame)) {
         auto& transforms = static_buffer_[target_frame][source_frame];
         if (!transforms.empty()) {
@@ -307,7 +380,8 @@ bool Buffer::_canTransformNoLock(
 geometry_msgs::TransformStamped Buffer::_lookupTransformNoLock(
     const std::string& target_frame,
     const std::string& source_frame,
-    const std::chrono::system_clock::time_point& time) {
+    const std::chrono::system_clock::time_point& time,
+    const std::chrono::duration<double>& time_tolerance) {
     
     // If frames are the same, return identity transform
     if (target_frame == source_frame) {
@@ -501,7 +575,9 @@ void Buffer::_waitForTransform(
         std::string error_msg;
         {
             std::lock_guard<std::mutex> lock(mutex_);
-            if (_canTransformNoLock(target_frame, source_frame, time, &error_msg)) {
+            // Use the same large time tolerance for log playback (10000 seconds)
+            const std::chrono::duration<double> large_time_tolerance(10000.0);
+            if (_canTransformNoLock(target_frame, source_frame, time, &error_msg, large_time_tolerance)) {
                 return;
             }
         }
@@ -517,10 +593,15 @@ void Buffer::_waitForTransform(
 geometry_msgs::TransformStamped Buffer::_lookupDirectTransform(
     const std::string& source_frame,
     const std::string& target_frame,
-    const std::chrono::system_clock::time_point& time) {
+    const std::chrono::system_clock::time_point& time,
+    const std::chrono::duration<double>& time_tolerance) {
+    
+    // Debug log for this critical lookup
+    TF_DEBUG(*this, "Looking for direct transform: '" << source_frame << "' -> '" << target_frame << "'");
     
     // Check dynamic buffer
     if (buffer_.count(source_frame) && buffer_[source_frame].count(target_frame)) {
+        TF_DEBUG(*this, "Found direct mapping in buffer: " << source_frame << " -> " << target_frame);
         auto& transforms = buffer_[source_frame][target_frame];
         if (!transforms.empty()) {
             // Find transform closest to requested time
@@ -530,21 +611,120 @@ geometry_msgs::TransformStamped Buffer::_lookupDirectTransform(
                            std::abs(std::chrono::duration<double>(b.stamp - time).count());
                 });
             
-            return closest->toTransformStamped();
+            // Check if the closest transform is within our time tolerance
+            double time_diff = std::abs(std::chrono::duration<double>(closest->stamp - time).count());
+            TF_DEBUG(*this, "Found transform with time diff: " << time_diff << ", tolerance: " << time_tolerance.count());
+            
+            // With large tolerance for log playback, just use the transform regardless of time
+            // This applies to any difference larger than ~2 hours (typical for log playback scenarios)
+            if (time_diff > 1000.0 || time_tolerance.count() > 1000.0) {
+                TF_DEBUG(*this, "Using transform despite large time difference (log playback mode)");
+                return closest->toTransformStamped();
+            }
+            
+            // If within tolerance, use it
+            if (time_diff <= time_tolerance.count()) {
+                TF_DEBUG(*this, "Using transform within tolerance");
+                return closest->toTransformStamped();
+            }
+            
+            // If the time difference is too large, check if ANY transform in the buffer is within tolerance
+            for (const auto& transform : transforms) {
+                time_diff = std::abs(std::chrono::duration<double>(transform.stamp - time).count());
+                if (time_diff <= time_tolerance.count()) {
+                    TF_DEBUG(*this, "Found another transform within tolerance");
+                    return transform.toTransformStamped();
+                }
+            }
         }
     }
     
-    // Check static buffer
+    // SECOND ATTEMPT: Look for target -> source in dynamic buffer and invert it
+    if (buffer_.count(target_frame) && buffer_[target_frame].count(source_frame)) {
+        TF_DEBUG(*this, "Found REVERSE mapping in buffer: " << target_frame << " -> " << source_frame);
+        auto& transforms = buffer_[target_frame][source_frame];
+        if (!transforms.empty()) {
+            // Find transform closest to requested time
+            auto closest = std::min_element(transforms.begin(), transforms.end(),
+                [time](const TransformStorage& a, const TransformStorage& b) {
+                    return std::abs(std::chrono::duration<double>(a.stamp - time).count()) <
+                           std::abs(std::chrono::duration<double>(b.stamp - time).count());
+                });
+            
+            // With large tolerance for log playback, just use the transform regardless of time
+            // This applies to any difference larger than ~2 hours (typical for log playback scenarios)
+            double inverse_time_diff = std::abs(std::chrono::duration<double>(closest->stamp - time).count());
+            TF_DEBUG(*this, "Found INVERSE transform with time diff: " << inverse_time_diff << ", tolerance: " << time_tolerance.count());
+            
+            if (inverse_time_diff > 1000.0 || time_tolerance.count() > 1000.0) {
+                TF_DEBUG(*this, "Using INVERSE transform despite large time difference (log playback mode)");
+                // Invert the transform since we found target -> source but need source -> target
+                auto transform = closest->toTransformStamped();
+                return _inverseTransform(transform);
+            }
+            
+            // Check if the closest transform is within our time tolerance
+            double time_diff = std::abs(std::chrono::duration<double>(closest->stamp - time).count());
+            
+            // If within tolerance, use it
+            if (time_diff <= time_tolerance.count()) {
+                TF_DEBUG(*this, "Using INVERSE transform within tolerance");
+                // Invert the transform since we found target -> source but need source -> target
+                auto transform = closest->toTransformStamped();
+                return _inverseTransform(transform);
+            }
+            
+            // If the time difference is too large, check if ANY transform in the buffer is within tolerance
+            for (const auto& transform_storage : transforms) {
+                time_diff = std::abs(std::chrono::duration<double>(transform_storage.stamp - time).count());
+                if (time_diff <= time_tolerance.count()) {
+                    TF_DEBUG(*this, "Found another INVERSE transform within tolerance");
+                    // Invert the transform
+                    auto transform = transform_storage.toTransformStamped();
+                    return _inverseTransform(transform);
+                }
+            }
+        }
+    }
+    
+    // THIRD ATTEMPT: Check static buffer for source -> target
     if (static_buffer_.count(source_frame) && static_buffer_[source_frame].count(target_frame)) {
+        TF_DEBUG(*this, "Found static transform: " << source_frame << " -> " << target_frame);
         auto& transforms = static_buffer_[source_frame][target_frame];
         if (!transforms.empty()) {
             return transforms[0].toTransformStamped();
         }
     }
     
+    // FOURTH ATTEMPT: Check static buffer for target -> source and invert
+    if (static_buffer_.count(target_frame) && static_buffer_[target_frame].count(source_frame)) {
+        TF_DEBUG(*this, "Found static INVERSE transform: " << target_frame << " -> " << source_frame);
+        auto& transforms = static_buffer_[target_frame][source_frame];
+        if (!transforms.empty()) {
+            // Invert the transform
+            auto transform = transforms[0].toTransformStamped();
+            return _inverseTransform(transform);
+        }
+    }
+    
+    // FINAL ATTEMPT: Dump all available transforms for debugging
+    TF_DEBUG(*this, "No transform found. Dumping available transforms:");
+    if (debug_enabled_) {
+        for (const auto& parent_pair : buffer_) {
+            for (const auto& child_pair : parent_pair.second) {
+                std::cerr << "  Buffer contains: " << parent_pair.first << " -> " << child_pair.first << " (" << child_pair.second.size() << " transforms)" << std::endl;
+            }
+        }
+        
+        for (const auto& parent_pair : static_buffer_) {
+            for (const auto& child_pair : parent_pair.second) {
+                std::cerr << "  Static buffer contains: " << parent_pair.first << " -> " << child_pair.first << " (" << child_pair.second.size() << " transforms)" << std::endl;
+            }
+        }
+    }
+    
     throw LookupException("Cannot find direct transform from '" + source_frame + "' to '" + target_frame + "'");
 }
-
 geometry_msgs::TransformStamped Buffer::_inverseTransform(
     const geometry_msgs::TransformStamped& transform) {
     
@@ -700,6 +880,88 @@ geometry_msgs::TransformStamped Buffer::_composeTransforms(
     }
     
     return result;
+}
+
+std::chrono::system_clock::time_point Buffer::getValidTimestamp() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Default to current time if no transforms are found
+    auto now = std::chrono::system_clock::now();
+    
+    // Look for a valid timestamp in the dynamic buffer
+    for (const auto& parent_map : buffer_) {
+        for (const auto& child_map : parent_map.second) {
+            const auto& transforms = child_map.second;
+            if (!transforms.empty()) {
+                // Return the timestamp of the first transform found
+                return transforms[0].stamp;
+            }
+        }
+    }
+    
+    // If no transforms in dynamic buffer, check static buffer
+    for (const auto& parent_map : static_buffer_) {
+        for (const auto& child_map : parent_map.second) {
+            const auto& transforms = child_map.second;
+            if (!transforms.empty()) {
+                // Return the timestamp of the first transform found
+                return transforms[0].stamp;
+            }
+        }
+    }
+    
+    // If no transforms found at all, return current time
+    return now;
+}
+
+std::chrono::system_clock::time_point Buffer::getMostRecentTimestamp() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // If we have a valid cached timestamp, return it immediately
+    if (cached_timestamp_valid_) {
+        return cached_most_recent_timestamp_;
+    }
+    
+    // Cache was invalid, so we need to scan all transforms to find the most recent timestamp
+    std::chrono::system_clock::time_point most_recent = std::chrono::system_clock::time_point::min();
+    bool found = false;
+    
+    // Check all transforms in dynamic buffer
+    for (const auto& parent_map : buffer_) {
+        for (const auto& child_map : parent_map.second) {
+            const auto& transforms = child_map.second;
+            for (const auto& transform : transforms) {
+                if (transform.stamp > most_recent) {
+                    most_recent = transform.stamp;
+                    found = true;
+                }
+            }
+        }
+    }
+    
+    // Check static transforms too (though these are less likely to have recent timestamps)
+    for (const auto& parent_map : static_buffer_) {
+        for (const auto& child_map : parent_map.second) {
+            const auto& transforms = child_map.second;
+            for (const auto& transform : transforms) {
+                if (transform.stamp > most_recent) {
+                    most_recent = transform.stamp;
+                    found = true;
+                }
+            }
+        }
+    }
+    
+    // Update the cache with what we found
+    if (found) {
+        cached_most_recent_timestamp_ = most_recent;
+        cached_timestamp_valid_ = true;
+    } else {
+        // If no timestamp found, return current time
+        return std::chrono::system_clock::now();
+    }
+    
+    return cached_most_recent_timestamp_;
 }
 
 } // namespace tf_lcm

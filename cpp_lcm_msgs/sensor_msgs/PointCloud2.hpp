@@ -258,7 +258,7 @@ uint64_t PointCloud2::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == PointCloud2::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, PointCloud2::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)PointCloud2::getHash };
 
     uint64_t hash = 0xeabe7183c4d74215LL +
          std_msgs::Header::_computeHash(&cp) +

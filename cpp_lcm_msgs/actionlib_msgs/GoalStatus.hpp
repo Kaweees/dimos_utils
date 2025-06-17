@@ -223,7 +223,7 @@ uint64_t GoalStatus::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == GoalStatus::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, GoalStatus::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)GoalStatus::getHash };
 
     uint64_t hash = 0xc0b4e95febdcd994LL +
          actionlib_msgs::GoalID::_computeHash(&cp);

@@ -201,7 +201,7 @@ uint64_t TextAnnotation::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == TextAnnotation::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, TextAnnotation::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)TextAnnotation::getHash };
 
     uint64_t hash = 0x1354af1f564701e9LL +
          builtin_interfaces::Time::_computeHash(&cp) +

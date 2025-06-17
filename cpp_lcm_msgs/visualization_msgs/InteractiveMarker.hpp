@@ -265,7 +265,7 @@ uint64_t InteractiveMarker::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == InteractiveMarker::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, InteractiveMarker::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)InteractiveMarker::getHash };
 
     uint64_t hash = 0xe9ed8e5f9a72545fLL +
          std_msgs::Header::_computeHash(&cp) +

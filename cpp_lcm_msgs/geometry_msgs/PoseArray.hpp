@@ -178,7 +178,7 @@ uint64_t PoseArray::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == PoseArray::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, PoseArray::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)PoseArray::getHash };
 
     uint64_t hash = 0xc779b6acc503055aLL +
          std_msgs::Header::_computeHash(&cp) +

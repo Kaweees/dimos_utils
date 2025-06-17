@@ -171,7 +171,7 @@ uint64_t Float32MultiArray::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Float32MultiArray::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Float32MultiArray::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Float32MultiArray::getHash };
 
     uint64_t hash = 0x7138323e2b24be12LL +
          std_msgs::MultiArrayLayout::_computeHash(&cp);

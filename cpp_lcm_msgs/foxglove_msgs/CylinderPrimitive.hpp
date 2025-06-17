@@ -182,7 +182,7 @@ uint64_t CylinderPrimitive::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == CylinderPrimitive::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, CylinderPrimitive::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)CylinderPrimitive::getHash };
 
     uint64_t hash = 0xa52103034bfe0bacLL +
          geometry_msgs::Pose::_computeHash(&cp) +

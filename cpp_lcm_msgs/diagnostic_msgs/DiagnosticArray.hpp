@@ -178,7 +178,7 @@ uint64_t DiagnosticArray::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == DiagnosticArray::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, DiagnosticArray::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)DiagnosticArray::getHash };
 
     uint64_t hash = 0x0163c308c500b94dLL +
          std_msgs::Header::_computeHash(&cp) +

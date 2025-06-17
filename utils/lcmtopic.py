@@ -24,7 +24,7 @@ def format_bytes(size):
 
 class LcmTopicTool:
     def __init__(self):
-        self.lc = lcm.LCM()
+        self.lc = lcm.LCM("udpm://239.255.76.67:7667")
         self.running = True
         self.lcm_thread = None
         self.subscriptions = []

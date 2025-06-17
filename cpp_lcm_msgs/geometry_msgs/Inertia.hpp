@@ -207,7 +207,7 @@ uint64_t Inertia::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Inertia::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Inertia::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Inertia::getHash };
 
     uint64_t hash = 0xbeaa1a2a4c70b2e0LL +
          geometry_msgs::Vector3::_computeHash(&cp);

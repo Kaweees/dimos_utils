@@ -263,7 +263,7 @@ uint64_t JointState::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == JointState::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, JointState::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)JointState::getHash };
 
     uint64_t hash = 0xb69cc30d0d7668faLL +
          std_msgs::Header::_computeHash(&cp);

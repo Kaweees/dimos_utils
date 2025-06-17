@@ -17,7 +17,7 @@ def update_positions():
     lc.publish("joint_states#sensor_msgs.JointState", msg.encode())
     
     # Schedule the next update
-    root.after(100, update_positions)  # 100ms = 0.1s
+    root.after(10, update_positions)  # 10ms = 0.01s
 
 def reset_positions():
     # Reset all sliders to 0.0
@@ -71,7 +71,7 @@ for i, joint_name in enumerate(msg.name):
     ttk.Label(frame, text=joint_name, width=20).grid(column=0, row=0, sticky=tk.W, padx=5)
     
     # Add slider
-    slider = ttk.Scale(frame, from_=-1.0, to=1.0, orient=tk.HORIZONTAL, length=300)
+    slider = ttk.Scale(frame, from_=-3.14, to=3.14, orient=tk.HORIZONTAL, length=300)
     slider.grid(column=1, row=0, sticky=(tk.W, tk.E))
     slider.set(0.0)  # Initial value
     

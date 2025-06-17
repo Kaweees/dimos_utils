@@ -244,7 +244,7 @@ uint64_t MultiDOFJointTrajectoryPoint::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == MultiDOFJointTrajectoryPoint::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, MultiDOFJointTrajectoryPoint::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)MultiDOFJointTrajectoryPoint::getHash };
 
     uint64_t hash = 0x6afb214a921f4cfaLL +
          geometry_msgs::Transform::_computeHash(&cp) +

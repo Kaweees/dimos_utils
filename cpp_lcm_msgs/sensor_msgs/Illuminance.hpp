@@ -162,7 +162,7 @@ uint64_t Illuminance::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Illuminance::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Illuminance::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Illuminance::getHash };
 
     uint64_t hash = 0xdfb4b65ce9b1b524LL +
          std_msgs::Header::_computeHash(&cp);

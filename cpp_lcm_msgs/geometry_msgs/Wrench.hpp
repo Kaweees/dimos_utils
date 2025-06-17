@@ -154,7 +154,7 @@ uint64_t Wrench::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Wrench::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Wrench::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Wrench::getHash };
 
     uint64_t hash = 0x0980c3aea984c9a6LL +
          geometry_msgs::Vector3::_computeHash(&cp) +

@@ -178,7 +178,7 @@ uint64_t GoalStatusArray::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == GoalStatusArray::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, GoalStatusArray::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)GoalStatusArray::getHash };
 
     uint64_t hash = 0x0f5c35b2e7eed0faLL +
          std_msgs::Header::_computeHash(&cp) +

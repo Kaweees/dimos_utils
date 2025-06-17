@@ -154,7 +154,7 @@ uint64_t PolygonStamped::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == PolygonStamped::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, PolygonStamped::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)PolygonStamped::getHash };
 
     uint64_t hash = 0x413a2f753630b1d7LL +
          std_msgs::Header::_computeHash(&cp) +

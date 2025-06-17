@@ -247,7 +247,7 @@ uint64_t TriangleListPrimitive::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == TriangleListPrimitive::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, TriangleListPrimitive::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)TriangleListPrimitive::getHash };
 
     uint64_t hash = 0xcf3047947917a6ccLL +
          geometry_msgs::Pose::_computeHash(&cp) +

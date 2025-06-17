@@ -154,7 +154,7 @@ uint64_t QuaternionStamped::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == QuaternionStamped::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, QuaternionStamped::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)QuaternionStamped::getHash };
 
     uint64_t hash = 0x7a3833b23af3ee48LL +
          std_msgs::Header::_computeHash(&cp) +

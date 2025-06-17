@@ -288,7 +288,7 @@ uint64_t InteractiveMarkerUpdate::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == InteractiveMarkerUpdate::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, InteractiveMarkerUpdate::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)InteractiveMarkerUpdate::getHash };
 
     uint64_t hash = 0xf6eebb4c4a608b4cLL +
          visualization_msgs::InteractiveMarker::_computeHash(&cp) +

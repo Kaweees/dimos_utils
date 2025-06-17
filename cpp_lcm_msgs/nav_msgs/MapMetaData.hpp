@@ -181,7 +181,7 @@ uint64_t MapMetaData::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == MapMetaData::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, MapMetaData::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)MapMetaData::getHash };
 
     uint64_t hash = 0x3245f3cdb468ba93LL +
          std_msgs::Time::_computeHash(&cp) +

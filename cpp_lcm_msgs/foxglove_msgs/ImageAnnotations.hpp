@@ -234,7 +234,7 @@ uint64_t ImageAnnotations::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == ImageAnnotations::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, ImageAnnotations::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)ImageAnnotations::getHash };
 
     uint64_t hash = 0x8b3a52c632c59b07LL +
          foxglove_msgs::CircleAnnotation::_computeHash(&cp) +

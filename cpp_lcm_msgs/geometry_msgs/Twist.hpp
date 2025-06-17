@@ -154,7 +154,7 @@ uint64_t Twist::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Twist::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Twist::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Twist::getHash };
 
     uint64_t hash = 0x3a4144772922add7LL +
          geometry_msgs::Vector3::_computeHash(&cp) +

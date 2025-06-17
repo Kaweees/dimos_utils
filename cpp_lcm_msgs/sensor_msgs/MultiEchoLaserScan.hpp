@@ -274,7 +274,7 @@ uint64_t MultiEchoLaserScan::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == MultiEchoLaserScan::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, MultiEchoLaserScan::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)MultiEchoLaserScan::getHash };
 
     uint64_t hash = 0xf02a6253849d18e2LL +
          std_msgs::Header::_computeHash(&cp) +

@@ -224,7 +224,7 @@ uint64_t NavSatFix::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == NavSatFix::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, NavSatFix::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)NavSatFix::getHash };
 
     uint64_t hash = 0x4a84d20526d9067aLL +
          std_msgs::Header::_computeHash(&cp) +

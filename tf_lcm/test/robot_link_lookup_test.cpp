@@ -68,13 +68,26 @@ int main(int argc, char** argv) {
             lcm->handleTimeout(100);  // 100ms timeout
             
             // Try to look up the transform
-            // First check if we can transform
-            auto now = std::chrono::system_clock::now();
-            bool can_transform = buffer.canTransform(target_frame, source_frame, now);
+            // Use getMostRecentTimestamp to get the most recent timestamp from the buffer
+            // This is the cleanest approach for log playback, as it uses actual transform timestamps
+            auto lookup_time = buffer.getMostRecentTimestamp();
+            
+            auto time_sec = std::chrono::duration_cast<std::chrono::seconds>(lookup_time.time_since_epoch()).count();
+            auto time_nsec = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                lookup_time.time_since_epoch() % std::chrono::seconds(1)).count();
+            std::cout << "Looking up transform at timestamp: " << time_sec << "." 
+                      << std::setfill('0') << std::setw(9) << time_nsec << std::endl;
+            
+            // With the correct timestamp from the transforms, we only need a small time tolerance
+            // for minor variations between transform timestamps
+            const std::chrono::duration<double> time_tolerance(0.1); // 100ms tolerance
+            
+            // Check if we can transform with the actual timestamp from the transforms
+            bool can_transform = buffer.canTransform(target_frame, source_frame, lookup_time, nullptr, time_tolerance);
             
             if (can_transform) {
-                // Look up the transform
-                auto transform = buffer.lookupTransform(target_frame, source_frame, now);
+                // Look up the transform using the same timestamp with the large time tolerance
+                auto transform = buffer.lookupTransform(target_frame, source_frame, lookup_time, std::chrono::duration<double>(0.0), time_tolerance);
                 print_transform(transform);
                 found_transform = true;
                 

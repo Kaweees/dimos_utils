@@ -201,7 +201,7 @@ uint64_t SceneUpdate::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == SceneUpdate::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, SceneUpdate::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)SceneUpdate::getHash };
 
     uint64_t hash = 0x8f9d4ee9e2a92d31LL +
          foxglove_msgs::SceneEntityDeletion::_computeHash(&cp) +

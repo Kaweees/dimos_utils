@@ -162,7 +162,7 @@ uint64_t RelativeHumidity::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == RelativeHumidity::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, RelativeHumidity::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)RelativeHumidity::getHash };
 
     uint64_t hash = 0x1db00395f858f771LL +
          std_msgs::Header::_computeHash(&cp);

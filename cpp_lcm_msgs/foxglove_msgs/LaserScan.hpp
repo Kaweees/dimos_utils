@@ -243,7 +243,7 @@ uint64_t LaserScan::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == LaserScan::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, LaserScan::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)LaserScan::getHash };
 
     uint64_t hash = 0x22e7c769ba6a90c2LL +
          builtin_interfaces::Time::_computeHash(&cp) +

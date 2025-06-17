@@ -430,7 +430,7 @@ uint64_t Marker::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Marker::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Marker::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Marker::getHash };
 
     uint64_t hash = 0x707e24d8bc038bd3LL +
          std_msgs::Header::_computeHash(&cp) +

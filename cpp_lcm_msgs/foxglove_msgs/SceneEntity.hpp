@@ -496,7 +496,7 @@ uint64_t SceneEntity::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == SceneEntity::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, SceneEntity::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)SceneEntity::getHash };
 
     uint64_t hash = 0xe143d679579f0ab0LL +
          builtin_interfaces::Time::_computeHash(&cp) +

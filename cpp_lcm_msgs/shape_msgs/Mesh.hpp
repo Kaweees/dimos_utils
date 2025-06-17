@@ -201,7 +201,7 @@ uint64_t Mesh::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Mesh::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Mesh::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Mesh::getHash };
 
     uint64_t hash = 0xdc739fb8d2f81ab9LL +
          shape_msgs::MeshTriangle::_computeHash(&cp) +

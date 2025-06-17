@@ -154,7 +154,7 @@ uint64_t AccelStamped::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == AccelStamped::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, AccelStamped::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)AccelStamped::getHash };
 
     uint64_t hash = 0xf012322e268930c2LL +
          std_msgs::Header::_computeHash(&cp) +

@@ -164,7 +164,7 @@ uint64_t CubePrimitive::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == CubePrimitive::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, CubePrimitive::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)CubePrimitive::getHash };
 
     uint64_t hash = 0xe7e8912ea6542887LL +
          geometry_msgs::Pose::_computeHash(&cp) +

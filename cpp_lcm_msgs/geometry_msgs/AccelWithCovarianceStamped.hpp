@@ -154,7 +154,7 @@ uint64_t AccelWithCovarianceStamped::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == AccelWithCovarianceStamped::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, AccelWithCovarianceStamped::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)AccelWithCovarianceStamped::getHash };
 
     uint64_t hash = 0xf012322e268930c2LL +
          std_msgs::Header::_computeHash(&cp) +

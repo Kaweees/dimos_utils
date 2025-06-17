@@ -168,7 +168,7 @@ uint64_t Polygon::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Polygon::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Polygon::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Polygon::getHash };
 
     uint64_t hash = 0x5634733b354407e8LL +
          geometry_msgs::Point32::_computeHash(&cp);

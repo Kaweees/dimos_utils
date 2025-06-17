@@ -177,7 +177,7 @@ uint64_t MultiArrayLayout::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == MultiArrayLayout::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, MultiArrayLayout::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)MultiArrayLayout::getHash };
 
     uint64_t hash = 0x0bf4b5363481d321LL +
          std_msgs::MultiArrayDimension::_computeHash(&cp);

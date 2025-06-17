@@ -129,7 +129,7 @@ class DepthToPointcloudConverter:
             cloud_msg.header = Header()
             cloud_msg.header.stamp = int(time.time() * 1e9)  # Current time in nanoseconds
         
-        cloud_msg.header.frame_id = "pan_tilt_head"
+        cloud_msg.header.frame_id = self.frame_id
         
         # Set basic properties
         N = points.shape[0]
@@ -287,6 +287,7 @@ class DepthToPointcloudConverter:
         """
         try:
             start_time = time.time()
+            self.frame_id = header.frame_id
             
             # Generate point cloud
             points = self.generate_point_cloud(depth_image)

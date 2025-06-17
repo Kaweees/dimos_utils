@@ -154,7 +154,7 @@ uint64_t Pose::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Pose::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Pose::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Pose::getHash };
 
     uint64_t hash = 0x2d70dd60bd541272LL +
          geometry_msgs::Point::_computeHash(&cp) +

@@ -162,7 +162,7 @@ uint64_t FluidPressure::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == FluidPressure::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, FluidPressure::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)FluidPressure::getHash };
 
     uint64_t hash = 0x36b91af6b8f9d388LL +
          std_msgs::Header::_computeHash(&cp);

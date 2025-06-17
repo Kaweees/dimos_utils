@@ -269,7 +269,7 @@ uint64_t Grid::_computeHash(const __lcm_hash_ptr *p)
     for(fp = p; fp != NULL; fp = fp->parent)
         if(fp->v == Grid::getHash)
             return 0;
-    const __lcm_hash_ptr cp = { p, Grid::getHash };
+    const __lcm_hash_ptr cp = { p, (void*)Grid::getHash };
 
     uint64_t hash = 0x91f7114ed51a5321LL +
          builtin_interfaces::Time::_computeHash(&cp) +

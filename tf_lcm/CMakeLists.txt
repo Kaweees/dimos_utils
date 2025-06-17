@@ -6,8 +6,37 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Find package LCM
-find_package(lcm REQUIRED)
+# ABI compatibility between Linux and Mac is now handled directly in the message files
+# by properly casting function pointers
+
+# Use pkg-config to find LCM instead of CMake's find_package
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LCM REQUIRED lcm)
+
+# Print LCM library information for debugging
+message(STATUS "LCM include dirs: ${LCM_INCLUDE_DIRS}")
+message(STATUS "LCM library dirs: ${LCM_LIBRARY_DIRS}")
+message(STATUS "LCM libraries: ${LCM_LIBRARIES}")
+
+# Set include and library dirs
+include_directories(${LCM_INCLUDE_DIRS})
+link_directories(${LCM_LIBRARY_DIRS})
+
+# Ensure we find liblcm.so directly instead of using IMPORTED targets
+find_library(LCM_LIB lcm REQUIRED)
+find_library(LCM_CORETYPES_LIB lcm-coretypes)
+
+message(STATUS "Found LCM: ${LCM_LIB}")
+message(STATUS "Found LCM coretypes: ${LCM_CORETYPES_LIB}")
+
+# Create targets for LCM libraries
+add_library(lcm INTERFACE)
+target_include_directories(lcm INTERFACE ${LCM_INCLUDE_DIRS})
+target_link_libraries(lcm INTERFACE ${LCM_LIB})
+
+add_library(lcm-coretypes INTERFACE)
+target_include_directories(lcm-coretypes INTERFACE ${LCM_INCLUDE_DIRS})
+target_link_libraries(lcm-coretypes INTERFACE ${LCM_LIB})
 
 # Add pybind11
 include(FetchContent)
