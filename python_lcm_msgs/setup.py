@@ -16,7 +16,6 @@ if __name__ == '__main__':
         packages=find_packages(),  # This will find lcm_msgs and all subpackages
         install_requires=[
             "lcm",
-            "foxglove-websocket",
         ],
         python_requires=">=3.8",
     )
