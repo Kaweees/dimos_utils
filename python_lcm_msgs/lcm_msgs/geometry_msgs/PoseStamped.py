@@ -36,7 +36,7 @@ class PoseStamped(object):
         assert self.pose._get_packed_fingerprint() == Pose._get_packed_fingerprint()
         self.pose._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -46,14 +46,14 @@ class PoseStamped(object):
             raise ValueError("Decode error")
         return PoseStamped._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = PoseStamped()
         self.header = std_msgs.Header._decode_one(buf)
         self.pose = Pose._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if PoseStamped in parents: return 0
         newparents = parents + [PoseStamped]
@@ -62,7 +62,7 @@ class PoseStamped(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if PoseStamped._packed_fingerprint is None:
             PoseStamped._packed_fingerprint = struct.pack(">Q", PoseStamped._get_hash_recursive([]))

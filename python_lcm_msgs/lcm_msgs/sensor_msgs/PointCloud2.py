@@ -60,7 +60,7 @@ class PointCloud2(object):
         buf.write(bytearray(self.data[:self.data_length]))
         buf.write(struct.pack(">b", self.is_dense))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -70,7 +70,7 @@ class PointCloud2(object):
             raise ValueError("Decode error")
         return PointCloud2._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = PointCloud2()
         self.fields_length, self.data_length = struct.unpack(">ii", buf.read(8))
@@ -85,7 +85,7 @@ class PointCloud2(object):
         self.is_dense = bool(struct.unpack('b', buf.read(1))[0])
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if PointCloud2 in parents: return 0
         newparents = parents + [PointCloud2]
@@ -94,7 +94,7 @@ class PointCloud2(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if PointCloud2._packed_fingerprint is None:
             PointCloud2._packed_fingerprint = struct.pack(">Q", PointCloud2._get_hash_recursive([]))

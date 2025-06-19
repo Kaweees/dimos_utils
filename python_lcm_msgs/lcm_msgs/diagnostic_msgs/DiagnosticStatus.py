@@ -60,7 +60,7 @@ class DiagnosticStatus(object):
             assert self.values[i0]._get_packed_fingerprint() == KeyValue._get_packed_fingerprint()
             self.values[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -70,7 +70,7 @@ class DiagnosticStatus(object):
             raise ValueError("Decode error")
         return DiagnosticStatus._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = DiagnosticStatus()
         self.values_length, self.level = struct.unpack(">ib", buf.read(5))
@@ -85,7 +85,7 @@ class DiagnosticStatus(object):
             self.values.append(KeyValue._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if DiagnosticStatus in parents: return 0
         newparents = parents + [DiagnosticStatus]
@@ -94,7 +94,7 @@ class DiagnosticStatus(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if DiagnosticStatus._packed_fingerprint is None:
             DiagnosticStatus._packed_fingerprint = struct.pack(">Q", DiagnosticStatus._get_hash_recursive([]))

@@ -36,7 +36,7 @@ class RegionOfInterest(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">iiiib", self.x_offset, self.y_offset, self.height, self.width, self.do_rectify))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -46,14 +46,14 @@ class RegionOfInterest(object):
             raise ValueError("Decode error")
         return RegionOfInterest._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = RegionOfInterest()
         self.x_offset, self.y_offset, self.height, self.width = struct.unpack(">iiii", buf.read(16))
         self.do_rectify = bool(struct.unpack('b', buf.read(1))[0])
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if RegionOfInterest in parents: return 0
         tmphash = (0x398a869d05983f0e) & 0xffffffffffffffff
@@ -61,7 +61,7 @@ class RegionOfInterest(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if RegionOfInterest._packed_fingerprint is None:
             RegionOfInterest._packed_fingerprint = struct.pack(">Q", RegionOfInterest._get_hash_recursive([]))

@@ -54,7 +54,7 @@ class TextAnnotation(object):
         assert self.background_color._get_packed_fingerprint() == Color._get_packed_fingerprint()
         self.background_color._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -64,7 +64,7 @@ class TextAnnotation(object):
             raise ValueError("Decode error")
         return TextAnnotation._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = TextAnnotation()
         self.timestamp = builtin_interfaces.Time._decode_one(buf)
@@ -76,7 +76,7 @@ class TextAnnotation(object):
         self.background_color = Color._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if TextAnnotation in parents: return 0
         newparents = parents + [TextAnnotation]
@@ -85,7 +85,7 @@ class TextAnnotation(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if TextAnnotation._packed_fingerprint is None:
             TextAnnotation._packed_fingerprint = struct.pack(">Q", TextAnnotation._get_hash_recursive([]))

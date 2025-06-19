@@ -62,7 +62,7 @@ class CameraCalibration(object):
         buf.write(struct.pack('>9d', *self.r[:9]))
         buf.write(struct.pack('>12d', *self.p[:12]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -72,7 +72,7 @@ class CameraCalibration(object):
             raise ValueError("Decode error")
         return CameraCalibration._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = CameraCalibration()
         self.d_length = struct.unpack(">i", buf.read(4))[0]
@@ -88,7 +88,7 @@ class CameraCalibration(object):
         self.p = struct.unpack('>12d', buf.read(96))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if CameraCalibration in parents: return 0
         newparents = parents + [CameraCalibration]
@@ -97,7 +97,7 @@ class CameraCalibration(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if CameraCalibration._packed_fingerprint is None:
             CameraCalibration._packed_fingerprint = struct.pack(">Q", CameraCalibration._get_hash_recursive([]))

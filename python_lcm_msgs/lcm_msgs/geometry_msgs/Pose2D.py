@@ -32,7 +32,7 @@ class Pose2D(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">ddd", self.x, self.y, self.theta))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -42,13 +42,13 @@ class Pose2D(object):
             raise ValueError("Decode error")
         return Pose2D._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Pose2D()
         self.x, self.y, self.theta = struct.unpack(">ddd", buf.read(24))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Pose2D in parents: return 0
         tmphash = (0x7491c1074c104593) & 0xffffffffffffffff
@@ -56,7 +56,7 @@ class Pose2D(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Pose2D._packed_fingerprint is None:
             Pose2D._packed_fingerprint = struct.pack(">Q", Pose2D._get_hash_recursive([]))

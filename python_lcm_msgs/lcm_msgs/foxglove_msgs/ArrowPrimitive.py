@@ -45,7 +45,7 @@ class ArrowPrimitive(object):
         assert self.color._get_packed_fingerprint() == Color._get_packed_fingerprint()
         self.color._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -55,7 +55,7 @@ class ArrowPrimitive(object):
             raise ValueError("Decode error")
         return ArrowPrimitive._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = ArrowPrimitive()
         self.pose = geometry_msgs.Pose._decode_one(buf)
@@ -63,7 +63,7 @@ class ArrowPrimitive(object):
         self.color = Color._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if ArrowPrimitive in parents: return 0
         newparents = parents + [ArrowPrimitive]
@@ -72,7 +72,7 @@ class ArrowPrimitive(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if ArrowPrimitive._packed_fingerprint is None:
             ArrowPrimitive._packed_fingerprint = struct.pack(">Q", ArrowPrimitive._get_hash_recursive([]))

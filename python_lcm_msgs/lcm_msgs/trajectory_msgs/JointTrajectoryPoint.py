@@ -51,7 +51,7 @@ class JointTrajectoryPoint(object):
         assert self.time_from_start._get_packed_fingerprint() == std_msgs.Duration._get_packed_fingerprint()
         self.time_from_start._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -61,7 +61,7 @@ class JointTrajectoryPoint(object):
             raise ValueError("Decode error")
         return JointTrajectoryPoint._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = JointTrajectoryPoint()
         self.positions_length, self.velocities_length, self.accelerations_length, self.effort_length = struct.unpack(">iiii", buf.read(16))
@@ -72,7 +72,7 @@ class JointTrajectoryPoint(object):
         self.time_from_start = std_msgs.Duration._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if JointTrajectoryPoint in parents: return 0
         newparents = parents + [JointTrajectoryPoint]
@@ -81,7 +81,7 @@ class JointTrajectoryPoint(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if JointTrajectoryPoint._packed_fingerprint is None:
             JointTrajectoryPoint._packed_fingerprint = struct.pack(">Q", JointTrajectoryPoint._get_hash_recursive([]))

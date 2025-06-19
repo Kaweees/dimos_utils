@@ -50,7 +50,7 @@ class CircleAnnotation(object):
         assert self.outline_color._get_packed_fingerprint() == Color._get_packed_fingerprint()
         self.outline_color._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -60,7 +60,7 @@ class CircleAnnotation(object):
             raise ValueError("Decode error")
         return CircleAnnotation._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = CircleAnnotation()
         self.timestamp = builtin_interfaces.Time._decode_one(buf)
@@ -70,7 +70,7 @@ class CircleAnnotation(object):
         self.outline_color = Color._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if CircleAnnotation in parents: return 0
         newparents = parents + [CircleAnnotation]
@@ -79,7 +79,7 @@ class CircleAnnotation(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if CircleAnnotation._packed_fingerprint is None:
             CircleAnnotation._packed_fingerprint = struct.pack(">Q", CircleAnnotation._get_hash_recursive([]))

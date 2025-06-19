@@ -56,7 +56,7 @@ class LaserScan(object):
         buf.write(struct.pack('>%df' % self.ranges_length, *self.ranges[:self.ranges_length]))
         buf.write(struct.pack('>%df' % self.intensities_length, *self.intensities[:self.intensities_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -66,7 +66,7 @@ class LaserScan(object):
             raise ValueError("Decode error")
         return LaserScan._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = LaserScan()
         self.ranges_length, self.intensities_length = struct.unpack(">ii", buf.read(8))
@@ -76,7 +76,7 @@ class LaserScan(object):
         self.intensities = struct.unpack('>%df' % self.intensities_length, buf.read(self.intensities_length * 4))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if LaserScan in parents: return 0
         newparents = parents + [LaserScan]
@@ -85,7 +85,7 @@ class LaserScan(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if LaserScan._packed_fingerprint is None:
             LaserScan._packed_fingerprint = struct.pack(">Q", LaserScan._get_hash_recursive([]))

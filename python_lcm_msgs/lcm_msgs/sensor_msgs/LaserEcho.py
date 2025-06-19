@@ -31,7 +31,7 @@ class LaserEcho(object):
         buf.write(struct.pack(">i", self.echoes_length))
         buf.write(struct.pack('>%df' % self.echoes_length, *self.echoes[:self.echoes_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -41,14 +41,14 @@ class LaserEcho(object):
             raise ValueError("Decode error")
         return LaserEcho._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = LaserEcho()
         self.echoes_length = struct.unpack(">i", buf.read(4))[0]
         self.echoes = struct.unpack('>%df' % self.echoes_length, buf.read(self.echoes_length * 4))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if LaserEcho in parents: return 0
         tmphash = (0xc45702116c7d0a2e) & 0xffffffffffffffff
@@ -56,7 +56,7 @@ class LaserEcho(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if LaserEcho._packed_fingerprint is None:
             LaserEcho._packed_fingerprint = struct.pack(">Q", LaserEcho._get_hash_recursive([]))

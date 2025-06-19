@@ -36,7 +36,7 @@ class AccelStamped(object):
         assert self.accel._get_packed_fingerprint() == Accel._get_packed_fingerprint()
         self.accel._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -46,14 +46,14 @@ class AccelStamped(object):
             raise ValueError("Decode error")
         return AccelStamped._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = AccelStamped()
         self.header = std_msgs.Header._decode_one(buf)
         self.accel = Accel._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if AccelStamped in parents: return 0
         newparents = parents + [AccelStamped]
@@ -62,7 +62,7 @@ class AccelStamped(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if AccelStamped._packed_fingerprint is None:
             AccelStamped._packed_fingerprint = struct.pack(">Q", AccelStamped._get_hash_recursive([]))

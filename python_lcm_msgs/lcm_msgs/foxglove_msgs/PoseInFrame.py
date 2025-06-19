@@ -41,7 +41,7 @@ class PoseInFrame(object):
         assert self.pose._get_packed_fingerprint() == geometry_msgs.Pose._get_packed_fingerprint()
         self.pose._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -51,7 +51,7 @@ class PoseInFrame(object):
             raise ValueError("Decode error")
         return PoseInFrame._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = PoseInFrame()
         self.timestamp = builtin_interfaces.Time._decode_one(buf)
@@ -60,7 +60,7 @@ class PoseInFrame(object):
         self.pose = geometry_msgs.Pose._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if PoseInFrame in parents: return 0
         newparents = parents + [PoseInFrame]
@@ -69,7 +69,7 @@ class PoseInFrame(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if PoseInFrame._packed_fingerprint is None:
             PoseInFrame._packed_fingerprint = struct.pack(">Q", PoseInFrame._get_hash_recursive([]))

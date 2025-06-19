@@ -28,7 +28,7 @@ class Int16(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">h", self.data))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -38,13 +38,13 @@ class Int16(object):
             raise ValueError("Decode error")
         return Int16._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Int16()
         self.data = struct.unpack(">h", buf.read(2))[0]
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Int16 in parents: return 0
         tmphash = (0x165e7cf9f948811f) & 0xffffffffffffffff
@@ -52,7 +52,7 @@ class Int16(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Int16._packed_fingerprint is None:
             Int16._packed_fingerprint = struct.pack(">Q", Int16._get_hash_recursive([]))

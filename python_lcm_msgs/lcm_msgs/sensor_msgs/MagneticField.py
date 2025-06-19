@@ -38,7 +38,7 @@ class MagneticField(object):
         self.magnetic_field._encode_one(buf)
         buf.write(struct.pack('>9d', *self.magnetic_field_covariance[:9]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -48,7 +48,7 @@ class MagneticField(object):
             raise ValueError("Decode error")
         return MagneticField._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = MagneticField()
         self.header = std_msgs.Header._decode_one(buf)
@@ -56,7 +56,7 @@ class MagneticField(object):
         self.magnetic_field_covariance = struct.unpack('>9d', buf.read(72))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if MagneticField in parents: return 0
         newparents = parents + [MagneticField]
@@ -65,7 +65,7 @@ class MagneticField(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if MagneticField._packed_fingerprint is None:
             MagneticField._packed_fingerprint = struct.pack(">Q", MagneticField._get_hash_recursive([]))

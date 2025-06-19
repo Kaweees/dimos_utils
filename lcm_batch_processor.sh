@@ -98,11 +98,11 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check if lcm-gen is installed
-if ! command -v lcm-gen &> /dev/null; then
-    echo "Error: lcm-gen command not found"
-    echo "Please install LCM first: https://lcm-proj.github.io/"
-    exit 1
-fi
+# if ! command -v lcm-gen &> /dev/null; then
+#     echo "Error: lcm-gen command not found"
+#     echo "Please install LCM first: https://lcm-proj.github.io/"
+#     exit 1
+# fi
 
 # Check if a directory was specified
 if [ -z "$DIRECTORY" ]; then
@@ -133,7 +133,7 @@ if [ -n "$OUTPUT_DIR" ] && [ ! -d "$OUTPUT_DIR" ]; then
 fi
 
 # Build lcm-gen command base
-LCM_GEN_CMD="lcm-gen --lazy"
+LCM_GEN_CMD="./lcm-gen --lazy"
 
 # Set output directory for each language if specified
 if [ -n "$OUTPUT_DIR" ]; then

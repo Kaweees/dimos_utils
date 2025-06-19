@@ -8,8 +8,8 @@ from io import BytesIO
 import struct
 
 from . import *
-from .Point import Point
 from .Quaternion import Quaternion
+from .Point import Point
 class Pose(object):
 
     __slots__ = ["position", "orientation"]
@@ -36,7 +36,7 @@ class Pose(object):
         assert self.orientation._get_packed_fingerprint() == Quaternion._get_packed_fingerprint()
         self.orientation._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -46,14 +46,14 @@ class Pose(object):
             raise ValueError("Decode error")
         return Pose._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Pose()
         self.position = Point._decode_one(buf)
         self.orientation = Quaternion._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Pose in parents: return 0
         newparents = parents + [Pose]
@@ -62,7 +62,7 @@ class Pose(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Pose._packed_fingerprint is None:
             Pose._packed_fingerprint = struct.pack(">Q", Pose._get_hash_recursive([]))

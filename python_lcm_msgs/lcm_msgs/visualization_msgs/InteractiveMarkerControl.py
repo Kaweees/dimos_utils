@@ -76,7 +76,7 @@ class InteractiveMarkerControl(object):
         buf.write(__description_encoded)
         buf.write(b"\0")
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -86,7 +86,7 @@ class InteractiveMarkerControl(object):
             raise ValueError("Decode error")
         return InteractiveMarkerControl._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = InteractiveMarkerControl()
         self.markers_length = struct.unpack(">i", buf.read(4))[0]
@@ -103,7 +103,7 @@ class InteractiveMarkerControl(object):
         self.description = buf.read(__description_len)[:-1].decode('utf-8', 'replace')
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if InteractiveMarkerControl in parents: return 0
         newparents = parents + [InteractiveMarkerControl]
@@ -112,7 +112,7 @@ class InteractiveMarkerControl(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if InteractiveMarkerControl._packed_fingerprint is None:
             InteractiveMarkerControl._packed_fingerprint = struct.pack(">Q", InteractiveMarkerControl._get_hash_recursive([]))

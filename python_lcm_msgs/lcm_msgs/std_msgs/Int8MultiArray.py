@@ -37,7 +37,7 @@ class Int8MultiArray(object):
         self.layout._encode_one(buf)
         buf.write(struct.pack('>%db' % self.data_length, *self.data[:self.data_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -47,7 +47,7 @@ class Int8MultiArray(object):
             raise ValueError("Decode error")
         return Int8MultiArray._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Int8MultiArray()
         self.data_length = struct.unpack(">i", buf.read(4))[0]
@@ -55,7 +55,7 @@ class Int8MultiArray(object):
         self.data = struct.unpack('>%db' % self.data_length, buf.read(self.data_length))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Int8MultiArray in parents: return 0
         newparents = parents + [Int8MultiArray]
@@ -64,7 +64,7 @@ class Int8MultiArray(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Int8MultiArray._packed_fingerprint is None:
             Int8MultiArray._packed_fingerprint = struct.pack(">Q", Int8MultiArray._get_hash_recursive([]))

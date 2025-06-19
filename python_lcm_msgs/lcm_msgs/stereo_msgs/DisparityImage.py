@@ -51,7 +51,7 @@ class DisparityImage(object):
         self.valid_window._encode_one(buf)
         buf.write(struct.pack(">fff", self.min_disparity, self.max_disparity, self.delta_d))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -61,7 +61,7 @@ class DisparityImage(object):
             raise ValueError("Decode error")
         return DisparityImage._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = DisparityImage()
         self.header = std_msgs.Header._decode_one(buf)
@@ -71,7 +71,7 @@ class DisparityImage(object):
         self.min_disparity, self.max_disparity, self.delta_d = struct.unpack(">fff", buf.read(12))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if DisparityImage in parents: return 0
         newparents = parents + [DisparityImage]
@@ -80,7 +80,7 @@ class DisparityImage(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if DisparityImage._packed_fingerprint is None:
             DisparityImage._packed_fingerprint = struct.pack(">Q", DisparityImage._get_hash_recursive([]))

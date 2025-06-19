@@ -28,7 +28,7 @@ class Int8(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">b", self.data))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -38,13 +38,13 @@ class Int8(object):
             raise ValueError("Decode error")
         return Int8._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Int8()
         self.data = struct.unpack(">b", buf.read(1))[0]
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Int8 in parents: return 0
         tmphash = (0x90e9a182fedda20a) & 0xffffffffffffffff
@@ -52,7 +52,7 @@ class Int8(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Int8._packed_fingerprint is None:
             Int8._packed_fingerprint = struct.pack(">Q", Int8._get_hash_recursive([]))

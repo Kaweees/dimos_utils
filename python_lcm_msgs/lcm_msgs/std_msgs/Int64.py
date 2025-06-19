@@ -28,7 +28,7 @@ class Int64(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">q", self.data))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -38,13 +38,13 @@ class Int64(object):
             raise ValueError("Decode error")
         return Int64._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Int64()
         self.data = struct.unpack(">q", buf.read(8))[0]
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Int64 in parents: return 0
         tmphash = (0x165e7cfef748811f) & 0xffffffffffffffff
@@ -52,7 +52,7 @@ class Int64(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Int64._packed_fingerprint is None:
             Int64._packed_fingerprint = struct.pack(">Q", Int64._get_hash_recursive([]))

@@ -38,7 +38,7 @@ class MultiArrayLayout(object):
             self.dim[i0]._encode_one(buf)
         buf.write(struct.pack(">i", self.data_offset))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -48,7 +48,7 @@ class MultiArrayLayout(object):
             raise ValueError("Decode error")
         return MultiArrayLayout._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = MultiArrayLayout()
         self.dim_length = struct.unpack(">i", buf.read(4))[0]
@@ -58,7 +58,7 @@ class MultiArrayLayout(object):
         self.data_offset = struct.unpack(">i", buf.read(4))[0]
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if MultiArrayLayout in parents: return 0
         newparents = parents + [MultiArrayLayout]
@@ -67,7 +67,7 @@ class MultiArrayLayout(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if MultiArrayLayout._packed_fingerprint is None:
             MultiArrayLayout._packed_fingerprint = struct.pack(">Q", MultiArrayLayout._get_hash_recursive([]))

@@ -37,7 +37,7 @@ class ChannelFloat32(object):
         buf.write(b"\0")
         buf.write(struct.pack('>%df' % self.values_length, *self.values[:self.values_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -47,7 +47,7 @@ class ChannelFloat32(object):
             raise ValueError("Decode error")
         return ChannelFloat32._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = ChannelFloat32()
         self.values_length = struct.unpack(">i", buf.read(4))[0]
@@ -56,7 +56,7 @@ class ChannelFloat32(object):
         self.values = struct.unpack('>%df' % self.values_length, buf.read(self.values_length * 4))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if ChannelFloat32 in parents: return 0
         tmphash = (0x8cbe448953ebf073) & 0xffffffffffffffff
@@ -64,7 +64,7 @@ class ChannelFloat32(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if ChannelFloat32._packed_fingerprint is None:
             ChannelFloat32._packed_fingerprint = struct.pack(">Q", ChannelFloat32._get_hash_recursive([]))

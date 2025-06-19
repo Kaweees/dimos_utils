@@ -40,7 +40,7 @@ class TimeReference(object):
         buf.write(__source_encoded)
         buf.write(b"\0")
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -50,7 +50,7 @@ class TimeReference(object):
             raise ValueError("Decode error")
         return TimeReference._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = TimeReference()
         self.header = std_msgs.Header._decode_one(buf)
@@ -59,7 +59,7 @@ class TimeReference(object):
         self.source = buf.read(__source_len)[:-1].decode('utf-8', 'replace')
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if TimeReference in parents: return 0
         newparents = parents + [TimeReference]
@@ -68,7 +68,7 @@ class TimeReference(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if TimeReference._packed_fingerprint is None:
             TimeReference._packed_fingerprint = struct.pack(">Q", TimeReference._get_hash_recursive([]))

@@ -32,7 +32,7 @@ class Point32(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">fff", self.x, self.y, self.z))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -42,13 +42,13 @@ class Point32(object):
             raise ValueError("Decode error")
         return Point32._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Point32()
         self.x, self.y, self.z = struct.unpack(">fff", buf.read(12))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Point32 in parents: return 0
         tmphash = (0x2a14f112c253ac0c) & 0xffffffffffffffff
@@ -56,7 +56,7 @@ class Point32(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Point32._packed_fingerprint is None:
             Point32._packed_fingerprint = struct.pack(">Q", Point32._get_hash_recursive([]))

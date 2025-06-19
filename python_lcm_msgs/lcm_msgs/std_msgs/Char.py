@@ -28,7 +28,7 @@ class Char(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">B", self.data))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -38,13 +38,13 @@ class Char(object):
             raise ValueError("Decode error")
         return Char._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Char()
         self.data = struct.unpack(">B", buf.read(1))[0]
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Char in parents: return 0
         tmphash = (0x74856d0f697d2dc2) & 0xffffffffffffffff
@@ -52,7 +52,7 @@ class Char(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Char._packed_fingerprint is None:
             Char._packed_fingerprint = struct.pack(">Q", Char._get_hash_recursive([]))

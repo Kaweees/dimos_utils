@@ -30,7 +30,7 @@ class Time(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">ii", self.sec, self.nanosec))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -40,13 +40,13 @@ class Time(object):
             raise ValueError("Decode error")
         return Time._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Time()
         self.sec, self.nanosec = struct.unpack(">ii", buf.read(8))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Time in parents: return 0
         tmphash = (0x263f39efa2a9af63) & 0xffffffffffffffff
@@ -54,7 +54,7 @@ class Time(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Time._packed_fingerprint is None:
             Time._packed_fingerprint = struct.pack(">Q", Time._get_hash_recursive([]))

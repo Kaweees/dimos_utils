@@ -67,7 +67,7 @@ class CameraInfo(object):
         assert self.roi._get_packed_fingerprint() == RegionOfInterest._get_packed_fingerprint()
         self.roi._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -77,7 +77,7 @@ class CameraInfo(object):
             raise ValueError("Decode error")
         return CameraInfo._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = CameraInfo()
         self.D_length = struct.unpack(">i", buf.read(4))[0]
@@ -93,7 +93,7 @@ class CameraInfo(object):
         self.roi = RegionOfInterest._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if CameraInfo in parents: return 0
         newparents = parents + [CameraInfo]
@@ -102,7 +102,7 @@ class CameraInfo(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if CameraInfo._packed_fingerprint is None:
             CameraInfo._packed_fingerprint = struct.pack(">Q", CameraInfo._get_hash_recursive([]))

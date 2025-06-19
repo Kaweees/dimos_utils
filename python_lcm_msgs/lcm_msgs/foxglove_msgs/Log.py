@@ -61,7 +61,7 @@ class Log(object):
         buf.write(b"\0")
         buf.write(struct.pack(">i", self.line))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -71,7 +71,7 @@ class Log(object):
             raise ValueError("Decode error")
         return Log._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Log()
         self.timestamp = builtin_interfaces.Time._decode_one(buf)
@@ -85,7 +85,7 @@ class Log(object):
         self.line = struct.unpack(">i", buf.read(4))[0]
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Log in parents: return 0
         newparents = parents + [Log]
@@ -94,7 +94,7 @@ class Log(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Log._packed_fingerprint is None:
             Log._packed_fingerprint = struct.pack(">Q", Log._get_hash_recursive([]))

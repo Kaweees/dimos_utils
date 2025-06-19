@@ -28,7 +28,7 @@ class Float64(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">d", self.data))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -38,13 +38,13 @@ class Float64(object):
             raise ValueError("Decode error")
         return Float64._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Float64()
         self.data = struct.unpack(">d", buf.read(8))[0]
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Float64 in parents: return 0
         tmphash = (0x90eea081d4d0b10a) & 0xffffffffffffffff
@@ -52,7 +52,7 @@ class Float64(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Float64._packed_fingerprint is None:
             Float64._packed_fingerprint = struct.pack(">Q", Float64._get_hash_recursive([]))

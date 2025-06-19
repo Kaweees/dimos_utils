@@ -49,7 +49,7 @@ class TextPrimitive(object):
         buf.write(__text_encoded)
         buf.write(b"\0")
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -59,7 +59,7 @@ class TextPrimitive(object):
             raise ValueError("Decode error")
         return TextPrimitive._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = TextPrimitive()
         self.pose = geometry_msgs.Pose._decode_one(buf)
@@ -71,7 +71,7 @@ class TextPrimitive(object):
         self.text = buf.read(__text_len)[:-1].decode('utf-8', 'replace')
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if TextPrimitive in parents: return 0
         newparents = parents + [TextPrimitive]
@@ -80,7 +80,7 @@ class TextPrimitive(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if TextPrimitive._packed_fingerprint is None:
             TextPrimitive._packed_fingerprint = struct.pack(">Q", TextPrimitive._get_hash_recursive([]))

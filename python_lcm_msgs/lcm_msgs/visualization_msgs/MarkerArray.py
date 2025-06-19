@@ -35,7 +35,7 @@ class MarkerArray(object):
             assert self.markers[i0]._get_packed_fingerprint() == Marker._get_packed_fingerprint()
             self.markers[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -45,7 +45,7 @@ class MarkerArray(object):
             raise ValueError("Decode error")
         return MarkerArray._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = MarkerArray()
         self.markers_length = struct.unpack(">i", buf.read(4))[0]
@@ -54,7 +54,7 @@ class MarkerArray(object):
             self.markers.append(Marker._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if MarkerArray in parents: return 0
         newparents = parents + [MarkerArray]
@@ -63,7 +63,7 @@ class MarkerArray(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if MarkerArray._packed_fingerprint is None:
             MarkerArray._packed_fingerprint = struct.pack(">Q", MarkerArray._get_hash_recursive([]))

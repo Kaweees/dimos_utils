@@ -8,8 +8,8 @@ from io import BytesIO
 import struct
 
 from . import *
-from .Quaternion import Quaternion
 from .Vector3 import Vector3
+from .Quaternion import Quaternion
 class Transform(object):
 
     __slots__ = ["translation", "rotation"]
@@ -36,7 +36,7 @@ class Transform(object):
         assert self.rotation._get_packed_fingerprint() == Quaternion._get_packed_fingerprint()
         self.rotation._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -46,14 +46,14 @@ class Transform(object):
             raise ValueError("Decode error")
         return Transform._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Transform()
         self.translation = Vector3._decode_one(buf)
         self.rotation = Quaternion._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Transform in parents: return 0
         newparents = parents + [Transform]
@@ -62,7 +62,7 @@ class Transform(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Transform._packed_fingerprint is None:
             Transform._packed_fingerprint = struct.pack(">Q", Transform._get_hash_recursive([]))

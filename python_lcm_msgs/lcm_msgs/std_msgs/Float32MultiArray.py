@@ -37,7 +37,7 @@ class Float32MultiArray(object):
         self.layout._encode_one(buf)
         buf.write(struct.pack('>%df' % self.data_length, *self.data[:self.data_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -47,7 +47,7 @@ class Float32MultiArray(object):
             raise ValueError("Decode error")
         return Float32MultiArray._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Float32MultiArray()
         self.data_length = struct.unpack(">i", buf.read(4))[0]
@@ -55,7 +55,7 @@ class Float32MultiArray(object):
         self.data = struct.unpack('>%df' % self.data_length, buf.read(self.data_length * 4))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Float32MultiArray in parents: return 0
         newparents = parents + [Float32MultiArray]
@@ -64,7 +64,7 @@ class Float32MultiArray(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Float32MultiArray._packed_fingerprint is None:
             Float32MultiArray._packed_fingerprint = struct.pack(">Q", Float32MultiArray._get_hash_recursive([]))

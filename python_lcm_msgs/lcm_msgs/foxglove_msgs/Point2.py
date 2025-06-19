@@ -30,7 +30,7 @@ class Point2(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">dd", self.x, self.y))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -40,13 +40,13 @@ class Point2(object):
             raise ValueError("Decode error")
         return Point2._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Point2()
         self.x, self.y = struct.unpack(">dd", buf.read(16))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Point2 in parents: return 0
         tmphash = (0xd259512e30b44885) & 0xffffffffffffffff
@@ -54,7 +54,7 @@ class Point2(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Point2._packed_fingerprint is None:
             Point2._packed_fingerprint = struct.pack(">Q", Point2._get_hash_recursive([]))

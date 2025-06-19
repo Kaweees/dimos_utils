@@ -34,7 +34,7 @@ class TFMessage(object):
             assert self.transforms[i0]._get_packed_fingerprint() == geometry_msgs.TransformStamped._get_packed_fingerprint()
             self.transforms[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -44,7 +44,7 @@ class TFMessage(object):
             raise ValueError("Decode error")
         return TFMessage._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = TFMessage()
         self.transforms_length = struct.unpack(">i", buf.read(4))[0]
@@ -53,7 +53,7 @@ class TFMessage(object):
             self.transforms.append(geometry_msgs.TransformStamped._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if TFMessage in parents: return 0
         newparents = parents + [TFMessage]
@@ -62,7 +62,7 @@ class TFMessage(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if TFMessage._packed_fingerprint is None:
             TFMessage._packed_fingerprint = struct.pack(">Q", TFMessage._get_hash_recursive([]))

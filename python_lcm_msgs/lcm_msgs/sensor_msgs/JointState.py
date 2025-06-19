@@ -55,7 +55,7 @@ class JointState(object):
         buf.write(struct.pack('>%dd' % self.velocity_length, *self.velocity[:self.velocity_length]))
         buf.write(struct.pack('>%dd' % self.effort_length, *self.effort[:self.effort_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -65,7 +65,7 @@ class JointState(object):
             raise ValueError("Decode error")
         return JointState._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = JointState()
         self.name_length, self.position_length, self.velocity_length, self.effort_length = struct.unpack(">iiii", buf.read(16))
@@ -79,7 +79,7 @@ class JointState(object):
         self.effort = struct.unpack('>%dd' % self.effort_length, buf.read(self.effort_length * 8))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if JointState in parents: return 0
         newparents = parents + [JointState]
@@ -88,7 +88,7 @@ class JointState(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if JointState._packed_fingerprint is None:
             JointState._packed_fingerprint = struct.pack(">Q", JointState._get_hash_recursive([]))

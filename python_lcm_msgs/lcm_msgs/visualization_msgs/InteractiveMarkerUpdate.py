@@ -8,8 +8,8 @@ from io import BytesIO
 import struct
 
 from . import *
-from .InteractiveMarker import InteractiveMarker
 from .InteractiveMarkerPose import InteractiveMarkerPose
+from .InteractiveMarker import InteractiveMarker
 class InteractiveMarkerUpdate(object):
 
     __slots__ = ["markers_length", "poses_length", "erases_length", "server_id", "seq_num", "type", "markers", "poses", "erases"]
@@ -66,7 +66,7 @@ class InteractiveMarkerUpdate(object):
             buf.write(__erases_encoded)
             buf.write(b"\0")
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -76,7 +76,7 @@ class InteractiveMarkerUpdate(object):
             raise ValueError("Decode error")
         return InteractiveMarkerUpdate._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = InteractiveMarkerUpdate()
         self.markers_length, self.poses_length, self.erases_length = struct.unpack(">iii", buf.read(12))
@@ -95,7 +95,7 @@ class InteractiveMarkerUpdate(object):
             self.erases.append(buf.read(__erases_len)[:-1].decode('utf-8', 'replace'))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if InteractiveMarkerUpdate in parents: return 0
         newparents = parents + [InteractiveMarkerUpdate]
@@ -104,7 +104,7 @@ class InteractiveMarkerUpdate(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if InteractiveMarkerUpdate._packed_fingerprint is None:
             InteractiveMarkerUpdate._packed_fingerprint = struct.pack(">Q", InteractiveMarkerUpdate._get_hash_recursive([]))

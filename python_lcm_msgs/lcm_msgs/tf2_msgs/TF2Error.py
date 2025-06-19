@@ -42,7 +42,7 @@ class TF2Error(object):
         buf.write(__error_string_encoded)
         buf.write(b"\0")
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -52,7 +52,7 @@ class TF2Error(object):
             raise ValueError("Decode error")
         return TF2Error._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = TF2Error()
         self.error = struct.unpack(">B", buf.read(1))[0]
@@ -60,7 +60,7 @@ class TF2Error(object):
         self.error_string = buf.read(__error_string_len)[:-1].decode('utf-8', 'replace')
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if TF2Error in parents: return 0
         tmphash = (0x1e8ff0d80d02ee55) & 0xffffffffffffffff
@@ -68,7 +68,7 @@ class TF2Error(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if TF2Error._packed_fingerprint is None:
             TF2Error._packed_fingerprint = struct.pack(">Q", TF2Error._get_hash_recursive([]))

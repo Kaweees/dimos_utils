@@ -34,7 +34,7 @@ class Quaternion(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">dddd", self.x, self.y, self.z, self.w))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -44,13 +44,13 @@ class Quaternion(object):
             raise ValueError("Decode error")
         return Quaternion._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Quaternion()
         self.x, self.y, self.z, self.w = struct.unpack(">dddd", buf.read(32))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Quaternion in parents: return 0
         tmphash = (0x9b1dee9dfc8c0515) & 0xffffffffffffffff
@@ -58,7 +58,7 @@ class Quaternion(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Quaternion._packed_fingerprint is None:
             Quaternion._packed_fingerprint = struct.pack(">Q", Quaternion._get_hash_recursive([]))

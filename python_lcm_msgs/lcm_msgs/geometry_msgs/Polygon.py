@@ -35,7 +35,7 @@ class Polygon(object):
             assert self.points[i0]._get_packed_fingerprint() == Point32._get_packed_fingerprint()
             self.points[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -45,7 +45,7 @@ class Polygon(object):
             raise ValueError("Decode error")
         return Polygon._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Polygon()
         self.points_length = struct.unpack(">i", buf.read(4))[0]
@@ -54,7 +54,7 @@ class Polygon(object):
             self.points.append(Point32._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Polygon in parents: return 0
         newparents = parents + [Polygon]
@@ -63,7 +63,7 @@ class Polygon(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Polygon._packed_fingerprint is None:
             Polygon._packed_fingerprint = struct.pack(">Q", Polygon._get_hash_recursive([]))

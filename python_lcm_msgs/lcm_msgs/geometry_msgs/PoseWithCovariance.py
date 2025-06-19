@@ -34,7 +34,7 @@ class PoseWithCovariance(object):
         self.pose._encode_one(buf)
         buf.write(struct.pack('>36d', *self.covariance[:36]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -44,14 +44,14 @@ class PoseWithCovariance(object):
             raise ValueError("Decode error")
         return PoseWithCovariance._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = PoseWithCovariance()
         self.pose = Pose._decode_one(buf)
         self.covariance = struct.unpack('>36d', buf.read(288))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if PoseWithCovariance in parents: return 0
         newparents = parents + [PoseWithCovariance]
@@ -60,7 +60,7 @@ class PoseWithCovariance(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if PoseWithCovariance._packed_fingerprint is None:
             PoseWithCovariance._packed_fingerprint = struct.pack(">Q", PoseWithCovariance._get_hash_recursive([]))

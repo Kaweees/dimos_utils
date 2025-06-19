@@ -47,7 +47,7 @@ class RawAudio(object):
         buf.write(b"\0")
         buf.write(struct.pack(">ii", self.sample_rate, self.number_of_channels))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -57,7 +57,7 @@ class RawAudio(object):
             raise ValueError("Decode error")
         return RawAudio._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = RawAudio()
         self.data_length = struct.unpack(">i", buf.read(4))[0]
@@ -68,7 +68,7 @@ class RawAudio(object):
         self.sample_rate, self.number_of_channels = struct.unpack(">ii", buf.read(8))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if RawAudio in parents: return 0
         newparents = parents + [RawAudio]
@@ -77,7 +77,7 @@ class RawAudio(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if RawAudio._packed_fingerprint is None:
             RawAudio._packed_fingerprint = struct.pack(">Q", RawAudio._get_hash_recursive([]))

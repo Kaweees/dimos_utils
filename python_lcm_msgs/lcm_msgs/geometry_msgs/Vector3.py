@@ -32,7 +32,7 @@ class Vector3(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">ddd", self.x, self.y, self.z))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -42,13 +42,13 @@ class Vector3(object):
             raise ValueError("Decode error")
         return Vector3._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Vector3()
         self.x, self.y, self.z = struct.unpack(">ddd", buf.read(24))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Vector3 in parents: return 0
         tmphash = (0x573f2fdd2f76508f) & 0xffffffffffffffff
@@ -56,7 +56,7 @@ class Vector3(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Vector3._packed_fingerprint is None:
             Vector3._packed_fingerprint = struct.pack(">Q", Vector3._get_hash_recursive([]))

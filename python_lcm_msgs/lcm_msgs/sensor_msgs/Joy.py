@@ -41,7 +41,7 @@ class Joy(object):
         buf.write(struct.pack('>%df' % self.axes_length, *self.axes[:self.axes_length]))
         buf.write(struct.pack('>%di' % self.buttons_length, *self.buttons[:self.buttons_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -51,7 +51,7 @@ class Joy(object):
             raise ValueError("Decode error")
         return Joy._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Joy()
         self.axes_length, self.buttons_length = struct.unpack(">ii", buf.read(8))
@@ -60,7 +60,7 @@ class Joy(object):
         self.buttons = struct.unpack('>%di' % self.buttons_length, buf.read(self.buttons_length * 4))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Joy in parents: return 0
         newparents = parents + [Joy]
@@ -69,7 +69,7 @@ class Joy(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Joy._packed_fingerprint is None:
             Joy._packed_fingerprint = struct.pack(">Q", Joy._get_hash_recursive([]))

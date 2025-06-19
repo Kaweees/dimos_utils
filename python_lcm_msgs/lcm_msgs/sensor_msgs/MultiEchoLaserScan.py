@@ -62,7 +62,7 @@ class MultiEchoLaserScan(object):
             assert self.intensities[i0]._get_packed_fingerprint() == LaserEcho._get_packed_fingerprint()
             self.intensities[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -72,7 +72,7 @@ class MultiEchoLaserScan(object):
             raise ValueError("Decode error")
         return MultiEchoLaserScan._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = MultiEchoLaserScan()
         self.ranges_length, self.intensities_length = struct.unpack(">ii", buf.read(8))
@@ -86,7 +86,7 @@ class MultiEchoLaserScan(object):
             self.intensities.append(LaserEcho._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if MultiEchoLaserScan in parents: return 0
         newparents = parents + [MultiEchoLaserScan]
@@ -95,7 +95,7 @@ class MultiEchoLaserScan(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if MultiEchoLaserScan._packed_fingerprint is None:
             MultiEchoLaserScan._packed_fingerprint = struct.pack(">Q", MultiEchoLaserScan._get_hash_recursive([]))

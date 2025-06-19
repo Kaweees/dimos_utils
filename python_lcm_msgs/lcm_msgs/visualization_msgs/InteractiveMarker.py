@@ -10,8 +10,8 @@ import struct
 from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 from . import *
-from .MenuEntry import MenuEntry
 from .InteractiveMarkerControl import InteractiveMarkerControl
+from .MenuEntry import MenuEntry
 class InteractiveMarker(object):
 
     __slots__ = ["menu_entries_length", "controls_length", "header", "pose", "name", "description", "scale", "menu_entries", "controls"]
@@ -68,7 +68,7 @@ class InteractiveMarker(object):
             assert self.controls[i0]._get_packed_fingerprint() == InteractiveMarkerControl._get_packed_fingerprint()
             self.controls[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -78,7 +78,7 @@ class InteractiveMarker(object):
             raise ValueError("Decode error")
         return InteractiveMarker._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = InteractiveMarker()
         self.menu_entries_length, self.controls_length = struct.unpack(">ii", buf.read(8))
@@ -97,7 +97,7 @@ class InteractiveMarker(object):
             self.controls.append(InteractiveMarkerControl._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if InteractiveMarker in parents: return 0
         newparents = parents + [InteractiveMarker]
@@ -106,7 +106,7 @@ class InteractiveMarker(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if InteractiveMarker._packed_fingerprint is None:
             InteractiveMarker._packed_fingerprint = struct.pack(">Q", InteractiveMarker._get_hash_recursive([]))

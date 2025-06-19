@@ -37,7 +37,7 @@ class KeyValuePair(object):
         buf.write(__value_encoded)
         buf.write(b"\0")
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -47,7 +47,7 @@ class KeyValuePair(object):
             raise ValueError("Decode error")
         return KeyValuePair._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = KeyValuePair()
         __key_len = struct.unpack('>I', buf.read(4))[0]
@@ -56,7 +56,7 @@ class KeyValuePair(object):
         self.value = buf.read(__value_len)[:-1].decode('utf-8', 'replace')
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if KeyValuePair in parents: return 0
         tmphash = (0x97574015d52eedde) & 0xffffffffffffffff
@@ -64,7 +64,7 @@ class KeyValuePair(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if KeyValuePair._packed_fingerprint is None:
             KeyValuePair._packed_fingerprint = struct.pack(">Q", KeyValuePair._get_hash_recursive([]))

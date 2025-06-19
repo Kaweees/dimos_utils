@@ -35,7 +35,7 @@ class Illuminance(object):
         self.header._encode_one(buf)
         buf.write(struct.pack(">dd", self.illuminance, self.variance))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -45,14 +45,14 @@ class Illuminance(object):
             raise ValueError("Decode error")
         return Illuminance._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Illuminance()
         self.header = std_msgs.Header._decode_one(buf)
         self.illuminance, self.variance = struct.unpack(">dd", buf.read(16))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Illuminance in parents: return 0
         newparents = parents + [Illuminance]
@@ -61,7 +61,7 @@ class Illuminance(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Illuminance._packed_fingerprint is None:
             Illuminance._packed_fingerprint = struct.pack(">Q", Illuminance._get_hash_recursive([]))

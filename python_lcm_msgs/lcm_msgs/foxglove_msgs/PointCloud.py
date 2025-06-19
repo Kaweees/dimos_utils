@@ -59,7 +59,7 @@ class PointCloud(object):
             self.fields[i0]._encode_one(buf)
         buf.write(bytearray(self.data[:self.data_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -69,7 +69,7 @@ class PointCloud(object):
             raise ValueError("Decode error")
         return PointCloud._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = PointCloud()
         self.fields_length, self.data_length = struct.unpack(">ii", buf.read(8))
@@ -84,7 +84,7 @@ class PointCloud(object):
         self.data = buf.read(self.data_length)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if PointCloud in parents: return 0
         newparents = parents + [PointCloud]
@@ -93,7 +93,7 @@ class PointCloud(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if PointCloud._packed_fingerprint is None:
             PointCloud._packed_fingerprint = struct.pack(">Q", PointCloud._get_hash_recursive([]))

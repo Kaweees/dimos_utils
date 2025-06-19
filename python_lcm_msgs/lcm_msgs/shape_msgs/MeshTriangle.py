@@ -28,7 +28,7 @@ class MeshTriangle(object):
     def _encode_one(self, buf):
         buf.write(struct.pack('>3i', *self.vertex_indices[:3]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -38,13 +38,13 @@ class MeshTriangle(object):
             raise ValueError("Decode error")
         return MeshTriangle._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = MeshTriangle()
         self.vertex_indices = struct.unpack('>3i', buf.read(12))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if MeshTriangle in parents: return 0
         tmphash = (0x2ff7303a4eea918d) & 0xffffffffffffffff
@@ -52,7 +52,7 @@ class MeshTriangle(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if MeshTriangle._packed_fingerprint is None:
             MeshTriangle._packed_fingerprint = struct.pack(">Q", MeshTriangle._get_hash_recursive([]))

@@ -8,9 +8,9 @@ from io import BytesIO
 import struct
 
 from . import *
-from .TextAnnotation import TextAnnotation
-from .PointsAnnotation import PointsAnnotation
 from .CircleAnnotation import CircleAnnotation
+from .PointsAnnotation import PointsAnnotation
+from .TextAnnotation import TextAnnotation
 class ImageAnnotations(object):
 
     __slots__ = ["circles_length", "points_length", "texts_length", "circles", "points", "texts"]
@@ -51,7 +51,7 @@ class ImageAnnotations(object):
             assert self.texts[i0]._get_packed_fingerprint() == TextAnnotation._get_packed_fingerprint()
             self.texts[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -61,7 +61,7 @@ class ImageAnnotations(object):
             raise ValueError("Decode error")
         return ImageAnnotations._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = ImageAnnotations()
         self.circles_length, self.points_length, self.texts_length = struct.unpack(">iii", buf.read(12))
@@ -76,7 +76,7 @@ class ImageAnnotations(object):
             self.texts.append(TextAnnotation._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if ImageAnnotations in parents: return 0
         newparents = parents + [ImageAnnotations]
@@ -85,7 +85,7 @@ class ImageAnnotations(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if ImageAnnotations._packed_fingerprint is None:
             ImageAnnotations._packed_fingerprint = struct.pack(">Q", ImageAnnotations._get_hash_recursive([]))

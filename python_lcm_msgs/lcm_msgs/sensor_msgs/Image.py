@@ -52,7 +52,7 @@ class Image(object):
         buf.write(struct.pack(">Bi", self.is_bigendian, self.step))
         buf.write(bytearray(self.data[:self.data_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -62,7 +62,7 @@ class Image(object):
             raise ValueError("Decode error")
         return Image._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Image()
         self.data_length = struct.unpack(">i", buf.read(4))[0]
@@ -74,7 +74,7 @@ class Image(object):
         self.data = buf.read(self.data_length)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Image in parents: return 0
         newparents = parents + [Image]
@@ -83,7 +83,7 @@ class Image(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Image._packed_fingerprint is None:
             Image._packed_fingerprint = struct.pack(">Q", Image._get_hash_recursive([]))

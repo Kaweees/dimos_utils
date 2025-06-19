@@ -49,7 +49,7 @@ class MenuEntry(object):
         buf.write(b"\0")
         buf.write(struct.pack(">B", self.command_type))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -59,7 +59,7 @@ class MenuEntry(object):
             raise ValueError("Decode error")
         return MenuEntry._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = MenuEntry()
         self.id, self.parent_id = struct.unpack(">ii", buf.read(8))
@@ -70,7 +70,7 @@ class MenuEntry(object):
         self.command_type = struct.unpack(">B", buf.read(1))[0]
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if MenuEntry in parents: return 0
         tmphash = (0x667b2d15ef03e972) & 0xffffffffffffffff
@@ -78,7 +78,7 @@ class MenuEntry(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if MenuEntry._packed_fingerprint is None:
             MenuEntry._packed_fingerprint = struct.pack(">Q", MenuEntry._get_hash_recursive([]))

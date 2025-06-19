@@ -36,7 +36,7 @@ class InertiaStamped(object):
         assert self.inertia._get_packed_fingerprint() == Inertia._get_packed_fingerprint()
         self.inertia._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -46,14 +46,14 @@ class InertiaStamped(object):
             raise ValueError("Decode error")
         return InertiaStamped._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = InertiaStamped()
         self.header = std_msgs.Header._decode_one(buf)
         self.inertia = Inertia._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if InertiaStamped in parents: return 0
         newparents = parents + [InertiaStamped]
@@ -62,7 +62,7 @@ class InertiaStamped(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if InertiaStamped._packed_fingerprint is None:
             InertiaStamped._packed_fingerprint = struct.pack(">Q", InertiaStamped._get_hash_recursive([]))

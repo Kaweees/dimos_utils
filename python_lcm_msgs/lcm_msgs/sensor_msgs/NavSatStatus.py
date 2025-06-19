@@ -39,7 +39,7 @@ class NavSatStatus(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">bh", self.status, self.service))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -49,13 +49,13 @@ class NavSatStatus(object):
             raise ValueError("Decode error")
         return NavSatStatus._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = NavSatStatus()
         self.status, self.service = struct.unpack(">bh", buf.read(3))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if NavSatStatus in parents: return 0
         tmphash = (0x76b236592075c1db) & 0xffffffffffffffff
@@ -63,7 +63,7 @@ class NavSatStatus(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if NavSatStatus._packed_fingerprint is None:
             NavSatStatus._packed_fingerprint = struct.pack(">Q", NavSatStatus._get_hash_recursive([]))

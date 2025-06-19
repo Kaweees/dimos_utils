@@ -42,7 +42,7 @@ class OccupancyGrid(object):
         self.info._encode_one(buf)
         buf.write(struct.pack('>%db' % self.data_length, *self.data[:self.data_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -52,7 +52,7 @@ class OccupancyGrid(object):
             raise ValueError("Decode error")
         return OccupancyGrid._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = OccupancyGrid()
         self.data_length = struct.unpack(">i", buf.read(4))[0]
@@ -61,7 +61,7 @@ class OccupancyGrid(object):
         self.data = struct.unpack('>%db' % self.data_length, buf.read(self.data_length))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if OccupancyGrid in parents: return 0
         newparents = parents + [OccupancyGrid]
@@ -70,7 +70,7 @@ class OccupancyGrid(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if OccupancyGrid._packed_fingerprint is None:
             OccupancyGrid._packed_fingerprint = struct.pack(">Q", OccupancyGrid._get_hash_recursive([]))

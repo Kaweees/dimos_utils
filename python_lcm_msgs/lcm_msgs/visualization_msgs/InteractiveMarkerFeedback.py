@@ -73,7 +73,7 @@ class InteractiveMarkerFeedback(object):
         self.mouse_point._encode_one(buf)
         buf.write(struct.pack(">b", self.mouse_point_valid))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -83,7 +83,7 @@ class InteractiveMarkerFeedback(object):
             raise ValueError("Decode error")
         return InteractiveMarkerFeedback._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = InteractiveMarkerFeedback()
         self.header = std_msgs.Header._decode_one(buf)
@@ -100,7 +100,7 @@ class InteractiveMarkerFeedback(object):
         self.mouse_point_valid = bool(struct.unpack('b', buf.read(1))[0])
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if InteractiveMarkerFeedback in parents: return 0
         newparents = parents + [InteractiveMarkerFeedback]
@@ -109,7 +109,7 @@ class InteractiveMarkerFeedback(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if InteractiveMarkerFeedback._packed_fingerprint is None:
             InteractiveMarkerFeedback._packed_fingerprint = struct.pack(">Q", InteractiveMarkerFeedback._get_hash_recursive([]))

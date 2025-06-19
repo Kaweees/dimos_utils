@@ -35,7 +35,7 @@ class Twist(object):
         assert self.angular._get_packed_fingerprint() == Vector3._get_packed_fingerprint()
         self.angular._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -45,14 +45,14 @@ class Twist(object):
             raise ValueError("Decode error")
         return Twist._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Twist()
         self.linear = Vector3._decode_one(buf)
         self.angular = Vector3._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Twist in parents: return 0
         newparents = parents + [Twist]
@@ -61,7 +61,7 @@ class Twist(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Twist._packed_fingerprint is None:
             Twist._packed_fingerprint = struct.pack(">Q", Twist._get_hash_recursive([]))

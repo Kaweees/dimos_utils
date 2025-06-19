@@ -31,7 +31,7 @@ class String(object):
         buf.write(__data_encoded)
         buf.write(b"\0")
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -41,14 +41,14 @@ class String(object):
             raise ValueError("Decode error")
         return String._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = String()
         __data_len = struct.unpack('>I', buf.read(4))[0]
         self.data = buf.read(__data_len)[:-1].decode('utf-8', 'replace')
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if String in parents: return 0
         tmphash = (0x90df9b84cdceaf0a) & 0xffffffffffffffff
@@ -56,7 +56,7 @@ class String(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if String._packed_fingerprint is None:
             String._packed_fingerprint = struct.pack(">Q", String._get_hash_recursive([]))

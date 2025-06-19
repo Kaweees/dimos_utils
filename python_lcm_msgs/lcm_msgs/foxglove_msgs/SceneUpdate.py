@@ -8,8 +8,8 @@ from io import BytesIO
 import struct
 
 from . import *
-from .SceneEntity import SceneEntity
 from .SceneEntityDeletion import SceneEntityDeletion
+from .SceneEntity import SceneEntity
 class SceneUpdate(object):
 
     __slots__ = ["deletions_length", "entities_length", "deletions", "entities"]
@@ -43,7 +43,7 @@ class SceneUpdate(object):
             assert self.entities[i0]._get_packed_fingerprint() == SceneEntity._get_packed_fingerprint()
             self.entities[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -53,7 +53,7 @@ class SceneUpdate(object):
             raise ValueError("Decode error")
         return SceneUpdate._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = SceneUpdate()
         self.deletions_length, self.entities_length = struct.unpack(">ii", buf.read(8))
@@ -65,7 +65,7 @@ class SceneUpdate(object):
             self.entities.append(SceneEntity._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if SceneUpdate in parents: return 0
         newparents = parents + [SceneUpdate]
@@ -74,7 +74,7 @@ class SceneUpdate(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if SceneUpdate._packed_fingerprint is None:
             SceneUpdate._packed_fingerprint = struct.pack(">Q", SceneUpdate._get_hash_recursive([]))

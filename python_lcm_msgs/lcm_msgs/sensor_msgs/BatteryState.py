@@ -98,7 +98,7 @@ class BatteryState(object):
         buf.write(__serial_number_encoded)
         buf.write(b"\0")
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -108,7 +108,7 @@ class BatteryState(object):
             raise ValueError("Decode error")
         return BatteryState._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = BatteryState()
         self.cell_voltage_length, self.cell_temperature_length = struct.unpack(">ii", buf.read(8))
@@ -123,7 +123,7 @@ class BatteryState(object):
         self.serial_number = buf.read(__serial_number_len)[:-1].decode('utf-8', 'replace')
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if BatteryState in parents: return 0
         newparents = parents + [BatteryState]
@@ -132,7 +132,7 @@ class BatteryState(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if BatteryState._packed_fingerprint is None:
             BatteryState._packed_fingerprint = struct.pack(">Q", BatteryState._get_hash_recursive([]))

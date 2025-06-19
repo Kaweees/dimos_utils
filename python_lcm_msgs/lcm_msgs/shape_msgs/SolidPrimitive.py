@@ -46,7 +46,7 @@ class SolidPrimitive(object):
         buf.write(struct.pack(">iB", self.dimensions_length, self.type))
         buf.write(struct.pack('>%dd' % self.dimensions_length, *self.dimensions[:self.dimensions_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -56,14 +56,14 @@ class SolidPrimitive(object):
             raise ValueError("Decode error")
         return SolidPrimitive._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = SolidPrimitive()
         self.dimensions_length, self.type = struct.unpack(">iB", buf.read(5))
         self.dimensions = struct.unpack('>%dd' % self.dimensions_length, buf.read(self.dimensions_length * 8))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if SolidPrimitive in parents: return 0
         tmphash = (0xb8a8e7178cab07ac) & 0xffffffffffffffff
@@ -71,7 +71,7 @@ class SolidPrimitive(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if SolidPrimitive._packed_fingerprint is None:
             SolidPrimitive._packed_fingerprint = struct.pack(">Q", SolidPrimitive._get_hash_recursive([]))

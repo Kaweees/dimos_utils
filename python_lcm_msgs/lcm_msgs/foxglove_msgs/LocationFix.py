@@ -54,7 +54,7 @@ class LocationFix(object):
         buf.write(struct.pack('>9d', *self.position_covariance[:9]))
         buf.write(struct.pack(">B", self.position_covariance_type))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -64,7 +64,7 @@ class LocationFix(object):
             raise ValueError("Decode error")
         return LocationFix._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = LocationFix()
         self.timestamp = builtin_interfaces.Time._decode_one(buf)
@@ -75,7 +75,7 @@ class LocationFix(object):
         self.position_covariance_type = struct.unpack(">B", buf.read(1))[0]
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if LocationFix in parents: return 0
         newparents = parents + [LocationFix]
@@ -84,7 +84,7 @@ class LocationFix(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if LocationFix._packed_fingerprint is None:
             LocationFix._packed_fingerprint = struct.pack(">Q", LocationFix._get_hash_recursive([]))

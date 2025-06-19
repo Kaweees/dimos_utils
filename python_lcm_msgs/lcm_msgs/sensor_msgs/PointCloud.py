@@ -48,7 +48,7 @@ class PointCloud(object):
             assert self.channels[i0]._get_packed_fingerprint() == ChannelFloat32._get_packed_fingerprint()
             self.channels[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -58,7 +58,7 @@ class PointCloud(object):
             raise ValueError("Decode error")
         return PointCloud._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = PointCloud()
         self.points_length, self.channels_length = struct.unpack(">ii", buf.read(8))
@@ -71,7 +71,7 @@ class PointCloud(object):
             self.channels.append(ChannelFloat32._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if PointCloud in parents: return 0
         newparents = parents + [PointCloud]
@@ -80,7 +80,7 @@ class PointCloud(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if PointCloud._packed_fingerprint is None:
             PointCloud._packed_fingerprint = struct.pack(">Q", PointCloud._get_hash_recursive([]))

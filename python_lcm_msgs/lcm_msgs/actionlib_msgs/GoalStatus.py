@@ -51,7 +51,7 @@ class GoalStatus(object):
         buf.write(__text_encoded)
         buf.write(b"\0")
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -61,7 +61,7 @@ class GoalStatus(object):
             raise ValueError("Decode error")
         return GoalStatus._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = GoalStatus()
         self.goal_id = GoalID._decode_one(buf)
@@ -70,7 +70,7 @@ class GoalStatus(object):
         self.text = buf.read(__text_len)[:-1].decode('utf-8', 'replace')
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if GoalStatus in parents: return 0
         newparents = parents + [GoalStatus]
@@ -79,7 +79,7 @@ class GoalStatus(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if GoalStatus._packed_fingerprint is None:
             GoalStatus._packed_fingerprint = struct.pack(">Q", GoalStatus._get_hash_recursive([]))

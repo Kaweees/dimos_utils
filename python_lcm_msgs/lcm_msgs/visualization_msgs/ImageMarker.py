@@ -89,7 +89,7 @@ class ImageMarker(object):
             assert self.outline_colors[i0]._get_packed_fingerprint() == std_msgs.ColorRGBA._get_packed_fingerprint()
             self.outline_colors[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -99,7 +99,7 @@ class ImageMarker(object):
             raise ValueError("Decode error")
         return ImageMarker._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = ImageMarker()
         self.points_length, self.outline_colors_length = struct.unpack(">ii", buf.read(8))
@@ -121,7 +121,7 @@ class ImageMarker(object):
             self.outline_colors.append(std_msgs.ColorRGBA._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if ImageMarker in parents: return 0
         newparents = parents + [ImageMarker]
@@ -130,7 +130,7 @@ class ImageMarker(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if ImageMarker._packed_fingerprint is None:
             ImageMarker._packed_fingerprint = struct.pack(">Q", ImageMarker._get_hash_recursive([]))

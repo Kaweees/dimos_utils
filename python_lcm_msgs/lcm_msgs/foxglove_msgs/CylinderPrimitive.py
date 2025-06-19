@@ -45,7 +45,7 @@ class CylinderPrimitive(object):
         assert self.color._get_packed_fingerprint() == Color._get_packed_fingerprint()
         self.color._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -55,7 +55,7 @@ class CylinderPrimitive(object):
             raise ValueError("Decode error")
         return CylinderPrimitive._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = CylinderPrimitive()
         self.pose = geometry_msgs.Pose._decode_one(buf)
@@ -64,7 +64,7 @@ class CylinderPrimitive(object):
         self.color = Color._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if CylinderPrimitive in parents: return 0
         newparents = parents + [CylinderPrimitive]
@@ -73,7 +73,7 @@ class CylinderPrimitive(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if CylinderPrimitive._packed_fingerprint is None:
             CylinderPrimitive._packed_fingerprint = struct.pack(">Q", CylinderPrimitive._get_hash_recursive([]))

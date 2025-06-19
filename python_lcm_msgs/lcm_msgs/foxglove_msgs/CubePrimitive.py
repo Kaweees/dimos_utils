@@ -40,7 +40,7 @@ class CubePrimitive(object):
         assert self.color._get_packed_fingerprint() == Color._get_packed_fingerprint()
         self.color._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -50,7 +50,7 @@ class CubePrimitive(object):
             raise ValueError("Decode error")
         return CubePrimitive._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = CubePrimitive()
         self.pose = geometry_msgs.Pose._decode_one(buf)
@@ -58,7 +58,7 @@ class CubePrimitive(object):
         self.color = Color._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if CubePrimitive in parents: return 0
         newparents = parents + [CubePrimitive]
@@ -67,7 +67,7 @@ class CubePrimitive(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if CubePrimitive._packed_fingerprint is None:
             CubePrimitive._packed_fingerprint = struct.pack(">Q", CubePrimitive._get_hash_recursive([]))

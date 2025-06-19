@@ -44,7 +44,7 @@ class Range(object):
         self.header._encode_one(buf)
         buf.write(struct.pack(">Bffff", self.radiation_type, self.field_of_view, self.min_range, self.max_range, self.range))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -54,14 +54,14 @@ class Range(object):
             raise ValueError("Decode error")
         return Range._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Range()
         self.header = std_msgs.Header._decode_one(buf)
         self.radiation_type, self.field_of_view, self.min_range, self.max_range, self.range = struct.unpack(">Bffff", buf.read(17))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Range in parents: return 0
         newparents = parents + [Range]
@@ -70,7 +70,7 @@ class Range(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Range._packed_fingerprint is None:
             Range._packed_fingerprint = struct.pack(">Q", Range._get_hash_recursive([]))

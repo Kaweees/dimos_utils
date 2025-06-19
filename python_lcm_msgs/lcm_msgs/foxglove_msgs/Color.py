@@ -34,7 +34,7 @@ class Color(object):
     def _encode_one(self, buf):
         buf.write(struct.pack(">dddd", self.r, self.g, self.b, self.a))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -44,13 +44,13 @@ class Color(object):
             raise ValueError("Decode error")
         return Color._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Color()
         self.r, self.g, self.b, self.a = struct.unpack(">dddd", buf.read(32))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Color in parents: return 0
         tmphash = (0x998136169753c441) & 0xffffffffffffffff
@@ -58,7 +58,7 @@ class Color(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Color._packed_fingerprint is None:
             Color._packed_fingerprint = struct.pack(">Q", Color._get_hash_recursive([]))

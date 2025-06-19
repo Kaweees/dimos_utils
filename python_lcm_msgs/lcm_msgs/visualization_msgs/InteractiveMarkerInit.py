@@ -44,7 +44,7 @@ class InteractiveMarkerInit(object):
             assert self.markers[i0]._get_packed_fingerprint() == InteractiveMarker._get_packed_fingerprint()
             self.markers[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -54,7 +54,7 @@ class InteractiveMarkerInit(object):
             raise ValueError("Decode error")
         return InteractiveMarkerInit._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = InteractiveMarkerInit()
         self.markers_length = struct.unpack(">i", buf.read(4))[0]
@@ -66,7 +66,7 @@ class InteractiveMarkerInit(object):
             self.markers.append(InteractiveMarker._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if InteractiveMarkerInit in parents: return 0
         newparents = parents + [InteractiveMarkerInit]
@@ -75,7 +75,7 @@ class InteractiveMarkerInit(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if InteractiveMarkerInit._packed_fingerprint is None:
             InteractiveMarkerInit._packed_fingerprint = struct.pack(">Q", InteractiveMarkerInit._get_hash_recursive([]))

@@ -35,7 +35,7 @@ class RelativeHumidity(object):
         self.header._encode_one(buf)
         buf.write(struct.pack(">dd", self.relative_humidity, self.variance))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -45,14 +45,14 @@ class RelativeHumidity(object):
             raise ValueError("Decode error")
         return RelativeHumidity._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = RelativeHumidity()
         self.header = std_msgs.Header._decode_one(buf)
         self.relative_humidity, self.variance = struct.unpack(">dd", buf.read(16))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if RelativeHumidity in parents: return 0
         newparents = parents + [RelativeHumidity]
@@ -61,7 +61,7 @@ class RelativeHumidity(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if RelativeHumidity._packed_fingerprint is None:
             RelativeHumidity._packed_fingerprint = struct.pack(">Q", RelativeHumidity._get_hash_recursive([]))

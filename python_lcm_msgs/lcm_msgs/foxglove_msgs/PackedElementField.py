@@ -46,7 +46,7 @@ class PackedElementField(object):
         buf.write(b"\0")
         buf.write(struct.pack(">iB", self.offset, self.type))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -56,7 +56,7 @@ class PackedElementField(object):
             raise ValueError("Decode error")
         return PackedElementField._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = PackedElementField()
         __name_len = struct.unpack('>I', buf.read(4))[0]
@@ -64,7 +64,7 @@ class PackedElementField(object):
         self.offset, self.type = struct.unpack(">iB", buf.read(5))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if PackedElementField in parents: return 0
         tmphash = (0x47c85ba0fafa16b8) & 0xffffffffffffffff
@@ -72,7 +72,7 @@ class PackedElementField(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if PackedElementField._packed_fingerprint is None:
             PackedElementField._packed_fingerprint = struct.pack(">Q", PackedElementField._get_hash_recursive([]))

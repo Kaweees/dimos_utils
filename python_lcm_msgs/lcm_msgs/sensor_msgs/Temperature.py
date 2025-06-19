@@ -35,7 +35,7 @@ class Temperature(object):
         self.header._encode_one(buf)
         buf.write(struct.pack(">dd", self.temperature, self.variance))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -45,14 +45,14 @@ class Temperature(object):
             raise ValueError("Decode error")
         return Temperature._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Temperature()
         self.header = std_msgs.Header._decode_one(buf)
         self.temperature, self.variance = struct.unpack(">dd", buf.read(16))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Temperature in parents: return 0
         newparents = parents + [Temperature]
@@ -61,7 +61,7 @@ class Temperature(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Temperature._packed_fingerprint is None:
             Temperature._packed_fingerprint = struct.pack(">Q", Temperature._get_hash_recursive([]))

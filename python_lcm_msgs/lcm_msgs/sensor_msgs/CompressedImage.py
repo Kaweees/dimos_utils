@@ -42,7 +42,7 @@ class CompressedImage(object):
         buf.write(b"\0")
         buf.write(bytearray(self.data[:self.data_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -52,7 +52,7 @@ class CompressedImage(object):
             raise ValueError("Decode error")
         return CompressedImage._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = CompressedImage()
         self.data_length = struct.unpack(">i", buf.read(4))[0]
@@ -62,7 +62,7 @@ class CompressedImage(object):
         self.data = buf.read(self.data_length)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if CompressedImage in parents: return 0
         newparents = parents + [CompressedImage]
@@ -71,7 +71,7 @@ class CompressedImage(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if CompressedImage._packed_fingerprint is None:
             CompressedImage._packed_fingerprint = struct.pack(">Q", CompressedImage._get_hash_recursive([]))

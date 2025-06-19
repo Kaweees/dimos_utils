@@ -42,7 +42,7 @@ class MapMetaData(object):
         assert self.origin._get_packed_fingerprint() == geometry_msgs.Pose._get_packed_fingerprint()
         self.origin._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -52,7 +52,7 @@ class MapMetaData(object):
             raise ValueError("Decode error")
         return MapMetaData._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = MapMetaData()
         self.map_load_time = std_msgs.Time._decode_one(buf)
@@ -60,7 +60,7 @@ class MapMetaData(object):
         self.origin = geometry_msgs.Pose._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if MapMetaData in parents: return 0
         newparents = parents + [MapMetaData]
@@ -69,7 +69,7 @@ class MapMetaData(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if MapMetaData._packed_fingerprint is None:
             MapMetaData._packed_fingerprint = struct.pack(">Q", MapMetaData._get_hash_recursive([]))

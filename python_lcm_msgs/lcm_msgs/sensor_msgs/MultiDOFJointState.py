@@ -62,7 +62,7 @@ class MultiDOFJointState(object):
             assert self.wrench[i0]._get_packed_fingerprint() == geometry_msgs.Wrench._get_packed_fingerprint()
             self.wrench[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -72,7 +72,7 @@ class MultiDOFJointState(object):
             raise ValueError("Decode error")
         return MultiDOFJointState._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = MultiDOFJointState()
         self.joint_names_length, self.transforms_length, self.twist_length, self.wrench_length = struct.unpack(">iiii", buf.read(16))
@@ -92,7 +92,7 @@ class MultiDOFJointState(object):
             self.wrench.append(geometry_msgs.Wrench._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if MultiDOFJointState in parents: return 0
         newparents = parents + [MultiDOFJointState]
@@ -101,7 +101,7 @@ class MultiDOFJointState(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if MultiDOFJointState._packed_fingerprint is None:
             MultiDOFJointState._packed_fingerprint = struct.pack(">Q", MultiDOFJointState._get_hash_recursive([]))

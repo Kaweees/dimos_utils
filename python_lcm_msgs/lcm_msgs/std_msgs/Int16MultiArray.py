@@ -37,7 +37,7 @@ class Int16MultiArray(object):
         self.layout._encode_one(buf)
         buf.write(struct.pack('>%dh' % self.data_length, *self.data[:self.data_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -47,7 +47,7 @@ class Int16MultiArray(object):
             raise ValueError("Decode error")
         return Int16MultiArray._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Int16MultiArray()
         self.data_length = struct.unpack(">i", buf.read(4))[0]
@@ -55,7 +55,7 @@ class Int16MultiArray(object):
         self.data = struct.unpack('>%dh' % self.data_length, buf.read(self.data_length * 2))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Int16MultiArray in parents: return 0
         newparents = parents + [Int16MultiArray]
@@ -64,7 +64,7 @@ class Int16MultiArray(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Int16MultiArray._packed_fingerprint is None:
             Int16MultiArray._packed_fingerprint = struct.pack(">Q", Int16MultiArray._get_hash_recursive([]))

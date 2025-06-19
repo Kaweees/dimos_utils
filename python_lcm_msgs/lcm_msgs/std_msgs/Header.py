@@ -40,7 +40,7 @@ class Header(object):
         buf.write(__frame_id_encoded)
         buf.write(b"\0")
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -50,7 +50,7 @@ class Header(object):
             raise ValueError("Decode error")
         return Header._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Header()
         self.seq = struct.unpack(">i", buf.read(4))[0]
@@ -59,7 +59,7 @@ class Header(object):
         self.frame_id = buf.read(__frame_id_len)[:-1].decode('utf-8', 'replace')
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Header in parents: return 0
         newparents = parents + [Header]
@@ -68,7 +68,7 @@ class Header(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Header._packed_fingerprint is None:
             Header._packed_fingerprint = struct.pack(">Q", Header._get_hash_recursive([]))

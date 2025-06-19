@@ -35,7 +35,7 @@ class FrameTransforms(object):
             assert self.transforms[i0]._get_packed_fingerprint() == FrameTransform._get_packed_fingerprint()
             self.transforms[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -45,7 +45,7 @@ class FrameTransforms(object):
             raise ValueError("Decode error")
         return FrameTransforms._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = FrameTransforms()
         self.transforms_length = struct.unpack(">i", buf.read(4))[0]
@@ -54,7 +54,7 @@ class FrameTransforms(object):
             self.transforms.append(FrameTransform._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if FrameTransforms in parents: return 0
         newparents = parents + [FrameTransforms]
@@ -63,7 +63,7 @@ class FrameTransforms(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if FrameTransforms._packed_fingerprint is None:
             FrameTransforms._packed_fingerprint = struct.pack(">Q", FrameTransforms._get_hash_recursive([]))

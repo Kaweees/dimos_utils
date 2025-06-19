@@ -35,7 +35,7 @@ class Wrench(object):
         assert self.torque._get_packed_fingerprint() == Vector3._get_packed_fingerprint()
         self.torque._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -45,14 +45,14 @@ class Wrench(object):
             raise ValueError("Decode error")
         return Wrench._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Wrench()
         self.force = Vector3._decode_one(buf)
         self.torque = Vector3._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Wrench in parents: return 0
         newparents = parents + [Wrench]
@@ -61,7 +61,7 @@ class Wrench(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Wrench._packed_fingerprint is None:
             Wrench._packed_fingerprint = struct.pack(">Q", Wrench._get_hash_recursive([]))

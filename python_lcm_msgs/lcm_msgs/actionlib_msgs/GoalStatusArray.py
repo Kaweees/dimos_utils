@@ -40,7 +40,7 @@ class GoalStatusArray(object):
             assert self.status_list[i0]._get_packed_fingerprint() == GoalStatus._get_packed_fingerprint()
             self.status_list[i0]._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -50,7 +50,7 @@ class GoalStatusArray(object):
             raise ValueError("Decode error")
         return GoalStatusArray._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = GoalStatusArray()
         self.status_list_length = struct.unpack(">i", buf.read(4))[0]
@@ -60,7 +60,7 @@ class GoalStatusArray(object):
             self.status_list.append(GoalStatus._decode_one(buf))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if GoalStatusArray in parents: return 0
         newparents = parents + [GoalStatusArray]
@@ -69,7 +69,7 @@ class GoalStatusArray(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if GoalStatusArray._packed_fingerprint is None:
             GoalStatusArray._packed_fingerprint = struct.pack(">Q", GoalStatusArray._get_hash_recursive([]))

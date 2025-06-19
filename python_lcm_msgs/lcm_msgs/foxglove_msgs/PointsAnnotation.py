@@ -68,7 +68,7 @@ class PointsAnnotation(object):
         self.fill_color._encode_one(buf)
         buf.write(struct.pack(">d", self.thickness))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -78,7 +78,7 @@ class PointsAnnotation(object):
             raise ValueError("Decode error")
         return PointsAnnotation._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = PointsAnnotation()
         self.points_length, self.outline_colors_length = struct.unpack(">ii", buf.read(8))
@@ -95,7 +95,7 @@ class PointsAnnotation(object):
         self.thickness = struct.unpack(">d", buf.read(8))[0]
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if PointsAnnotation in parents: return 0
         newparents = parents + [PointsAnnotation]
@@ -104,7 +104,7 @@ class PointsAnnotation(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if PointsAnnotation._packed_fingerprint is None:
             PointsAnnotation._packed_fingerprint = struct.pack(">Q", PointsAnnotation._get_hash_recursive([]))

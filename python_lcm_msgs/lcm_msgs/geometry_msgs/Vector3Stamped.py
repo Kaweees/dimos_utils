@@ -36,7 +36,7 @@ class Vector3Stamped(object):
         assert self.vector._get_packed_fingerprint() == Vector3._get_packed_fingerprint()
         self.vector._encode_one(buf)
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -46,14 +46,14 @@ class Vector3Stamped(object):
             raise ValueError("Decode error")
         return Vector3Stamped._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Vector3Stamped()
         self.header = std_msgs.Header._decode_one(buf)
         self.vector = Vector3._decode_one(buf)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Vector3Stamped in parents: return 0
         newparents = parents + [Vector3Stamped]
@@ -62,7 +62,7 @@ class Vector3Stamped(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Vector3Stamped._packed_fingerprint is None:
             Vector3Stamped._packed_fingerprint = struct.pack(">Q", Vector3Stamped._get_hash_recursive([]))

@@ -47,7 +47,7 @@ class PointField(object):
         buf.write(b"\0")
         buf.write(struct.pack(">iBi", self.offset, self.datatype, self.count))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -57,7 +57,7 @@ class PointField(object):
             raise ValueError("Decode error")
         return PointField._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = PointField()
         __name_len = struct.unpack('>I', buf.read(4))[0]
@@ -65,7 +65,7 @@ class PointField(object):
         self.offset, self.datatype, self.count = struct.unpack(">iBi", buf.read(9))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if PointField in parents: return 0
         tmphash = (0x702e0e03f04285d7) & 0xffffffffffffffff
@@ -73,7 +73,7 @@ class PointField(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if PointField._packed_fingerprint is None:
             PointField._packed_fingerprint = struct.pack(">Q", PointField._get_hash_recursive([]))

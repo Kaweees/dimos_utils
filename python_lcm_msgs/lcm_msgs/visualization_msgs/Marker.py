@@ -110,7 +110,7 @@ class Marker(object):
         buf.write(b"\0")
         buf.write(struct.pack(">b", self.mesh_use_embedded_materials))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -120,7 +120,7 @@ class Marker(object):
             raise ValueError("Decode error")
         return Marker._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Marker()
         self.points_length, self.colors_length = struct.unpack(">ii", buf.read(8))
@@ -146,7 +146,7 @@ class Marker(object):
         self.mesh_use_embedded_materials = bool(struct.unpack('b', buf.read(1))[0])
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Marker in parents: return 0
         newparents = parents + [Marker]
@@ -155,7 +155,7 @@ class Marker(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Marker._packed_fingerprint is None:
             Marker._packed_fingerprint = struct.pack(">Q", Marker._get_hash_recursive([]))

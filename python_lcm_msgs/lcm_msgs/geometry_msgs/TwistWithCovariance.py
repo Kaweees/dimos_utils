@@ -34,7 +34,7 @@ class TwistWithCovariance(object):
         self.twist._encode_one(buf)
         buf.write(struct.pack('>36d', *self.covariance[:36]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -44,14 +44,14 @@ class TwistWithCovariance(object):
             raise ValueError("Decode error")
         return TwistWithCovariance._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = TwistWithCovariance()
         self.twist = Twist._decode_one(buf)
         self.covariance = struct.unpack('>36d', buf.read(288))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if TwistWithCovariance in parents: return 0
         newparents = parents + [TwistWithCovariance]
@@ -60,7 +60,7 @@ class TwistWithCovariance(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if TwistWithCovariance._packed_fingerprint is None:
             TwistWithCovariance._packed_fingerprint = struct.pack(">Q", TwistWithCovariance._get_hash_recursive([]))

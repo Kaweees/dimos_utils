@@ -56,7 +56,7 @@ class RawImage(object):
         buf.write(struct.pack(">i", self.step))
         buf.write(bytearray(self.data[:self.data_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -66,7 +66,7 @@ class RawImage(object):
             raise ValueError("Decode error")
         return RawImage._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = RawImage()
         self.data_length = struct.unpack(">i", buf.read(4))[0]
@@ -80,7 +80,7 @@ class RawImage(object):
         self.data = buf.read(self.data_length)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if RawImage in parents: return 0
         newparents = parents + [RawImage]
@@ -89,7 +89,7 @@ class RawImage(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if RawImage._packed_fingerprint is None:
             RawImage._packed_fingerprint = struct.pack(">Q", RawImage._get_hash_recursive([]))

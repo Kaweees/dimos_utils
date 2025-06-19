@@ -47,7 +47,7 @@ class Inertia(object):
         self.com._encode_one(buf)
         buf.write(struct.pack(">dddddd", self.ixx, self.ixy, self.ixz, self.iyy, self.iyz, self.izz))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -57,7 +57,7 @@ class Inertia(object):
             raise ValueError("Decode error")
         return Inertia._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Inertia()
         self.m = struct.unpack(">d", buf.read(8))[0]
@@ -65,7 +65,7 @@ class Inertia(object):
         self.ixx, self.ixy, self.ixz, self.iyy, self.iyz, self.izz = struct.unpack(">dddddd", buf.read(48))
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Inertia in parents: return 0
         newparents = parents + [Inertia]
@@ -74,7 +74,7 @@ class Inertia(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Inertia._packed_fingerprint is None:
             Inertia._packed_fingerprint = struct.pack(">Q", Inertia._get_hash_recursive([]))

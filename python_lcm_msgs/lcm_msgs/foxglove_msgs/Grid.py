@@ -10,8 +10,8 @@ import struct
 from lcm_msgs import geometry_msgs
 from . import *
 from lcm_msgs import builtin_interfaces
-from .PackedElementField import PackedElementField
 from .Vector2 import Vector2
+from .PackedElementField import PackedElementField
 class Grid(object):
 
     __slots__ = ["fields_length", "data_length", "timestamp", "frame_id", "pose", "column_count", "cell_size", "row_stride", "cell_stride", "fields", "data"]
@@ -69,7 +69,7 @@ class Grid(object):
             self.fields[i0]._encode_one(buf)
         buf.write(bytearray(self.data[:self.data_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -79,7 +79,7 @@ class Grid(object):
             raise ValueError("Decode error")
         return Grid._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = Grid()
         self.fields_length, self.data_length = struct.unpack(">ii", buf.read(8))
@@ -96,7 +96,7 @@ class Grid(object):
         self.data = buf.read(self.data_length)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if Grid in parents: return 0
         newparents = parents + [Grid]
@@ -105,7 +105,7 @@ class Grid(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if Grid._packed_fingerprint is None:
             Grid._packed_fingerprint = struct.pack(">Q", Grid._get_hash_recursive([]))

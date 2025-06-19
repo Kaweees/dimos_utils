@@ -61,7 +61,7 @@ class ModelPrimitive(object):
         buf.write(b"\0")
         buf.write(bytearray(self.data[:self.data_length]))
 
-    @staticmethod
+    @classmethod
     def decode(data: bytes):
         if hasattr(data, 'read'):
             buf = data
@@ -71,7 +71,7 @@ class ModelPrimitive(object):
             raise ValueError("Decode error")
         return ModelPrimitive._decode_one(buf)
 
-    @staticmethod
+    @classmethod
     def _decode_one(buf):
         self = ModelPrimitive()
         self.data_length = struct.unpack(">i", buf.read(4))[0]
@@ -86,7 +86,7 @@ class ModelPrimitive(object):
         self.data = buf.read(self.data_length)
         return self
 
-    @staticmethod
+    @classmethod
     def _get_hash_recursive(parents):
         if ModelPrimitive in parents: return 0
         newparents = parents + [ModelPrimitive]
@@ -95,7 +95,7 @@ class ModelPrimitive(object):
         return tmphash
     _packed_fingerprint = None
 
-    @staticmethod
+    @classmethod
     def _get_packed_fingerprint():
         if ModelPrimitive._packed_fingerprint is None:
             ModelPrimitive._packed_fingerprint = struct.pack(">Q", ModelPrimitive._get_hash_recursive([]))
