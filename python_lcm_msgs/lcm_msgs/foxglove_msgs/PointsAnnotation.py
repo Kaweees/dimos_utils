@@ -9,8 +9,8 @@ import struct
 
 from . import *
 from lcm_msgs import builtin_interfaces
-from .Color import Color
 from .Point2 import Point2
+from .Color import Color
 class PointsAnnotation(object):
 
     __slots__ = ["points_length", "outline_colors_length", "timestamp", "type", "points", "outline_color", "outline_colors", "fill_color", "thickness"]
@@ -69,17 +69,17 @@ class PointsAnnotation(object):
         buf.write(struct.pack(">d", self.thickness))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != PointsAnnotation._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return PointsAnnotation._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = PointsAnnotation()
         self.points_length, self.outline_colors_length = struct.unpack(">ii", buf.read(8))
         self.timestamp = builtin_interfaces.Time._decode_one(buf)
@@ -96,21 +96,21 @@ class PointsAnnotation(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if PointsAnnotation in parents: return 0
-        newparents = parents + [PointsAnnotation]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0x97465363cc7c2a18+ builtin_interfaces.Time._get_hash_recursive(newparents)+ Point2._get_hash_recursive(newparents)+ Color._get_hash_recursive(newparents)+ Color._get_hash_recursive(newparents)+ Color._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if PointsAnnotation._packed_fingerprint is None:
-            PointsAnnotation._packed_fingerprint = struct.pack(">Q", PointsAnnotation._get_hash_recursive([]))
-        return PointsAnnotation._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", PointsAnnotation._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

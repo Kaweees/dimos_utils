@@ -32,37 +32,37 @@ class LaserEcho(object):
         buf.write(struct.pack('>%df' % self.echoes_length, *self.echoes[:self.echoes_length]))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != LaserEcho._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return LaserEcho._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = LaserEcho()
         self.echoes_length = struct.unpack(">i", buf.read(4))[0]
         self.echoes = struct.unpack('>%df' % self.echoes_length, buf.read(self.echoes_length * 4))
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if LaserEcho in parents: return 0
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
         tmphash = (0xc45702116c7d0a2e) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if LaserEcho._packed_fingerprint is None:
-            LaserEcho._packed_fingerprint = struct.pack(">Q", LaserEcho._get_hash_recursive([]))
-        return LaserEcho._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", LaserEcho._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

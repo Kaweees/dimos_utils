@@ -37,38 +37,38 @@ class Vector3Stamped(object):
         self.vector._encode_one(buf)
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != Vector3Stamped._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return Vector3Stamped._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = Vector3Stamped()
         self.header = std_msgs.Header._decode_one(buf)
         self.vector = Vector3._decode_one(buf)
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if Vector3Stamped in parents: return 0
-        newparents = parents + [Vector3Stamped]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0xecb8cfd985d1cbe0+ std_msgs.Header._get_hash_recursive(newparents)+ Vector3._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if Vector3Stamped._packed_fingerprint is None:
-            Vector3Stamped._packed_fingerprint = struct.pack(">Q", Vector3Stamped._get_hash_recursive([]))
-        return Vector3Stamped._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", Vector3Stamped._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

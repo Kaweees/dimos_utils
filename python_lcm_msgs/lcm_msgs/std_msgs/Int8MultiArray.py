@@ -38,17 +38,17 @@ class Int8MultiArray(object):
         buf.write(struct.pack('>%db' % self.data_length, *self.data[:self.data_length]))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != Int8MultiArray._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return Int8MultiArray._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = Int8MultiArray()
         self.data_length = struct.unpack(">i", buf.read(4))[0]
         self.layout = MultiArrayLayout._decode_one(buf)
@@ -56,21 +56,21 @@ class Int8MultiArray(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if Int8MultiArray in parents: return 0
-        newparents = parents + [Int8MultiArray]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0xdcc1940b891be505+ MultiArrayLayout._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if Int8MultiArray._packed_fingerprint is None:
-            Int8MultiArray._packed_fingerprint = struct.pack(">Q", Int8MultiArray._get_hash_recursive([]))
-        return Int8MultiArray._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", Int8MultiArray._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

@@ -10,8 +10,8 @@ import struct
 from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 from . import *
-from .InteractiveMarkerControl import InteractiveMarkerControl
 from .MenuEntry import MenuEntry
+from .InteractiveMarkerControl import InteractiveMarkerControl
 class InteractiveMarker(object):
 
     __slots__ = ["menu_entries_length", "controls_length", "header", "pose", "name", "description", "scale", "menu_entries", "controls"]
@@ -69,17 +69,17 @@ class InteractiveMarker(object):
             self.controls[i0]._encode_one(buf)
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != InteractiveMarker._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return InteractiveMarker._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = InteractiveMarker()
         self.menu_entries_length, self.controls_length = struct.unpack(">ii", buf.read(8))
         self.header = std_msgs.Header._decode_one(buf)
@@ -98,21 +98,21 @@ class InteractiveMarker(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if InteractiveMarker in parents: return 0
-        newparents = parents + [InteractiveMarker]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0xe9ed8e5f9a72545f+ std_msgs.Header._get_hash_recursive(newparents)+ geometry_msgs.Pose._get_hash_recursive(newparents)+ MenuEntry._get_hash_recursive(newparents)+ InteractiveMarkerControl._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if InteractiveMarker._packed_fingerprint is None:
-            InteractiveMarker._packed_fingerprint = struct.pack(">Q", InteractiveMarker._get_hash_recursive([]))
-        return InteractiveMarker._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", InteractiveMarker._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

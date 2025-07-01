@@ -39,17 +39,17 @@ class MultiArrayLayout(object):
         buf.write(struct.pack(">i", self.data_offset))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != MultiArrayLayout._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return MultiArrayLayout._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = MultiArrayLayout()
         self.dim_length = struct.unpack(">i", buf.read(4))[0]
         self.dim = []
@@ -59,21 +59,21 @@ class MultiArrayLayout(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if MultiArrayLayout in parents: return 0
-        newparents = parents + [MultiArrayLayout]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0xbf4b5363481d321+ MultiArrayDimension._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if MultiArrayLayout._packed_fingerprint is None:
-            MultiArrayLayout._packed_fingerprint = struct.pack(">Q", MultiArrayLayout._get_hash_recursive([]))
-        return MultiArrayLayout._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", MultiArrayLayout._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

@@ -4,13 +4,13 @@ DO NOT MODIFY BY HAND!!!!
 lcm-gen 1.5.1
 """
 
-from .InteractiveMarkerFeedback import InteractiveMarkerFeedback as InteractiveMarkerFeedback
-from .MenuEntry import MenuEntry as MenuEntry
-from .ImageMarker import ImageMarker as ImageMarker
 from .InteractiveMarkerPose import InteractiveMarkerPose as InteractiveMarkerPose
-from .InteractiveMarkerInit import InteractiveMarkerInit as InteractiveMarkerInit
-from .Marker import Marker as Marker
-from .InteractiveMarkerControl import InteractiveMarkerControl as InteractiveMarkerControl
-from .MarkerArray import MarkerArray as MarkerArray
 from .InteractiveMarker import InteractiveMarker as InteractiveMarker
 from .InteractiveMarkerUpdate import InteractiveMarkerUpdate as InteractiveMarkerUpdate
+from .InteractiveMarkerFeedback import InteractiveMarkerFeedback as InteractiveMarkerFeedback
+from .Marker import Marker as Marker
+from .InteractiveMarkerInit import InteractiveMarkerInit as InteractiveMarkerInit
+from .InteractiveMarkerControl import InteractiveMarkerControl as InteractiveMarkerControl
+from .ImageMarker import ImageMarker as ImageMarker
+from .MenuEntry import MenuEntry as MenuEntry
+from .MarkerArray import MarkerArray as MarkerArray

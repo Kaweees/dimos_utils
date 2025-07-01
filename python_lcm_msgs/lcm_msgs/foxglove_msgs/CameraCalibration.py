@@ -63,17 +63,17 @@ class CameraCalibration(object):
         buf.write(struct.pack('>12d', *self.p[:12]))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != CameraCalibration._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return CameraCalibration._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = CameraCalibration()
         self.d_length = struct.unpack(">i", buf.read(4))[0]
         self.timestamp = builtin_interfaces.Time._decode_one(buf)
@@ -89,21 +89,21 @@ class CameraCalibration(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if CameraCalibration in parents: return 0
-        newparents = parents + [CameraCalibration]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0x89c275083a857ce2+ builtin_interfaces.Time._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if CameraCalibration._packed_fingerprint is None:
-            CameraCalibration._packed_fingerprint = struct.pack(">Q", CameraCalibration._get_hash_recursive([]))
-        return CameraCalibration._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", CameraCalibration._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

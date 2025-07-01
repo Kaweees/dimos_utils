@@ -36,38 +36,38 @@ class Illuminance(object):
         buf.write(struct.pack(">dd", self.illuminance, self.variance))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != Illuminance._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return Illuminance._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = Illuminance()
         self.header = std_msgs.Header._decode_one(buf)
         self.illuminance, self.variance = struct.unpack(">dd", buf.read(16))
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if Illuminance in parents: return 0
-        newparents = parents + [Illuminance]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0xdfb4b65ce9b1b524+ std_msgs.Header._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if Illuminance._packed_fingerprint is None:
-            Illuminance._packed_fingerprint = struct.pack(">Q", Illuminance._get_hash_recursive([]))
-        return Illuminance._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", Illuminance._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

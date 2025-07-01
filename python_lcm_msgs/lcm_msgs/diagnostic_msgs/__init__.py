@@ -4,6 +4,6 @@ DO NOT MODIFY BY HAND!!!!
 lcm-gen 1.5.1
 """
 
-from .DiagnosticArray import DiagnosticArray as DiagnosticArray
 from .KeyValue import KeyValue as KeyValue
+from .DiagnosticArray import DiagnosticArray as DiagnosticArray
 from .DiagnosticStatus import DiagnosticStatus as DiagnosticStatus

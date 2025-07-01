@@ -4,7 +4,7 @@ DO NOT MODIFY BY HAND!!!!
 lcm-gen 1.5.1
 """
 
-from .Mesh import Mesh as Mesh
 from .Plane import Plane as Plane
 from .SolidPrimitive import SolidPrimitive as SolidPrimitive
+from .Mesh import Mesh as Mesh
 from .MeshTriangle import MeshTriangle as MeshTriangle

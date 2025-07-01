@@ -29,36 +29,36 @@ class UInt16(object):
         buf.write(struct.pack(">h", self.data))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != UInt16._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return UInt16._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = UInt16()
         self.data = struct.unpack(">h", buf.read(2))[0]
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if UInt16 in parents: return 0
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
         tmphash = (0x165e7cf9f948811f) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if UInt16._packed_fingerprint is None:
-            UInt16._packed_fingerprint = struct.pack(">Q", UInt16._get_hash_recursive([]))
-        return UInt16._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", UInt16._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

@@ -41,17 +41,17 @@ class DiagnosticArray(object):
             self.status[i0]._encode_one(buf)
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != DiagnosticArray._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return DiagnosticArray._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = DiagnosticArray()
         self.status_length = struct.unpack(">i", buf.read(4))[0]
         self.header = std_msgs.Header._decode_one(buf)
@@ -61,21 +61,21 @@ class DiagnosticArray(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if DiagnosticArray in parents: return 0
-        newparents = parents + [DiagnosticArray]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0x163c308c500b94d+ std_msgs.Header._get_hash_recursive(newparents)+ DiagnosticStatus._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if DiagnosticArray._packed_fingerprint is None:
-            DiagnosticArray._packed_fingerprint = struct.pack(">Q", DiagnosticArray._get_hash_recursive([]))
-        return DiagnosticArray._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", DiagnosticArray._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

@@ -61,17 +61,17 @@ class PointCloud2(object):
         buf.write(struct.pack(">b", self.is_dense))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != PointCloud2._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return PointCloud2._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = PointCloud2()
         self.fields_length, self.data_length = struct.unpack(">ii", buf.read(8))
         self.header = std_msgs.Header._decode_one(buf)
@@ -86,21 +86,21 @@ class PointCloud2(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if PointCloud2 in parents: return 0
-        newparents = parents + [PointCloud2]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0xeabe7183c4d74215+ std_msgs.Header._get_hash_recursive(newparents)+ PointField._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if PointCloud2._packed_fingerprint is None:
-            PointCloud2._packed_fingerprint = struct.pack(">Q", PointCloud2._get_hash_recursive([]))
-        return PointCloud2._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", PointCloud2._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

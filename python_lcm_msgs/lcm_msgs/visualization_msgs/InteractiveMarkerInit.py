@@ -45,17 +45,17 @@ class InteractiveMarkerInit(object):
             self.markers[i0]._encode_one(buf)
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != InteractiveMarkerInit._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return InteractiveMarkerInit._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = InteractiveMarkerInit()
         self.markers_length = struct.unpack(">i", buf.read(4))[0]
         __server_id_len = struct.unpack('>I', buf.read(4))[0]
@@ -67,21 +67,21 @@ class InteractiveMarkerInit(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if InteractiveMarkerInit in parents: return 0
-        newparents = parents + [InteractiveMarkerInit]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0xd2afaf11cff61d9+ InteractiveMarker._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if InteractiveMarkerInit._packed_fingerprint is None:
-            InteractiveMarkerInit._packed_fingerprint = struct.pack(">Q", InteractiveMarkerInit._get_hash_recursive([]))
-        return InteractiveMarkerInit._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", InteractiveMarkerInit._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

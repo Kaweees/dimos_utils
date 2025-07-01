@@ -54,17 +54,17 @@ class MultiDOFJointTrajectoryPoint(object):
         self.time_from_start._encode_one(buf)
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != MultiDOFJointTrajectoryPoint._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return MultiDOFJointTrajectoryPoint._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = MultiDOFJointTrajectoryPoint()
         self.transforms_length, self.velocities_length, self.accelerations_length = struct.unpack(">iii", buf.read(12))
         self.transforms = []
@@ -80,21 +80,21 @@ class MultiDOFJointTrajectoryPoint(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if MultiDOFJointTrajectoryPoint in parents: return 0
-        newparents = parents + [MultiDOFJointTrajectoryPoint]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0x6afb214a921f4cfa+ geometry_msgs.Transform._get_hash_recursive(newparents)+ geometry_msgs.Twist._get_hash_recursive(newparents)+ geometry_msgs.Twist._get_hash_recursive(newparents)+ std_msgs.Duration._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if MultiDOFJointTrajectoryPoint._packed_fingerprint is None:
-            MultiDOFJointTrajectoryPoint._packed_fingerprint = struct.pack(">Q", MultiDOFJointTrajectoryPoint._get_hash_recursive([]))
-        return MultiDOFJointTrajectoryPoint._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", MultiDOFJointTrajectoryPoint._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

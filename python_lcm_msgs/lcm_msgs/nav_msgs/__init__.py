@@ -5,7 +5,7 @@ lcm-gen 1.5.1
 """
 
 from .OccupancyGrid import OccupancyGrid as OccupancyGrid
-from .GridCells import GridCells as GridCells
 from .MapMetaData import MapMetaData as MapMetaData
-from .Path import Path as Path
 from .Odometry import Odometry as Odometry
+from .Path import Path as Path
+from .GridCells import GridCells as GridCells

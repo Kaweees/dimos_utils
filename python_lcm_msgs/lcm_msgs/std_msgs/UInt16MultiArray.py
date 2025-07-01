@@ -38,17 +38,17 @@ class UInt16MultiArray(object):
         buf.write(struct.pack('>%dh' % self.data_length, *self.data[:self.data_length]))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != UInt16MultiArray._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return UInt16MultiArray._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = UInt16MultiArray()
         self.data_length = struct.unpack(">i", buf.read(4))[0]
         self.layout = MultiArrayLayout._decode_one(buf)
@@ -56,21 +56,21 @@ class UInt16MultiArray(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if UInt16MultiArray in parents: return 0
-        newparents = parents + [UInt16MultiArray]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0xaa51366c8f222c76+ MultiArrayLayout._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if UInt16MultiArray._packed_fingerprint is None:
-            UInt16MultiArray._packed_fingerprint = struct.pack(">Q", UInt16MultiArray._get_hash_recursive([]))
-        return UInt16MultiArray._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", UInt16MultiArray._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

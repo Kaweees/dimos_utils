@@ -35,17 +35,17 @@ class TFMessage(object):
             self.transforms[i0]._encode_one(buf)
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != TFMessage._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return TFMessage._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = TFMessage()
         self.transforms_length = struct.unpack(">i", buf.read(4))[0]
         self.transforms = []
@@ -54,21 +54,21 @@ class TFMessage(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if TFMessage in parents: return 0
-        newparents = parents + [TFMessage]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0x37bc5cbce50a5ce2+ geometry_msgs.TransformStamped._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if TFMessage._packed_fingerprint is None:
-            TFMessage._packed_fingerprint = struct.pack(">Q", TFMessage._get_hash_recursive([]))
-        return TFMessage._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", TFMessage._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

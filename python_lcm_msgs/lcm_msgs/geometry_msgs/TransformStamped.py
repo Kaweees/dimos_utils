@@ -43,17 +43,17 @@ class TransformStamped(object):
         self.transform._encode_one(buf)
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != TransformStamped._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return TransformStamped._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = TransformStamped()
         self.header = std_msgs.Header._decode_one(buf)
         __child_frame_id_len = struct.unpack('>I', buf.read(4))[0]
@@ -62,21 +62,21 @@ class TransformStamped(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if TransformStamped in parents: return 0
-        newparents = parents + [TransformStamped]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0xf694f4a6d8779002+ std_msgs.Header._get_hash_recursive(newparents)+ Transform._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if TransformStamped._packed_fingerprint is None:
-            TransformStamped._packed_fingerprint = struct.pack(">Q", TransformStamped._get_hash_recursive([]))
-        return TransformStamped._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", TransformStamped._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

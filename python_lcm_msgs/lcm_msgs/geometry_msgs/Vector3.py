@@ -33,36 +33,36 @@ class Vector3(object):
         buf.write(struct.pack(">ddd", self.x, self.y, self.z))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != Vector3._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return Vector3._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = Vector3()
         self.x, self.y, self.z = struct.unpack(">ddd", buf.read(24))
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if Vector3 in parents: return 0
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
         tmphash = (0x573f2fdd2f76508f) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if Vector3._packed_fingerprint is None:
-            Vector3._packed_fingerprint = struct.pack(">Q", Vector3._get_hash_recursive([]))
-        return Vector3._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", Vector3._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

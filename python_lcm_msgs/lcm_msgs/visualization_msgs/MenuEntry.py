@@ -50,17 +50,17 @@ class MenuEntry(object):
         buf.write(struct.pack(">B", self.command_type))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != MenuEntry._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return MenuEntry._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = MenuEntry()
         self.id, self.parent_id = struct.unpack(">ii", buf.read(8))
         __title_len = struct.unpack('>I', buf.read(4))[0]
@@ -71,20 +71,20 @@ class MenuEntry(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if MenuEntry in parents: return 0
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
         tmphash = (0x667b2d15ef03e972) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if MenuEntry._packed_fingerprint is None:
-            MenuEntry._packed_fingerprint = struct.pack(">Q", MenuEntry._get_hash_recursive([]))
-        return MenuEntry._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", MenuEntry._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

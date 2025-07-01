@@ -9,8 +9,8 @@ import struct
 
 from . import *
 from lcm_msgs import builtin_interfaces
-from .Color import Color
 from .Point2 import Point2
+from .Color import Color
 class CircleAnnotation(object):
 
     __slots__ = ["timestamp", "position", "diameter", "thickness", "fill_color", "outline_color"]
@@ -51,17 +51,17 @@ class CircleAnnotation(object):
         self.outline_color._encode_one(buf)
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != CircleAnnotation._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return CircleAnnotation._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = CircleAnnotation()
         self.timestamp = builtin_interfaces.Time._decode_one(buf)
         self.position = Point2._decode_one(buf)
@@ -71,21 +71,21 @@ class CircleAnnotation(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if CircleAnnotation in parents: return 0
-        newparents = parents + [CircleAnnotation]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0x5a3219098258887c+ builtin_interfaces.Time._get_hash_recursive(newparents)+ Point2._get_hash_recursive(newparents)+ Color._get_hash_recursive(newparents)+ Color._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if CircleAnnotation._packed_fingerprint is None:
-            CircleAnnotation._packed_fingerprint = struct.pack(">Q", CircleAnnotation._get_hash_recursive([]))
-        return CircleAnnotation._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", CircleAnnotation._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

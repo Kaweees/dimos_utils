@@ -37,37 +37,37 @@ class RegionOfInterest(object):
         buf.write(struct.pack(">iiiib", self.x_offset, self.y_offset, self.height, self.width, self.do_rectify))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != RegionOfInterest._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return RegionOfInterest._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = RegionOfInterest()
         self.x_offset, self.y_offset, self.height, self.width = struct.unpack(">iiii", buf.read(16))
         self.do_rectify = bool(struct.unpack('b', buf.read(1))[0])
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if RegionOfInterest in parents: return 0
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
         tmphash = (0x398a869d05983f0e) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if RegionOfInterest._packed_fingerprint is None:
-            RegionOfInterest._packed_fingerprint = struct.pack(">Q", RegionOfInterest._get_hash_recursive([]))
-        return RegionOfInterest._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", RegionOfInterest._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

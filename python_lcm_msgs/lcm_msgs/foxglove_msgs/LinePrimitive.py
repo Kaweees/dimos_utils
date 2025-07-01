@@ -68,17 +68,17 @@ class LinePrimitive(object):
         buf.write(struct.pack('>%di' % self.indices_length, *self.indices[:self.indices_length]))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != LinePrimitive._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return LinePrimitive._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = LinePrimitive()
         self.points_length, self.colors_length, self.indices_length, self.type = struct.unpack(">iiiB", buf.read(13))
         self.pose = geometry_msgs.Pose._decode_one(buf)
@@ -95,21 +95,21 @@ class LinePrimitive(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if LinePrimitive in parents: return 0
-        newparents = parents + [LinePrimitive]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0x3b39f8eb653b3cd3+ geometry_msgs.Pose._get_hash_recursive(newparents)+ geometry_msgs.Point._get_hash_recursive(newparents)+ Color._get_hash_recursive(newparents)+ Color._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if LinePrimitive._packed_fingerprint is None:
-            LinePrimitive._packed_fingerprint = struct.pack(">Q", LinePrimitive._get_hash_recursive([]))
-        return LinePrimitive._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", LinePrimitive._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

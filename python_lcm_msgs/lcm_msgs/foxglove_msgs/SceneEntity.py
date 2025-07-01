@@ -9,15 +9,15 @@ import struct
 
 from . import *
 from lcm_msgs import builtin_interfaces
-from .TriangleListPrimitive import TriangleListPrimitive
-from .LinePrimitive import LinePrimitive
-from .ModelPrimitive import ModelPrimitive
-from .SpherePrimitive import SpherePrimitive
 from .CubePrimitive import CubePrimitive
-from .KeyValuePair import KeyValuePair
-from .ArrowPrimitive import ArrowPrimitive
-from .TextPrimitive import TextPrimitive
 from .CylinderPrimitive import CylinderPrimitive
+from .ModelPrimitive import ModelPrimitive
+from .TriangleListPrimitive import TriangleListPrimitive
+from .TextPrimitive import TextPrimitive
+from .LinePrimitive import LinePrimitive
+from .ArrowPrimitive import ArrowPrimitive
+from .SpherePrimitive import SpherePrimitive
+from .KeyValuePair import KeyValuePair
 class SceneEntity(object):
 
     __slots__ = ["metadata_length", "arrows_length", "cubes_length", "spheres_length", "cylinders_length", "lines_length", "triangles_length", "texts_length", "models_length", "timestamp", "frame_id", "id", "lifetime", "frame_locked", "metadata", "arrows", "cubes", "spheres", "cylinders", "lines", "triangles", "texts", "models"]
@@ -124,17 +124,17 @@ class SceneEntity(object):
             self.models[i0]._encode_one(buf)
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != SceneEntity._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return SceneEntity._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = SceneEntity()
         self.metadata_length, self.arrows_length, self.cubes_length, self.spheres_length, self.cylinders_length, self.lines_length, self.triangles_length, self.texts_length, self.models_length = struct.unpack(">iiiiiiiii", buf.read(36))
         self.timestamp = builtin_interfaces.Time._decode_one(buf)
@@ -174,21 +174,21 @@ class SceneEntity(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if SceneEntity in parents: return 0
-        newparents = parents + [SceneEntity]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0xe143d679579f0ab0+ builtin_interfaces.Time._get_hash_recursive(newparents)+ builtin_interfaces.Duration._get_hash_recursive(newparents)+ KeyValuePair._get_hash_recursive(newparents)+ ArrowPrimitive._get_hash_recursive(newparents)+ CubePrimitive._get_hash_recursive(newparents)+ SpherePrimitive._get_hash_recursive(newparents)+ CylinderPrimitive._get_hash_recursive(newparents)+ LinePrimitive._get_hash_recursive(newparents)+ TriangleListPrimitive._get_hash_recursive(newparents)+ TextPrimitive._get_hash_recursive(newparents)+ ModelPrimitive._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if SceneEntity._packed_fingerprint is None:
-            SceneEntity._packed_fingerprint = struct.pack(">Q", SceneEntity._get_hash_recursive([]))
-        return SceneEntity._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", SceneEntity._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

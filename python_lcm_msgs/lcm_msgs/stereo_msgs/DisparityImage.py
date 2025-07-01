@@ -52,17 +52,17 @@ class DisparityImage(object):
         buf.write(struct.pack(">fff", self.min_disparity, self.max_disparity, self.delta_d))
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != DisparityImage._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return DisparityImage._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = DisparityImage()
         self.header = std_msgs.Header._decode_one(buf)
         self.image = sensor_msgs.Image._decode_one(buf)
@@ -72,21 +72,21 @@ class DisparityImage(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if DisparityImage in parents: return 0
-        newparents = parents + [DisparityImage]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0xdeb7a557a2b9258a+ std_msgs.Header._get_hash_recursive(newparents)+ sensor_msgs.Image._get_hash_recursive(newparents)+ sensor_msgs.RegionOfInterest._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if DisparityImage._packed_fingerprint is None:
-            DisparityImage._packed_fingerprint = struct.pack(">Q", DisparityImage._get_hash_recursive([]))
-        return DisparityImage._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", DisparityImage._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

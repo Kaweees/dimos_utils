@@ -8,9 +8,9 @@ from io import BytesIO
 import struct
 
 from . import *
-from .CircleAnnotation import CircleAnnotation
 from .PointsAnnotation import PointsAnnotation
 from .TextAnnotation import TextAnnotation
+from .CircleAnnotation import CircleAnnotation
 class ImageAnnotations(object):
 
     __slots__ = ["circles_length", "points_length", "texts_length", "circles", "points", "texts"]
@@ -52,17 +52,17 @@ class ImageAnnotations(object):
             self.texts[i0]._encode_one(buf)
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != ImageAnnotations._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return ImageAnnotations._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = ImageAnnotations()
         self.circles_length, self.points_length, self.texts_length = struct.unpack(">iii", buf.read(12))
         self.circles = []
@@ -77,21 +77,21 @@ class ImageAnnotations(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if ImageAnnotations in parents: return 0
-        newparents = parents + [ImageAnnotations]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0x8b3a52c632c59b07+ CircleAnnotation._get_hash_recursive(newparents)+ PointsAnnotation._get_hash_recursive(newparents)+ TextAnnotation._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if ImageAnnotations._packed_fingerprint is None:
-            ImageAnnotations._packed_fingerprint = struct.pack(">Q", ImageAnnotations._get_hash_recursive([]))
-        return ImageAnnotations._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", ImageAnnotations._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 

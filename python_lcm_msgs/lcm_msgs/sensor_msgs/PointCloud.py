@@ -49,17 +49,17 @@ class PointCloud(object):
             self.channels[i0]._encode_one(buf)
 
     @classmethod
-    def decode(data: bytes):
+    def decode(cls, data: bytes):
         if hasattr(data, 'read'):
             buf = data
         else:
             buf = BytesIO(data)
-        if buf.read(8) != PointCloud._get_packed_fingerprint():
+        if buf.read(8) != cls._get_packed_fingerprint():
             raise ValueError("Decode error")
-        return PointCloud._decode_one(buf)
+        return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(buf):
+    def _decode_one(cls, buf):
         self = PointCloud()
         self.points_length, self.channels_length = struct.unpack(">ii", buf.read(8))
         self.header = std_msgs.Header._decode_one(buf)
@@ -72,21 +72,21 @@ class PointCloud(object):
         return self
 
     @classmethod
-    def _get_hash_recursive(parents):
-        if PointCloud in parents: return 0
-        newparents = parents + [PointCloud]
+    def _get_hash_recursive(cls, parents):
+        if cls in parents: return 0
+        newparents = parents + [cls]
         tmphash = (0x3ff7dc99e345164e+ std_msgs.Header._get_hash_recursive(newparents)+ geometry_msgs.Point32._get_hash_recursive(newparents)+ ChannelFloat32._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
 
     @classmethod
-    def _get_packed_fingerprint():
-        if PointCloud._packed_fingerprint is None:
-            PointCloud._packed_fingerprint = struct.pack(">Q", PointCloud._get_hash_recursive([]))
-        return PointCloud._packed_fingerprint
+    def _get_packed_fingerprint(cls):
+        if cls._packed_fingerprint is None:
+            cls._packed_fingerprint = struct.pack(">Q", cls._get_hash_recursive([]))
+        return cls._packed_fingerprint
 
     def get_hash(self):
         """Get the LCM hash of the struct"""
-        return struct.unpack(">Q", PointCloud._get_packed_fingerprint())[0]
+        return struct.unpack(">Q", cls._get_packed_fingerprint())[0]
 
