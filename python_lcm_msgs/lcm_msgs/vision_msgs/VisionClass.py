@@ -7,34 +7,32 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-from . import *
-from .Vector3 import Vector3
-from .Quaternion import Quaternion
-class Transform(object):
+class VisionClass(object):
 
-    __slots__ = ["translation", "rotation"]
+    __slots__ = ["class_id", "class_name"]
 
-    __typenames__ = ["Vector3", "Quaternion"]
+    __typenames__ = ["int16_t", "string"]
 
     __dimensions__ = [None, None]
 
     def __init__(self):
-        self.translation = Vector3()
-        """ LCM Type: Vector3 """
-        self.rotation = Quaternion()
-        """ LCM Type: Quaternion """
+        self.class_id = 0
+        """ LCM Type: int16_t """
+        self.class_name = ""
+        """ LCM Type: string """
 
     def encode(self):
         buf = BytesIO()
-        buf.write(Transform._get_packed_fingerprint())
+        buf.write(VisionClass._get_packed_fingerprint())
         self._encode_one(buf)
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        assert self.translation._get_packed_fingerprint() == Vector3._get_packed_fingerprint()
-        self.translation._encode_one(buf)
-        assert self.rotation._get_packed_fingerprint() == Quaternion._get_packed_fingerprint()
-        self.rotation._encode_one(buf)
+        buf.write(struct.pack(">h", self.class_id))
+        __class_name_encoded = self.class_name.encode('utf-8')
+        buf.write(struct.pack('>I', len(__class_name_encoded)+1))
+        buf.write(__class_name_encoded)
+        buf.write(b"\0")
 
     @classmethod
     def decode(cls, data: bytes):
@@ -48,16 +46,16 @@ class Transform(object):
 
     @classmethod
     def _decode_one(cls, buf):
-        self = Transform()
-        self.translation = Vector3._decode_one(buf)
-        self.rotation = Quaternion._decode_one(buf)
+        self = VisionClass()
+        self.class_id = struct.unpack(">h", buf.read(2))[0]
+        __class_name_len = struct.unpack('>I', buf.read(4))[0]
+        self.class_name = buf.read(__class_name_len)[:-1].decode('utf-8', 'replace')
         return self
 
     @classmethod
     def _get_hash_recursive(cls, parents):
         if cls in parents: return 0
-        newparents = parents + [cls]
-        tmphash = (0x1275bd1ccbdaf47f+ Vector3._get_hash_recursive(newparents)+ Quaternion._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0xdc055c3dd46c2633) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None

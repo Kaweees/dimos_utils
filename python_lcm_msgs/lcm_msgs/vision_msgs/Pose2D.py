@@ -7,34 +7,32 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-from . import *
-from .Vector3 import Vector3
-from .Quaternion import Quaternion
-class Transform(object):
+import vision_msgs
 
-    __slots__ = ["translation", "rotation"]
+class Pose2D(object):
 
-    __typenames__ = ["Vector3", "Quaternion"]
+    __slots__ = ["position", "theta"]
+
+    __typenames__ = ["vision_msgs.Point2D", "double"]
 
     __dimensions__ = [None, None]
 
     def __init__(self):
-        self.translation = Vector3()
-        """ LCM Type: Vector3 """
-        self.rotation = Quaternion()
-        """ LCM Type: Quaternion """
+        self.position = vision_msgs.Point2D()
+        """ LCM Type: vision_msgs.Point2D """
+        self.theta = 0.0
+        """ LCM Type: double """
 
     def encode(self):
         buf = BytesIO()
-        buf.write(Transform._get_packed_fingerprint())
+        buf.write(Pose2D._get_packed_fingerprint())
         self._encode_one(buf)
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        assert self.translation._get_packed_fingerprint() == Vector3._get_packed_fingerprint()
-        self.translation._encode_one(buf)
-        assert self.rotation._get_packed_fingerprint() == Quaternion._get_packed_fingerprint()
-        self.rotation._encode_one(buf)
+        assert self.position._get_packed_fingerprint() == vision_msgs.Point2D._get_packed_fingerprint()
+        self.position._encode_one(buf)
+        buf.write(struct.pack(">d", self.theta))
 
     @classmethod
     def decode(cls, data: bytes):
@@ -48,16 +46,16 @@ class Transform(object):
 
     @classmethod
     def _decode_one(cls, buf):
-        self = Transform()
-        self.translation = Vector3._decode_one(buf)
-        self.rotation = Quaternion._decode_one(buf)
+        self = Pose2D()
+        self.position = vision_msgs.Point2D._decode_one(buf)
+        self.theta = struct.unpack(">d", buf.read(8))[0]
         return self
 
     @classmethod
     def _get_hash_recursive(cls, parents):
         if cls in parents: return 0
         newparents = parents + [cls]
-        tmphash = (0x1275bd1ccbdaf47f+ Vector3._get_hash_recursive(newparents)+ Quaternion._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0x2da59bf5b18f540+ vision_msgs.Point2D._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None

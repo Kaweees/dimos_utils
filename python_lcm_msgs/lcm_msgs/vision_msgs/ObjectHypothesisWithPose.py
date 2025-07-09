@@ -7,34 +7,35 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-from . import *
-from .Vector3 import Vector3
-from .Quaternion import Quaternion
-class Transform(object):
+import vision_msgs
 
-    __slots__ = ["translation", "rotation"]
+import geometry_msgs
 
-    __typenames__ = ["Vector3", "Quaternion"]
+class ObjectHypothesisWithPose(object):
+
+    __slots__ = ["hypothesis", "pose"]
+
+    __typenames__ = ["vision_msgs.ObjectHypothesis", "geometry_msgs.PoseWithCovariance"]
 
     __dimensions__ = [None, None]
 
     def __init__(self):
-        self.translation = Vector3()
-        """ LCM Type: Vector3 """
-        self.rotation = Quaternion()
-        """ LCM Type: Quaternion """
+        self.hypothesis = vision_msgs.ObjectHypothesis()
+        """ LCM Type: vision_msgs.ObjectHypothesis """
+        self.pose = geometry_msgs.PoseWithCovariance()
+        """ LCM Type: geometry_msgs.PoseWithCovariance """
 
     def encode(self):
         buf = BytesIO()
-        buf.write(Transform._get_packed_fingerprint())
+        buf.write(ObjectHypothesisWithPose._get_packed_fingerprint())
         self._encode_one(buf)
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        assert self.translation._get_packed_fingerprint() == Vector3._get_packed_fingerprint()
-        self.translation._encode_one(buf)
-        assert self.rotation._get_packed_fingerprint() == Quaternion._get_packed_fingerprint()
-        self.rotation._encode_one(buf)
+        assert self.hypothesis._get_packed_fingerprint() == vision_msgs.ObjectHypothesis._get_packed_fingerprint()
+        self.hypothesis._encode_one(buf)
+        assert self.pose._get_packed_fingerprint() == geometry_msgs.PoseWithCovariance._get_packed_fingerprint()
+        self.pose._encode_one(buf)
 
     @classmethod
     def decode(cls, data: bytes):
@@ -48,16 +49,16 @@ class Transform(object):
 
     @classmethod
     def _decode_one(cls, buf):
-        self = Transform()
-        self.translation = Vector3._decode_one(buf)
-        self.rotation = Quaternion._decode_one(buf)
+        self = ObjectHypothesisWithPose()
+        self.hypothesis = vision_msgs.ObjectHypothesis._decode_one(buf)
+        self.pose = geometry_msgs.PoseWithCovariance._decode_one(buf)
         return self
 
     @classmethod
     def _get_hash_recursive(cls, parents):
         if cls in parents: return 0
         newparents = parents + [cls]
-        tmphash = (0x1275bd1ccbdaf47f+ Vector3._get_hash_recursive(newparents)+ Quaternion._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0x65e1d44b451e8a8b+ vision_msgs.ObjectHypothesis._get_hash_recursive(newparents)+ geometry_msgs.PoseWithCovariance._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None

@@ -8,8 +8,8 @@ from io import BytesIO
 import struct
 
 from . import *
-from .SceneEntity import SceneEntity
 from .SceneEntityDeletion import SceneEntityDeletion
+from .SceneEntity import SceneEntity
 class SceneUpdate(object):
 
     __slots__ = ["deletions_length", "entities_length", "deletions", "entities"]

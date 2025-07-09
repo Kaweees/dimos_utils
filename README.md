@@ -13,7 +13,14 @@ python3 ros_to_lcm.py ros_msgs lcm_files
 - The lcm-gen command is used to generate the language bindings for the LCM message definitions.
 
 ```sh
-./lcm_batch_processor.sh -p lcm_files -o python_lcm_msgs
+./lcm_batch_processor.sh -p lcm_files -o python_lcm_msgs/lcm_msgs
+```
+
+- Then to make sure tha Python messages package is installable, run
+
+```sh
+cd python_lcm_msgs
+python3 fix_imports.py
 ```
 
 - The Foxglove bridge converts all LCM messages to JSON and sends them via WebSocket to Foxglove for visualization.

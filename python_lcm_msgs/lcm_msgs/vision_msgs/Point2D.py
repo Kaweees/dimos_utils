@@ -7,34 +7,28 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-from . import *
-from .Vector3 import Vector3
-from .Quaternion import Quaternion
-class Transform(object):
+class Point2D(object):
 
-    __slots__ = ["translation", "rotation"]
+    __slots__ = ["x", "y"]
 
-    __typenames__ = ["Vector3", "Quaternion"]
+    __typenames__ = ["double", "double"]
 
     __dimensions__ = [None, None]
 
     def __init__(self):
-        self.translation = Vector3()
-        """ LCM Type: Vector3 """
-        self.rotation = Quaternion()
-        """ LCM Type: Quaternion """
+        self.x = 0.0
+        """ LCM Type: double """
+        self.y = 0.0
+        """ LCM Type: double """
 
     def encode(self):
         buf = BytesIO()
-        buf.write(Transform._get_packed_fingerprint())
+        buf.write(Point2D._get_packed_fingerprint())
         self._encode_one(buf)
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        assert self.translation._get_packed_fingerprint() == Vector3._get_packed_fingerprint()
-        self.translation._encode_one(buf)
-        assert self.rotation._get_packed_fingerprint() == Quaternion._get_packed_fingerprint()
-        self.rotation._encode_one(buf)
+        buf.write(struct.pack(">dd", self.x, self.y))
 
     @classmethod
     def decode(cls, data: bytes):
@@ -48,16 +42,14 @@ class Transform(object):
 
     @classmethod
     def _decode_one(cls, buf):
-        self = Transform()
-        self.translation = Vector3._decode_one(buf)
-        self.rotation = Quaternion._decode_one(buf)
+        self = Point2D()
+        self.x, self.y = struct.unpack(">dd", buf.read(16))
         return self
 
     @classmethod
     def _get_hash_recursive(cls, parents):
         if cls in parents: return 0
-        newparents = parents + [cls]
-        tmphash = (0x1275bd1ccbdaf47f+ Vector3._get_hash_recursive(newparents)+ Quaternion._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0xd259512e30b44885) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None

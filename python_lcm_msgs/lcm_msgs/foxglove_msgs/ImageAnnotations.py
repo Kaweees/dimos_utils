@@ -9,8 +9,8 @@ import struct
 
 from . import *
 from .PointsAnnotation import PointsAnnotation
-from .TextAnnotation import TextAnnotation
 from .CircleAnnotation import CircleAnnotation
+from .TextAnnotation import TextAnnotation
 class ImageAnnotations(object):
 
     __slots__ = ["circles_length", "points_length", "texts_length", "circles", "points", "texts"]
