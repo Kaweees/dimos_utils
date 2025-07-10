@@ -7,8 +7,7 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-import std_msgs
-
+from lcm_msgs import std_msgs
 class VisionInfo(object):
 
     __slots__ = ["header", "method", "database_location", "database_version"]

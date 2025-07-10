@@ -7,15 +7,15 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-import vision_msgs
-
-import std_msgs
-
+from . import *
+from lcm_msgs import std_msgs
+from .ObjectHypothesisWithPose import ObjectHypothesisWithPose
+from .BoundingBox3D import BoundingBox3D
 class Detection3D(object):
 
     __slots__ = ["results_length", "header", "results", "bbox", "id"]
 
-    __typenames__ = ["int32_t", "std_msgs.Header", "vision_msgs.ObjectHypothesisWithPose", "vision_msgs.BoundingBox3D", "string"]
+    __typenames__ = ["int32_t", "std_msgs.Header", "ObjectHypothesisWithPose", "BoundingBox3D", "string"]
 
     __dimensions__ = [None, None, ["results_length"], None, None]
 
@@ -25,9 +25,9 @@ class Detection3D(object):
         self.header = std_msgs.Header()
         """ LCM Type: std_msgs.Header """
         self.results = []
-        """ LCM Type: vision_msgs.ObjectHypothesisWithPose[results_length] """
-        self.bbox = vision_msgs.BoundingBox3D()
-        """ LCM Type: vision_msgs.BoundingBox3D """
+        """ LCM Type: ObjectHypothesisWithPose[results_length] """
+        self.bbox = BoundingBox3D()
+        """ LCM Type: BoundingBox3D """
         self.id = ""
         """ LCM Type: string """
 
@@ -42,9 +42,9 @@ class Detection3D(object):
         assert self.header._get_packed_fingerprint() == std_msgs.Header._get_packed_fingerprint()
         self.header._encode_one(buf)
         for i0 in range(self.results_length):
-            assert self.results[i0]._get_packed_fingerprint() == vision_msgs.ObjectHypothesisWithPose._get_packed_fingerprint()
+            assert self.results[i0]._get_packed_fingerprint() == ObjectHypothesisWithPose._get_packed_fingerprint()
             self.results[i0]._encode_one(buf)
-        assert self.bbox._get_packed_fingerprint() == vision_msgs.BoundingBox3D._get_packed_fingerprint()
+        assert self.bbox._get_packed_fingerprint() == BoundingBox3D._get_packed_fingerprint()
         self.bbox._encode_one(buf)
         __id_encoded = self.id.encode('utf-8')
         buf.write(struct.pack('>I', len(__id_encoded)+1))
@@ -68,8 +68,8 @@ class Detection3D(object):
         self.header = std_msgs.Header._decode_one(buf)
         self.results = []
         for i0 in range(self.results_length):
-            self.results.append(vision_msgs.ObjectHypothesisWithPose._decode_one(buf))
-        self.bbox = vision_msgs.BoundingBox3D._decode_one(buf)
+            self.results.append(ObjectHypothesisWithPose._decode_one(buf))
+        self.bbox = BoundingBox3D._decode_one(buf)
         __id_len = struct.unpack('>I', buf.read(4))[0]
         self.id = buf.read(__id_len)[:-1].decode('utf-8', 'replace')
         return self
@@ -78,7 +78,7 @@ class Detection3D(object):
     def _get_hash_recursive(cls, parents):
         if cls in parents: return 0
         newparents = parents + [cls]
-        tmphash = (0x7c62020c10a78d22+ std_msgs.Header._get_hash_recursive(newparents)+ vision_msgs.ObjectHypothesisWithPose._get_hash_recursive(newparents)+ vision_msgs.BoundingBox3D._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0x7c62020c10a78d22+ std_msgs.Header._get_hash_recursive(newparents)+ ObjectHypothesisWithPose._get_hash_recursive(newparents)+ BoundingBox3D._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None

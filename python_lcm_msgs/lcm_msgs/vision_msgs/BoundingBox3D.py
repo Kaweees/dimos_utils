@@ -7,8 +7,7 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-import geometry_msgs
-
+from lcm_msgs import geometry_msgs
 class BoundingBox3D(object):
 
     __slots__ = ["center", "size"]

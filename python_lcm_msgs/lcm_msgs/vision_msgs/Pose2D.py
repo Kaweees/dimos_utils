@@ -7,19 +7,19 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-import vision_msgs
-
+from . import *
+from .Point2D import Point2D
 class Pose2D(object):
 
     __slots__ = ["position", "theta"]
 
-    __typenames__ = ["vision_msgs.Point2D", "double"]
+    __typenames__ = ["Point2D", "double"]
 
     __dimensions__ = [None, None]
 
     def __init__(self):
-        self.position = vision_msgs.Point2D()
-        """ LCM Type: vision_msgs.Point2D """
+        self.position = Point2D()
+        """ LCM Type: Point2D """
         self.theta = 0.0
         """ LCM Type: double """
 
@@ -30,7 +30,7 @@ class Pose2D(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        assert self.position._get_packed_fingerprint() == vision_msgs.Point2D._get_packed_fingerprint()
+        assert self.position._get_packed_fingerprint() == Point2D._get_packed_fingerprint()
         self.position._encode_one(buf)
         buf.write(struct.pack(">d", self.theta))
 
@@ -47,7 +47,7 @@ class Pose2D(object):
     @classmethod
     def _decode_one(cls, buf):
         self = Pose2D()
-        self.position = vision_msgs.Point2D._decode_one(buf)
+        self.position = Point2D._decode_one(buf)
         self.theta = struct.unpack(">d", buf.read(8))[0]
         return self
 
@@ -55,7 +55,7 @@ class Pose2D(object):
     def _get_hash_recursive(cls, parents):
         if cls in parents: return 0
         newparents = parents + [cls]
-        tmphash = (0x2da59bf5b18f540+ vision_msgs.Point2D._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0x2da59bf5b18f540+ Point2D._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None

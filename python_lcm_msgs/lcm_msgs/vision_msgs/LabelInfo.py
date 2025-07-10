@@ -7,15 +7,14 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-import vision_msgs
-
-import std_msgs
-
+from . import *
+from lcm_msgs import std_msgs
+from .VisionClass import VisionClass
 class LabelInfo(object):
 
     __slots__ = ["class_map_length", "header", "class_map", "threshold"]
 
-    __typenames__ = ["int32_t", "std_msgs.Header", "vision_msgs.VisionClass", "float"]
+    __typenames__ = ["int32_t", "std_msgs.Header", "VisionClass", "float"]
 
     __dimensions__ = [None, None, ["class_map_length"], None]
 
@@ -25,7 +24,7 @@ class LabelInfo(object):
         self.header = std_msgs.Header()
         """ LCM Type: std_msgs.Header """
         self.class_map = []
-        """ LCM Type: vision_msgs.VisionClass[class_map_length] """
+        """ LCM Type: VisionClass[class_map_length] """
         self.threshold = 0.0
         """ LCM Type: float """
 
@@ -40,7 +39,7 @@ class LabelInfo(object):
         assert self.header._get_packed_fingerprint() == std_msgs.Header._get_packed_fingerprint()
         self.header._encode_one(buf)
         for i0 in range(self.class_map_length):
-            assert self.class_map[i0]._get_packed_fingerprint() == vision_msgs.VisionClass._get_packed_fingerprint()
+            assert self.class_map[i0]._get_packed_fingerprint() == VisionClass._get_packed_fingerprint()
             self.class_map[i0]._encode_one(buf)
         buf.write(struct.pack(">f", self.threshold))
 
@@ -61,7 +60,7 @@ class LabelInfo(object):
         self.header = std_msgs.Header._decode_one(buf)
         self.class_map = []
         for i0 in range(self.class_map_length):
-            self.class_map.append(vision_msgs.VisionClass._decode_one(buf))
+            self.class_map.append(VisionClass._decode_one(buf))
         self.threshold = struct.unpack(">f", buf.read(4))[0]
         return self
 
@@ -69,7 +68,7 @@ class LabelInfo(object):
     def _get_hash_recursive(cls, parents):
         if cls in parents: return 0
         newparents = parents + [cls]
-        tmphash = (0x73231a5050580a67+ std_msgs.Header._get_hash_recursive(newparents)+ vision_msgs.VisionClass._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0x73231a5050580a67+ std_msgs.Header._get_hash_recursive(newparents)+ VisionClass._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None

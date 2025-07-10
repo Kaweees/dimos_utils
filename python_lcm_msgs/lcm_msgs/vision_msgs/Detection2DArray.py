@@ -7,15 +7,14 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-import vision_msgs
-
-import std_msgs
-
+from . import *
+from lcm_msgs import std_msgs
+from .Detection2D import Detection2D
 class Detection2DArray(object):
 
     __slots__ = ["detections_length", "header", "detections"]
 
-    __typenames__ = ["int32_t", "std_msgs.Header", "vision_msgs.Detection2D"]
+    __typenames__ = ["int32_t", "std_msgs.Header", "Detection2D"]
 
     __dimensions__ = [None, None, ["detections_length"]]
 
@@ -25,7 +24,7 @@ class Detection2DArray(object):
         self.header = std_msgs.Header()
         """ LCM Type: std_msgs.Header """
         self.detections = []
-        """ LCM Type: vision_msgs.Detection2D[detections_length] """
+        """ LCM Type: Detection2D[detections_length] """
 
     def encode(self):
         buf = BytesIO()
@@ -38,7 +37,7 @@ class Detection2DArray(object):
         assert self.header._get_packed_fingerprint() == std_msgs.Header._get_packed_fingerprint()
         self.header._encode_one(buf)
         for i0 in range(self.detections_length):
-            assert self.detections[i0]._get_packed_fingerprint() == vision_msgs.Detection2D._get_packed_fingerprint()
+            assert self.detections[i0]._get_packed_fingerprint() == Detection2D._get_packed_fingerprint()
             self.detections[i0]._encode_one(buf)
 
     @classmethod
@@ -58,14 +57,14 @@ class Detection2DArray(object):
         self.header = std_msgs.Header._decode_one(buf)
         self.detections = []
         for i0 in range(self.detections_length):
-            self.detections.append(vision_msgs.Detection2D._decode_one(buf))
+            self.detections.append(Detection2D._decode_one(buf))
         return self
 
     @classmethod
     def _get_hash_recursive(cls, parents):
         if cls in parents: return 0
         newparents = parents + [cls]
-        tmphash = (0x85b4a076ba01be3c+ std_msgs.Header._get_hash_recursive(newparents)+ vision_msgs.Detection2D._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0x85b4a076ba01be3c+ std_msgs.Header._get_hash_recursive(newparents)+ Detection2D._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None
