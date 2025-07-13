@@ -287,6 +287,7 @@ class TopicInfo:
     is_high_frequency: bool = False  # Flag for topics that send many messages
     cache_hash: Optional[int] = None  # Hash of the last message (for message deduplication)
     rate_limit_ms: int = 0  # Rate limit in milliseconds (0 = no limit)
+    priority: int = 0  # Message priority (higher = more important)
 
 @dataclass
 class LcmMessage:
