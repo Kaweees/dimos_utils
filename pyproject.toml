@@ -21,8 +21,11 @@ dependencies = [
 "Homepage" = "https://github.com/dimensionalOS/dimos_utils"
 
 [tool.setuptools]
-packages = ["dimos_utils"]
-package-dir = {"dimos_utils" = "."}
+package-dir = {"dimos_utils" = ".", "dimos_utils.python_lcm_msgs" = "python_lcm_msgs"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dimos_utils*"]
 
 [tool.setuptools.package-data]
 "dimos_utils" = [
