@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dimos_utils"
+version = "0.1.0"
+description = "Utility tools for dimensional robotics including LCM-Foxglove bridge"
+authors = [
+    {name = "Dimensional Team", email = "build@dimensionalOS.com"},
+]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "lcm",
+    "foxglove-websocket",
+    "numpy",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/dimensionalOS/dimos_utils"
+
+[tool.setuptools]
+packages = ["dimos_utils"]
+package-dir = {"dimos_utils" = "."}
+
+[tool.setuptools.package-data]
+"dimos_utils" = [
+    "*.py", 
+    "*.sh", 
+    "ros_msgs/**/*", 
+    "lcm_files/**/*", 
+    "assets/**/*",
+    "python_lcm_msgs/**/*"
+] 
