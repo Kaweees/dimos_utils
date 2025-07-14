@@ -61,6 +61,5 @@ packages = [
     "*.sh", 
     "ros_msgs/**/*", 
     "lcm_files/**/*", 
-    "assets/**/*",
     "python_lcm_msgs/**/*"
 ] 
