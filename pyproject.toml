@@ -21,8 +21,39 @@ dependencies = [
 "Homepage" = "https://github.com/dimensionalOS/dimos_utils"
 
 [tool.setuptools]
-packages = ["dimos_utils", "dimos_utils.python_lcm_msgs"]
-package-dir = {"dimos_utils" = ".", "dimos_utils.python_lcm_msgs" = "python_lcm_msgs"}
+packages = [
+    "dimos_utils", 
+    "dimos_utils.geometry_msgs",
+    "dimos_utils.sensor_msgs", 
+    "dimos_utils.std_msgs",
+    "dimos_utils.nav_msgs",
+    "dimos_utils.diagnostic_msgs",
+    "dimos_utils.actionlib_msgs",
+    "dimos_utils.builtin_interfaces",
+    "dimos_utils.foxglove_msgs",
+    "dimos_utils.shape_msgs",
+    "dimos_utils.stereo_msgs",
+    "dimos_utils.tf2_msgs",
+    "dimos_utils.trajectory_msgs",
+    "dimos_utils.vision_msgs",
+    "dimos_utils.visualization_msgs"
+]
+[tool.setuptools.package-dir]
+"dimos_utils" = "."
+"dimos_utils.geometry_msgs" = "python_lcm_msgs/lcm_msgs/geometry_msgs"
+"dimos_utils.sensor_msgs" = "python_lcm_msgs/lcm_msgs/sensor_msgs"
+"dimos_utils.std_msgs" = "python_lcm_msgs/lcm_msgs/std_msgs"
+"dimos_utils.nav_msgs" = "python_lcm_msgs/lcm_msgs/nav_msgs"
+"dimos_utils.diagnostic_msgs" = "python_lcm_msgs/lcm_msgs/diagnostic_msgs"
+"dimos_utils.actionlib_msgs" = "python_lcm_msgs/lcm_msgs/actionlib_msgs"
+"dimos_utils.builtin_interfaces" = "python_lcm_msgs/lcm_msgs/builtin_interfaces"
+"dimos_utils.foxglove_msgs" = "python_lcm_msgs/lcm_msgs/foxglove_msgs"
+"dimos_utils.shape_msgs" = "python_lcm_msgs/lcm_msgs/shape_msgs"
+"dimos_utils.stereo_msgs" = "python_lcm_msgs/lcm_msgs/stereo_msgs"
+"dimos_utils.tf2_msgs" = "python_lcm_msgs/lcm_msgs/tf2_msgs"
+"dimos_utils.trajectory_msgs" = "python_lcm_msgs/lcm_msgs/trajectory_msgs"
+"dimos_utils.vision_msgs" = "python_lcm_msgs/lcm_msgs/vision_msgs"
+"dimos_utils.visualization_msgs" = "python_lcm_msgs/lcm_msgs/visualization_msgs"
 
 [tool.setuptools.package-data]
 "dimos_utils" = [
@@ -30,6 +61,5 @@ package-dir = {"dimos_utils" = ".", "dimos_utils.python_lcm_msgs" = "python_lcm_
     "*.sh", 
     "ros_msgs/**/*", 
     "lcm_files/**/*", 
-    "assets/**/*",
     "python_lcm_msgs/**/*"
 ] 
