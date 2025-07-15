@@ -9,23 +9,25 @@ import struct
 
 class RegionOfInterest(object):
 
+    msg_name = "RegionOfInterest"
+
     __slots__ = ["x_offset", "y_offset", "height", "width", "do_rectify"]
 
     __typenames__ = ["int32_t", "int32_t", "int32_t", "int32_t", "boolean"]
 
     __dimensions__ = [None, None, None, None, None]
 
-    def __init__(self):
-        self.x_offset = 0
-        """ LCM Type: int32_t """
-        self.y_offset = 0
-        """ LCM Type: int32_t """
-        self.height = 0
-        """ LCM Type: int32_t """
-        self.width = 0
-        """ LCM Type: int32_t """
-        self.do_rectify = False
-        """ LCM Type: boolean """
+    def __init__(self, x_offset=0, y_offset=0, height=0, width=0, do_rectify=False):
+        # LCM Type: int32_t
+        self.x_offset = x_offset
+        # LCM Type: int32_t
+        self.y_offset = y_offset
+        # LCM Type: int32_t
+        self.height = height
+        # LCM Type: int32_t
+        self.width = width
+        # LCM Type: boolean
+        self.do_rectify = do_rectify
 
     def encode(self):
         buf = BytesIO()

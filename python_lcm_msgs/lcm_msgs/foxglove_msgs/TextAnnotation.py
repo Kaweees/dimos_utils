@@ -9,9 +9,11 @@ import struct
 
 from . import *
 from lcm_msgs import builtin_interfaces
-from .Point2 import Point2
 from .Color import Color
+from .Point2 import Point2
 class TextAnnotation(object):
+
+    msg_name = "TextAnnotation"
 
     __slots__ = ["timestamp", "position", "text", "font_size", "text_color", "background_color"]
 
@@ -19,19 +21,19 @@ class TextAnnotation(object):
 
     __dimensions__ = [None, None, None, None, None, None]
 
-    def __init__(self):
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.position = Point2()
-        """ LCM Type: Point2 """
-        self.text = ""
-        """ LCM Type: string """
-        self.font_size = 0.0
-        """ LCM Type: double """
-        self.text_color = Color()
-        """ LCM Type: Color """
-        self.background_color = Color()
-        """ LCM Type: Color """
+    def __init__(self, timestamp=builtin_interfaces.Time(), position=Point2(), text="", font_size=0.0, text_color=Color(), background_color=Color()):
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: Point2
+        self.position = position
+        # LCM Type: string
+        self.text = text
+        # LCM Type: double
+        self.font_size = font_size
+        # LCM Type: Color
+        self.text_color = text_color
+        # LCM Type: Color
+        self.background_color = background_color
 
     def encode(self):
         buf = BytesIO()

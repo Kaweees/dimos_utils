@@ -12,17 +12,19 @@ from lcm_msgs import geometry_msgs
 from .ObjectHypothesis import ObjectHypothesis
 class ObjectHypothesisWithPose(object):
 
+    msg_name = "ObjectHypothesisWithPose"
+
     __slots__ = ["hypothesis", "pose"]
 
     __typenames__ = ["ObjectHypothesis", "geometry_msgs.PoseWithCovariance"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.hypothesis = ObjectHypothesis()
-        """ LCM Type: ObjectHypothesis """
-        self.pose = geometry_msgs.PoseWithCovariance()
-        """ LCM Type: geometry_msgs.PoseWithCovariance """
+    def __init__(self, hypothesis=ObjectHypothesis(), pose=geometry_msgs.PoseWithCovariance()):
+        # LCM Type: ObjectHypothesis
+        self.hypothesis = hypothesis
+        # LCM Type: geometry_msgs.PoseWithCovariance
+        self.pose = pose
 
     def encode(self):
         buf = BytesIO()

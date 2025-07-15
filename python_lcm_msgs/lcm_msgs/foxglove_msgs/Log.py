@@ -10,6 +10,8 @@ import struct
 from lcm_msgs import builtin_interfaces
 class Log(object):
 
+    msg_name = "Log"
+
     __slots__ = ["timestamp", "level", "message", "name", "file", "line"]
 
     __typenames__ = ["builtin_interfaces.Time", "byte", "string", "string", "string", "int32_t"]
@@ -23,19 +25,19 @@ class Log(object):
     ERROR = 4
     FATAL = 5
 
-    def __init__(self):
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.level = 0
-        """ LCM Type: byte """
-        self.message = ""
-        """ LCM Type: string """
-        self.name = ""
-        """ LCM Type: string """
-        self.file = ""
-        """ LCM Type: string """
-        self.line = 0
-        """ LCM Type: int32_t """
+    def __init__(self, timestamp=builtin_interfaces.Time(), level=0, message="", name="", file="", line=0):
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: byte
+        self.level = level
+        # LCM Type: string
+        self.message = message
+        # LCM Type: string
+        self.name = name
+        # LCM Type: string
+        self.file = file
+        # LCM Type: int32_t
+        self.line = line
 
     def encode(self):
         buf = BytesIO()

@@ -12,17 +12,19 @@ from lcm_msgs import std_msgs
 from .AccelWithCovariance import AccelWithCovariance
 class AccelWithCovarianceStamped(object):
 
+    msg_name = "AccelWithCovarianceStamped"
+
     __slots__ = ["header", "accel"]
 
     __typenames__ = ["std_msgs.Header", "AccelWithCovariance"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.accel = AccelWithCovariance()
-        """ LCM Type: AccelWithCovariance """
+    def __init__(self, header=std_msgs.Header(), accel=AccelWithCovariance()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: AccelWithCovariance
+        self.accel = accel
 
     def encode(self):
         buf = BytesIO()

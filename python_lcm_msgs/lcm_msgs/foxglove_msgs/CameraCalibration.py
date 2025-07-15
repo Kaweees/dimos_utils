@@ -10,33 +10,35 @@ import struct
 from lcm_msgs import builtin_interfaces
 class CameraCalibration(object):
 
+    msg_name = "CameraCalibration"
+
     __slots__ = ["d_length", "timestamp", "frame_id", "width", "height", "distortion_model", "d", "k", "r", "p"]
 
     __typenames__ = ["int32_t", "builtin_interfaces.Time", "string", "int32_t", "int32_t", "string", "double", "double", "double", "double"]
 
     __dimensions__ = [None, None, None, None, None, None, ["d_length"], [9], [9], [12]]
 
-    def __init__(self):
-        self.d_length = 0
-        """ LCM Type: int32_t """
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.frame_id = ""
-        """ LCM Type: string """
-        self.width = 0
-        """ LCM Type: int32_t """
-        self.height = 0
-        """ LCM Type: int32_t """
-        self.distortion_model = ""
-        """ LCM Type: string """
-        self.d = []
-        """ LCM Type: double[d_length] """
-        self.k = [ 0.0 for dim0 in range(9) ]
-        """ LCM Type: double[9] """
-        self.r = [ 0.0 for dim0 in range(9) ]
-        """ LCM Type: double[9] """
-        self.p = [ 0.0 for dim0 in range(12) ]
-        """ LCM Type: double[12] """
+    def __init__(self, d_length=0, timestamp=builtin_interfaces.Time(), frame_id="", width=0, height=0, distortion_model="", d=[], k=[ 0.0 for dim0 in range(9) ], r=[ 0.0 for dim0 in range(9) ], p=[ 0.0 for dim0 in range(12) ]):
+        # LCM Type: int32_t
+        self.d_length = d_length
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: string
+        self.frame_id = frame_id
+        # LCM Type: int32_t
+        self.width = width
+        # LCM Type: int32_t
+        self.height = height
+        # LCM Type: string
+        self.distortion_model = distortion_model
+        # LCM Type: double[d_length]
+        self.d = d
+        # LCM Type: double[9]
+        self.k = k
+        # LCM Type: double[9]
+        self.r = r
+        # LCM Type: double[12]
+        self.p = p
 
     def encode(self):
         buf = BytesIO()

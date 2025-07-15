@@ -11,19 +11,21 @@ from . import *
 from .Pose2D import Pose2D
 class BoundingBox2D(object):
 
+    msg_name = "BoundingBox2D"
+
     __slots__ = ["center", "size_x", "size_y"]
 
     __typenames__ = ["Pose2D", "double", "double"]
 
     __dimensions__ = [None, None, None]
 
-    def __init__(self):
-        self.center = Pose2D()
-        """ LCM Type: Pose2D """
-        self.size_x = 0.0
-        """ LCM Type: double """
-        self.size_y = 0.0
-        """ LCM Type: double """
+    def __init__(self, center=Pose2D(), size_x=0.0, size_y=0.0):
+        # LCM Type: Pose2D
+        self.center = center
+        # LCM Type: double
+        self.size_x = size_x
+        # LCM Type: double
+        self.size_y = size_y
 
     def encode(self):
         buf = BytesIO()

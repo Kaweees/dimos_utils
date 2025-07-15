@@ -9,6 +9,8 @@ import struct
 
 class PackedElementField(object):
 
+    msg_name = "PackedElementField"
+
     __slots__ = ["name", "offset", "type"]
 
     __typenames__ = ["string", "int32_t", "byte"]
@@ -25,13 +27,13 @@ class PackedElementField(object):
     FLOAT32 = 7
     FLOAT64 = 8
 
-    def __init__(self):
-        self.name = ""
-        """ LCM Type: string """
-        self.offset = 0
-        """ LCM Type: int32_t """
-        self.type = 0
-        """ LCM Type: byte """
+    def __init__(self, name="", offset=0, type=0):
+        # LCM Type: string
+        self.name = name
+        # LCM Type: int32_t
+        self.offset = offset
+        # LCM Type: byte
+        self.type = type
 
     def encode(self):
         buf = BytesIO()

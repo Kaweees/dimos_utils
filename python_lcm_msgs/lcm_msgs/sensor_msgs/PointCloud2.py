@@ -12,35 +12,37 @@ from . import *
 from .PointField import PointField
 class PointCloud2(object):
 
+    msg_name = "PointCloud2"
+
     __slots__ = ["fields_length", "data_length", "header", "height", "width", "fields", "is_bigendian", "point_step", "row_step", "data", "is_dense"]
 
     __typenames__ = ["int32_t", "int32_t", "std_msgs.Header", "int32_t", "int32_t", "PointField", "boolean", "int32_t", "int32_t", "byte", "boolean"]
 
     __dimensions__ = [None, None, None, None, None, ["fields_length"], None, None, None, ["data_length"], None]
 
-    def __init__(self):
-        self.fields_length = 0
-        """ LCM Type: int32_t """
-        self.data_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.height = 0
-        """ LCM Type: int32_t """
-        self.width = 0
-        """ LCM Type: int32_t """
-        self.fields = []
-        """ LCM Type: PointField[fields_length] """
-        self.is_bigendian = False
-        """ LCM Type: boolean """
-        self.point_step = 0
-        """ LCM Type: int32_t """
-        self.row_step = 0
-        """ LCM Type: int32_t """
-        self.data = b""
-        """ LCM Type: byte[data_length] """
-        self.is_dense = False
-        """ LCM Type: boolean """
+    def __init__(self, fields_length=0, data_length=0, header=std_msgs.Header(), height=0, width=0, fields=[], is_bigendian=False, point_step=0, row_step=0, data=b"", is_dense=False):
+        # LCM Type: int32_t
+        self.fields_length = fields_length
+        # LCM Type: int32_t
+        self.data_length = data_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: int32_t
+        self.height = height
+        # LCM Type: int32_t
+        self.width = width
+        # LCM Type: PointField[fields_length]
+        self.fields = fields
+        # LCM Type: boolean
+        self.is_bigendian = is_bigendian
+        # LCM Type: int32_t
+        self.point_step = point_step
+        # LCM Type: int32_t
+        self.row_step = row_step
+        # LCM Type: byte[data_length]
+        self.data = data
+        # LCM Type: boolean
+        self.is_dense = is_dense
 
     def encode(self):
         buf = BytesIO()

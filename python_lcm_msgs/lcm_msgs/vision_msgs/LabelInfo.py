@@ -12,21 +12,23 @@ from lcm_msgs import std_msgs
 from .VisionClass import VisionClass
 class LabelInfo(object):
 
+    msg_name = "LabelInfo"
+
     __slots__ = ["class_map_length", "header", "class_map", "threshold"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "VisionClass", "float"]
 
     __dimensions__ = [None, None, ["class_map_length"], None]
 
-    def __init__(self):
-        self.class_map_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.class_map = []
-        """ LCM Type: VisionClass[class_map_length] """
-        self.threshold = 0.0
-        """ LCM Type: float """
+    def __init__(self, class_map_length=0, header=std_msgs.Header(), class_map=[], threshold=0.0):
+        # LCM Type: int32_t
+        self.class_map_length = class_map_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: VisionClass[class_map_length]
+        self.class_map = class_map
+        # LCM Type: float
+        self.threshold = threshold
 
     def encode(self):
         buf = BytesIO()

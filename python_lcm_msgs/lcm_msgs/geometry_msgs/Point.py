@@ -9,19 +9,21 @@ import struct
 
 class Point(object):
 
+    msg_name = "Point"
+
     __slots__ = ["x", "y", "z"]
 
     __typenames__ = ["double", "double", "double"]
 
     __dimensions__ = [None, None, None]
 
-    def __init__(self):
-        self.x = 0.0
-        """ LCM Type: double """
-        self.y = 0.0
-        """ LCM Type: double """
-        self.z = 0.0
-        """ LCM Type: double """
+    def __init__(self, x=0.0, y=0.0, z=0.0):
+        # LCM Type: double
+        self.x = x
+        # LCM Type: double
+        self.y = y
+        # LCM Type: double
+        self.z = z
 
     def encode(self):
         buf = BytesIO()

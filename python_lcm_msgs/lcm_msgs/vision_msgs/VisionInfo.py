@@ -10,21 +10,23 @@ import struct
 from lcm_msgs import std_msgs
 class VisionInfo(object):
 
+    msg_name = "VisionInfo"
+
     __slots__ = ["header", "method", "database_location", "database_version"]
 
     __typenames__ = ["std_msgs.Header", "string", "string", "int32_t"]
 
     __dimensions__ = [None, None, None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.method = ""
-        """ LCM Type: string """
-        self.database_location = ""
-        """ LCM Type: string """
-        self.database_version = 0
-        """ LCM Type: int32_t """
+    def __init__(self, header=std_msgs.Header(), method="", database_location="", database_version=0):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: string
+        self.method = method
+        # LCM Type: string
+        self.database_location = database_location
+        # LCM Type: int32_t
+        self.database_version = database_version
 
     def encode(self):
         buf = BytesIO()

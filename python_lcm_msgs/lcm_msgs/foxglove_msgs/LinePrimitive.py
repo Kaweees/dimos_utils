@@ -12,6 +12,8 @@ from . import *
 from .Color import Color
 class LinePrimitive(object):
 
+    msg_name = "LinePrimitive"
+
     __slots__ = ["points_length", "colors_length", "indices_length", "type", "pose", "thickness", "scale_invariant", "points", "color", "colors", "indices"]
 
     __typenames__ = ["int32_t", "int32_t", "int32_t", "byte", "geometry_msgs.Pose", "double", "boolean", "geometry_msgs.Point", "Color", "Color", "int32_t"]
@@ -22,29 +24,29 @@ class LinePrimitive(object):
     LINE_LOOP = 1
     LINE_LIST = 2
 
-    def __init__(self):
-        self.points_length = 0
-        """ LCM Type: int32_t """
-        self.colors_length = 0
-        """ LCM Type: int32_t """
-        self.indices_length = 0
-        """ LCM Type: int32_t """
-        self.type = 0
-        """ LCM Type: byte """
-        self.pose = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.thickness = 0.0
-        """ LCM Type: double """
-        self.scale_invariant = False
-        """ LCM Type: boolean """
-        self.points = []
-        """ LCM Type: geometry_msgs.Point[points_length] """
-        self.color = Color()
-        """ LCM Type: Color """
-        self.colors = []
-        """ LCM Type: Color[colors_length] """
-        self.indices = []
-        """ LCM Type: int32_t[indices_length] """
+    def __init__(self, points_length=0, colors_length=0, indices_length=0, type=0, pose=geometry_msgs.Pose(), thickness=0.0, scale_invariant=False, points=[], color=Color(), colors=[], indices=[]):
+        # LCM Type: int32_t
+        self.points_length = points_length
+        # LCM Type: int32_t
+        self.colors_length = colors_length
+        # LCM Type: int32_t
+        self.indices_length = indices_length
+        # LCM Type: byte
+        self.type = type
+        # LCM Type: geometry_msgs.Pose
+        self.pose = pose
+        # LCM Type: double
+        self.thickness = thickness
+        # LCM Type: boolean
+        self.scale_invariant = scale_invariant
+        # LCM Type: geometry_msgs.Point[points_length]
+        self.points = points
+        # LCM Type: Color
+        self.color = color
+        # LCM Type: Color[colors_length]
+        self.colors = colors
+        # LCM Type: int32_t[indices_length]
+        self.indices = indices
 
     def encode(self):
         buf = BytesIO()

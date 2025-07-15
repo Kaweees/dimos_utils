@@ -9,21 +9,23 @@ import struct
 
 class ColorRGBA(object):
 
+    msg_name = "ColorRGBA"
+
     __slots__ = ["r", "g", "b", "a"]
 
     __typenames__ = ["float", "float", "float", "float"]
 
     __dimensions__ = [None, None, None, None]
 
-    def __init__(self):
-        self.r = 0.0
-        """ LCM Type: float """
-        self.g = 0.0
-        """ LCM Type: float """
-        self.b = 0.0
-        """ LCM Type: float """
-        self.a = 0.0
-        """ LCM Type: float """
+    def __init__(self, r=0.0, g=0.0, b=0.0, a=0.0):
+        # LCM Type: float
+        self.r = r
+        # LCM Type: float
+        self.g = g
+        # LCM Type: float
+        self.b = b
+        # LCM Type: float
+        self.a = a
 
     def encode(self):
         buf = BytesIO()

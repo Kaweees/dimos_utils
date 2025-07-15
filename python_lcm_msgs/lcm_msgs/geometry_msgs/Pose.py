@@ -8,9 +8,11 @@ from io import BytesIO
 import struct
 
 from . import *
-from .Quaternion import Quaternion
 from .Point import Point
+from .Quaternion import Quaternion
 class Pose(object):
+
+    msg_name = "Pose"
 
     __slots__ = ["position", "orientation"]
 
@@ -18,11 +20,11 @@ class Pose(object):
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.position = Point()
-        """ LCM Type: Point """
-        self.orientation = Quaternion()
-        """ LCM Type: Quaternion """
+    def __init__(self, position=Point(), orientation=Quaternion()):
+        # LCM Type: Point
+        self.position = position
+        # LCM Type: Quaternion
+        self.orientation = orientation
 
     def encode(self):
         buf = BytesIO()

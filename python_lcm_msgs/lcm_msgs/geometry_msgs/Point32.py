@@ -9,19 +9,21 @@ import struct
 
 class Point32(object):
 
+    msg_name = "Point32"
+
     __slots__ = ["x", "y", "z"]
 
     __typenames__ = ["float", "float", "float"]
 
     __dimensions__ = [None, None, None]
 
-    def __init__(self):
-        self.x = 0.0
-        """ LCM Type: float """
-        self.y = 0.0
-        """ LCM Type: float """
-        self.z = 0.0
-        """ LCM Type: float """
+    def __init__(self, x=0.0, y=0.0, z=0.0):
+        # LCM Type: float
+        self.x = x
+        # LCM Type: float
+        self.y = y
+        # LCM Type: float
+        self.z = z
 
     def encode(self):
         buf = BytesIO()

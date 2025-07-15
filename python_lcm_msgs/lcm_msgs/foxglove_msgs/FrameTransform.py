@@ -11,23 +11,25 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import builtin_interfaces
 class FrameTransform(object):
 
+    msg_name = "FrameTransform"
+
     __slots__ = ["timestamp", "parent_frame_id", "child_frame_id", "translation", "rotation"]
 
     __typenames__ = ["builtin_interfaces.Time", "string", "string", "geometry_msgs.Vector3", "geometry_msgs.Quaternion"]
 
     __dimensions__ = [None, None, None, None, None]
 
-    def __init__(self):
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.parent_frame_id = ""
-        """ LCM Type: string """
-        self.child_frame_id = ""
-        """ LCM Type: string """
-        self.translation = geometry_msgs.Vector3()
-        """ LCM Type: geometry_msgs.Vector3 """
-        self.rotation = geometry_msgs.Quaternion()
-        """ LCM Type: geometry_msgs.Quaternion """
+    def __init__(self, timestamp=builtin_interfaces.Time(), parent_frame_id="", child_frame_id="", translation=geometry_msgs.Vector3(), rotation=geometry_msgs.Quaternion()):
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: string
+        self.parent_frame_id = parent_frame_id
+        # LCM Type: string
+        self.child_frame_id = child_frame_id
+        # LCM Type: geometry_msgs.Vector3
+        self.translation = translation
+        # LCM Type: geometry_msgs.Quaternion
+        self.rotation = rotation
 
     def encode(self):
         buf = BytesIO()

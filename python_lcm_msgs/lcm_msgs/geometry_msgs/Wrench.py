@@ -11,17 +11,19 @@ from . import *
 from .Vector3 import Vector3
 class Wrench(object):
 
+    msg_name = "Wrench"
+
     __slots__ = ["force", "torque"]
 
     __typenames__ = ["Vector3", "Vector3"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.force = Vector3()
-        """ LCM Type: Vector3 """
-        self.torque = Vector3()
-        """ LCM Type: Vector3 """
+    def __init__(self, force=Vector3(), torque=Vector3()):
+        # LCM Type: Vector3
+        self.force = force
+        # LCM Type: Vector3
+        self.torque = torque
 
     def encode(self):
         buf = BytesIO()

@@ -9,17 +9,19 @@ import struct
 
 class ObjectHypothesis(object):
 
+    msg_name = "ObjectHypothesis"
+
     __slots__ = ["class_id", "score"]
 
     __typenames__ = ["string", "double"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.class_id = ""
-        """ LCM Type: string """
-        self.score = 0.0
-        """ LCM Type: double """
+    def __init__(self, class_id="", score=0.0):
+        # LCM Type: string
+        self.class_id = class_id
+        # LCM Type: double
+        self.score = score
 
     def encode(self):
         buf = BytesIO()

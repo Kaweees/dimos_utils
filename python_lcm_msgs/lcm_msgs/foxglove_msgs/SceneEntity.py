@@ -9,16 +9,18 @@ import struct
 
 from . import *
 from lcm_msgs import builtin_interfaces
-from .LinePrimitive import LinePrimitive
+from .SpherePrimitive import SpherePrimitive
+from .CylinderPrimitive import CylinderPrimitive
+from .TriangleListPrimitive import TriangleListPrimitive
+from .KeyValuePair import KeyValuePair
 from .ArrowPrimitive import ArrowPrimitive
 from .ModelPrimitive import ModelPrimitive
 from .TextPrimitive import TextPrimitive
-from .CylinderPrimitive import CylinderPrimitive
+from .LinePrimitive import LinePrimitive
 from .CubePrimitive import CubePrimitive
-from .KeyValuePair import KeyValuePair
-from .TriangleListPrimitive import TriangleListPrimitive
-from .SpherePrimitive import SpherePrimitive
 class SceneEntity(object):
+
+    msg_name = "SceneEntity"
 
     __slots__ = ["metadata_length", "arrows_length", "cubes_length", "spheres_length", "cylinders_length", "lines_length", "triangles_length", "texts_length", "models_length", "timestamp", "frame_id", "id", "lifetime", "frame_locked", "metadata", "arrows", "cubes", "spheres", "cylinders", "lines", "triangles", "texts", "models"]
 
@@ -26,53 +28,53 @@ class SceneEntity(object):
 
     __dimensions__ = [None, None, None, None, None, None, None, None, None, None, None, None, None, None, ["metadata_length"], ["arrows_length"], ["cubes_length"], ["spheres_length"], ["cylinders_length"], ["lines_length"], ["triangles_length"], ["texts_length"], ["models_length"]]
 
-    def __init__(self):
-        self.metadata_length = 0
-        """ LCM Type: int32_t """
-        self.arrows_length = 0
-        """ LCM Type: int32_t """
-        self.cubes_length = 0
-        """ LCM Type: int32_t """
-        self.spheres_length = 0
-        """ LCM Type: int32_t """
-        self.cylinders_length = 0
-        """ LCM Type: int32_t """
-        self.lines_length = 0
-        """ LCM Type: int32_t """
-        self.triangles_length = 0
-        """ LCM Type: int32_t """
-        self.texts_length = 0
-        """ LCM Type: int32_t """
-        self.models_length = 0
-        """ LCM Type: int32_t """
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.frame_id = ""
-        """ LCM Type: string """
-        self.id = ""
-        """ LCM Type: string """
-        self.lifetime = builtin_interfaces.Duration()
-        """ LCM Type: builtin_interfaces.Duration """
-        self.frame_locked = False
-        """ LCM Type: boolean """
-        self.metadata = []
-        """ LCM Type: KeyValuePair[metadata_length] """
-        self.arrows = []
-        """ LCM Type: ArrowPrimitive[arrows_length] """
-        self.cubes = []
-        """ LCM Type: CubePrimitive[cubes_length] """
-        self.spheres = []
-        """ LCM Type: SpherePrimitive[spheres_length] """
-        self.cylinders = []
-        """ LCM Type: CylinderPrimitive[cylinders_length] """
-        self.lines = []
-        """ LCM Type: LinePrimitive[lines_length] """
-        self.triangles = []
-        """ LCM Type: TriangleListPrimitive[triangles_length] """
-        self.texts = []
-        """ LCM Type: TextPrimitive[texts_length] """
-        self.models = []
-        """ LCM Type: ModelPrimitive[models_length] """
+    def __init__(self, metadata_length=0, arrows_length=0, cubes_length=0, spheres_length=0, cylinders_length=0, lines_length=0, triangles_length=0, texts_length=0, models_length=0, timestamp=builtin_interfaces.Time(), frame_id="", id="", lifetime=builtin_interfaces.Duration(), frame_locked=False, metadata=[], arrows=[], cubes=[], spheres=[], cylinders=[], lines=[], triangles=[], texts=[], models=[]):
+        # LCM Type: int32_t
+        self.metadata_length = metadata_length
+        # LCM Type: int32_t
+        self.arrows_length = arrows_length
+        # LCM Type: int32_t
+        self.cubes_length = cubes_length
+        # LCM Type: int32_t
+        self.spheres_length = spheres_length
+        # LCM Type: int32_t
+        self.cylinders_length = cylinders_length
+        # LCM Type: int32_t
+        self.lines_length = lines_length
+        # LCM Type: int32_t
+        self.triangles_length = triangles_length
+        # LCM Type: int32_t
+        self.texts_length = texts_length
+        # LCM Type: int32_t
+        self.models_length = models_length
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: string
+        self.frame_id = frame_id
+        # LCM Type: string
+        self.id = id
+        # LCM Type: builtin_interfaces.Duration
+        self.lifetime = lifetime
+        # LCM Type: boolean
+        self.frame_locked = frame_locked
+        # LCM Type: KeyValuePair[metadata_length]
+        self.metadata = metadata
+        # LCM Type: ArrowPrimitive[arrows_length]
+        self.arrows = arrows
+        # LCM Type: CubePrimitive[cubes_length]
+        self.cubes = cubes
+        # LCM Type: SpherePrimitive[spheres_length]
+        self.spheres = spheres
+        # LCM Type: CylinderPrimitive[cylinders_length]
+        self.cylinders = cylinders
+        # LCM Type: LinePrimitive[lines_length]
+        self.lines = lines
+        # LCM Type: TriangleListPrimitive[triangles_length]
+        self.triangles = triangles
+        # LCM Type: TextPrimitive[texts_length]
+        self.texts = texts
+        # LCM Type: ModelPrimitive[models_length]
+        self.models = models
 
     def encode(self):
         buf = BytesIO()

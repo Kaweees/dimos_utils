@@ -12,6 +12,8 @@ from . import *
 from .Marker import Marker
 class InteractiveMarkerControl(object):
 
+    msg_name = "InteractiveMarkerControl"
+
     __slots__ = ["markers_length", "name", "orientation", "orientation_mode", "interaction_mode", "always_visible", "markers", "independent_marker_orientation", "description"]
 
     __typenames__ = ["int32_t", "string", "geometry_msgs.Quaternion", "byte", "byte", "boolean", "Marker", "boolean", "string"]
@@ -32,25 +34,25 @@ class InteractiveMarkerControl(object):
     ROTATE_3D = 8
     MOVE_ROTATE_3D = 9
 
-    def __init__(self):
-        self.markers_length = 0
-        """ LCM Type: int32_t """
-        self.name = ""
-        """ LCM Type: string """
-        self.orientation = geometry_msgs.Quaternion()
-        """ LCM Type: geometry_msgs.Quaternion """
-        self.orientation_mode = 0
-        """ LCM Type: byte """
-        self.interaction_mode = 0
-        """ LCM Type: byte """
-        self.always_visible = False
-        """ LCM Type: boolean """
-        self.markers = []
-        """ LCM Type: Marker[markers_length] """
-        self.independent_marker_orientation = False
-        """ LCM Type: boolean """
-        self.description = ""
-        """ LCM Type: string """
+    def __init__(self, markers_length=0, name="", orientation=geometry_msgs.Quaternion(), orientation_mode=0, interaction_mode=0, always_visible=False, markers=[], independent_marker_orientation=False, description=""):
+        # LCM Type: int32_t
+        self.markers_length = markers_length
+        # LCM Type: string
+        self.name = name
+        # LCM Type: geometry_msgs.Quaternion
+        self.orientation = orientation
+        # LCM Type: byte
+        self.orientation_mode = orientation_mode
+        # LCM Type: byte
+        self.interaction_mode = interaction_mode
+        # LCM Type: boolean
+        self.always_visible = always_visible
+        # LCM Type: Marker[markers_length]
+        self.markers = markers
+        # LCM Type: boolean
+        self.independent_marker_orientation = independent_marker_orientation
+        # LCM Type: string
+        self.description = description
 
     def encode(self):
         buf = BytesIO()

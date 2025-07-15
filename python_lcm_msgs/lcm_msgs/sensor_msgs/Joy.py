@@ -10,23 +10,25 @@ import struct
 from lcm_msgs import std_msgs
 class Joy(object):
 
+    msg_name = "Joy"
+
     __slots__ = ["axes_length", "buttons_length", "header", "axes", "buttons"]
 
     __typenames__ = ["int32_t", "int32_t", "std_msgs.Header", "float", "int32_t"]
 
     __dimensions__ = [None, None, None, ["axes_length"], ["buttons_length"]]
 
-    def __init__(self):
-        self.axes_length = 0
-        """ LCM Type: int32_t """
-        self.buttons_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.axes = []
-        """ LCM Type: float[axes_length] """
-        self.buttons = []
-        """ LCM Type: int32_t[buttons_length] """
+    def __init__(self, axes_length=0, buttons_length=0, header=std_msgs.Header(), axes=[], buttons=[]):
+        # LCM Type: int32_t
+        self.axes_length = axes_length
+        # LCM Type: int32_t
+        self.buttons_length = buttons_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: float[axes_length]
+        self.axes = axes
+        # LCM Type: int32_t[buttons_length]
+        self.buttons = buttons
 
     def encode(self):
         buf = BytesIO()

@@ -12,17 +12,19 @@ from lcm_msgs import std_msgs
 from .Wrench import Wrench
 class WrenchStamped(object):
 
+    msg_name = "WrenchStamped"
+
     __slots__ = ["header", "wrench"]
 
     __typenames__ = ["std_msgs.Header", "Wrench"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.wrench = Wrench()
-        """ LCM Type: Wrench """
+    def __init__(self, header=std_msgs.Header(), wrench=Wrench()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: Wrench
+        self.wrench = wrench
 
     def encode(self):
         buf = BytesIO()

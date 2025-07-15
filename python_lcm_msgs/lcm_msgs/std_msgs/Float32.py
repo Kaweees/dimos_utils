@@ -9,15 +9,17 @@ import struct
 
 class Float32(object):
 
+    msg_name = "Float32"
+
     __slots__ = ["data"]
 
     __typenames__ = ["float"]
 
     __dimensions__ = [None]
 
-    def __init__(self):
-        self.data = 0.0
-        """ LCM Type: float """
+    def __init__(self, data=0.0):
+        # LCM Type: float
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

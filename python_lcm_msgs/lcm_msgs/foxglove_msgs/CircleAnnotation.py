@@ -9,9 +9,11 @@ import struct
 
 from . import *
 from lcm_msgs import builtin_interfaces
-from .Point2 import Point2
 from .Color import Color
+from .Point2 import Point2
 class CircleAnnotation(object):
+
+    msg_name = "CircleAnnotation"
 
     __slots__ = ["timestamp", "position", "diameter", "thickness", "fill_color", "outline_color"]
 
@@ -19,19 +21,19 @@ class CircleAnnotation(object):
 
     __dimensions__ = [None, None, None, None, None, None]
 
-    def __init__(self):
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.position = Point2()
-        """ LCM Type: Point2 """
-        self.diameter = 0.0
-        """ LCM Type: double """
-        self.thickness = 0.0
-        """ LCM Type: double """
-        self.fill_color = Color()
-        """ LCM Type: Color """
-        self.outline_color = Color()
-        """ LCM Type: Color """
+    def __init__(self, timestamp=builtin_interfaces.Time(), position=Point2(), diameter=0.0, thickness=0.0, fill_color=Color(), outline_color=Color()):
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: Point2
+        self.position = position
+        # LCM Type: double
+        self.diameter = diameter
+        # LCM Type: double
+        self.thickness = thickness
+        # LCM Type: Color
+        self.fill_color = fill_color
+        # LCM Type: Color
+        self.outline_color = outline_color
 
     def encode(self):
         buf = BytesIO()

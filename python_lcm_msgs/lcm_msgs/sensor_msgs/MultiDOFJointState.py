@@ -11,31 +11,33 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 class MultiDOFJointState(object):
 
+    msg_name = "MultiDOFJointState"
+
     __slots__ = ["joint_names_length", "transforms_length", "twist_length", "wrench_length", "header", "joint_names", "transforms", "twist", "wrench"]
 
     __typenames__ = ["int32_t", "int32_t", "int32_t", "int32_t", "std_msgs.Header", "string", "geometry_msgs.Transform", "geometry_msgs.Twist", "geometry_msgs.Wrench"]
 
     __dimensions__ = [None, None, None, None, None, ["joint_names_length"], ["transforms_length"], ["twist_length"], ["wrench_length"]]
 
-    def __init__(self):
-        self.joint_names_length = 0
-        """ LCM Type: int32_t """
-        self.transforms_length = 0
-        """ LCM Type: int32_t """
-        self.twist_length = 0
-        """ LCM Type: int32_t """
-        self.wrench_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.joint_names = []
-        """ LCM Type: string[joint_names_length] """
-        self.transforms = []
-        """ LCM Type: geometry_msgs.Transform[transforms_length] """
-        self.twist = []
-        """ LCM Type: geometry_msgs.Twist[twist_length] """
-        self.wrench = []
-        """ LCM Type: geometry_msgs.Wrench[wrench_length] """
+    def __init__(self, joint_names_length=0, transforms_length=0, twist_length=0, wrench_length=0, header=std_msgs.Header(), joint_names=[], transforms=[], twist=[], wrench=[]):
+        # LCM Type: int32_t
+        self.joint_names_length = joint_names_length
+        # LCM Type: int32_t
+        self.transforms_length = transforms_length
+        # LCM Type: int32_t
+        self.twist_length = twist_length
+        # LCM Type: int32_t
+        self.wrench_length = wrench_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: string[joint_names_length]
+        self.joint_names = joint_names
+        # LCM Type: geometry_msgs.Transform[transforms_length]
+        self.transforms = transforms
+        # LCM Type: geometry_msgs.Twist[twist_length]
+        self.twist = twist
+        # LCM Type: geometry_msgs.Wrench[wrench_length]
+        self.wrench = wrench
 
     def encode(self):
         buf = BytesIO()

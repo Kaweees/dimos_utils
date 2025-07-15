@@ -11,6 +11,8 @@ from . import *
 from .KeyValue import KeyValue
 class DiagnosticStatus(object):
 
+    msg_name = "DiagnosticStatus"
+
     __slots__ = ["values_length", "level", "name", "message", "hardware_id", "values"]
 
     __typenames__ = ["int32_t", "int8_t", "string", "string", "string", "KeyValue"]
@@ -22,19 +24,19 @@ class DiagnosticStatus(object):
     ERROR = 2
     STALE = 3
 
-    def __init__(self):
-        self.values_length = 0
-        """ LCM Type: int32_t """
-        self.level = 0
-        """ LCM Type: int8_t """
-        self.name = ""
-        """ LCM Type: string """
-        self.message = ""
-        """ LCM Type: string """
-        self.hardware_id = ""
-        """ LCM Type: string """
-        self.values = []
-        """ LCM Type: KeyValue[values_length] """
+    def __init__(self, values_length=0, level=0, name="", message="", hardware_id="", values=[]):
+        # LCM Type: int32_t
+        self.values_length = values_length
+        # LCM Type: int8_t
+        self.level = level
+        # LCM Type: string
+        self.name = name
+        # LCM Type: string
+        self.message = message
+        # LCM Type: string
+        self.hardware_id = hardware_id
+        # LCM Type: KeyValue[values_length]
+        self.values = values
 
     def encode(self):
         buf = BytesIO()

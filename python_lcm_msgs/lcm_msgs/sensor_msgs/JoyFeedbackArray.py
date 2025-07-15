@@ -11,17 +11,19 @@ from . import *
 from .JoyFeedback import JoyFeedback
 class JoyFeedbackArray(object):
 
+    msg_name = "JoyFeedbackArray"
+
     __slots__ = ["array_length", "array"]
 
     __typenames__ = ["int32_t", "JoyFeedback"]
 
     __dimensions__ = [None, ["array_length"]]
 
-    def __init__(self):
-        self.array_length = 0
-        """ LCM Type: int32_t """
-        self.array = []
-        """ LCM Type: JoyFeedback[array_length] """
+    def __init__(self, array_length=0, array=[]):
+        # LCM Type: int32_t
+        self.array_length = array_length
+        # LCM Type: JoyFeedback[array_length]
+        self.array = array
 
     def encode(self):
         buf = BytesIO()

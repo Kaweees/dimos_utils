@@ -12,19 +12,21 @@ from lcm_msgs import std_msgs
 from .Pose import Pose
 class PoseArray(object):
 
+    msg_name = "PoseArray"
+
     __slots__ = ["poses_length", "header", "poses"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "Pose"]
 
     __dimensions__ = [None, None, ["poses_length"]]
 
-    def __init__(self):
-        self.poses_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.poses = []
-        """ LCM Type: Pose[poses_length] """
+    def __init__(self, poses_length=0, header=std_msgs.Header(), poses=[]):
+        # LCM Type: int32_t
+        self.poses_length = poses_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: Pose[poses_length]
+        self.poses = poses
 
     def encode(self):
         buf = BytesIO()

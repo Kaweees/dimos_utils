@@ -11,21 +11,23 @@ from . import *
 from .InteractiveMarker import InteractiveMarker
 class InteractiveMarkerInit(object):
 
+    msg_name = "InteractiveMarkerInit"
+
     __slots__ = ["markers_length", "server_id", "seq_num", "markers"]
 
     __typenames__ = ["int32_t", "string", "int64_t", "InteractiveMarker"]
 
     __dimensions__ = [None, None, None, ["markers_length"]]
 
-    def __init__(self):
-        self.markers_length = 0
-        """ LCM Type: int32_t """
-        self.server_id = ""
-        """ LCM Type: string """
-        self.seq_num = 0
-        """ LCM Type: int64_t """
-        self.markers = []
-        """ LCM Type: InteractiveMarker[markers_length] """
+    def __init__(self, markers_length=0, server_id="", seq_num=0, markers=[]):
+        # LCM Type: int32_t
+        self.markers_length = markers_length
+        # LCM Type: string
+        self.server_id = server_id
+        # LCM Type: int64_t
+        self.seq_num = seq_num
+        # LCM Type: InteractiveMarker[markers_length]
+        self.markers = markers
 
     def encode(self):
         buf = BytesIO()

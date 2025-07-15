@@ -12,17 +12,19 @@ from .Vector3 import Vector3
 from .Quaternion import Quaternion
 class Transform(object):
 
+    msg_name = "Transform"
+
     __slots__ = ["translation", "rotation"]
 
     __typenames__ = ["Vector3", "Quaternion"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.translation = Vector3()
-        """ LCM Type: Vector3 """
-        self.rotation = Quaternion()
-        """ LCM Type: Quaternion """
+    def __init__(self, translation=Vector3(), rotation=Quaternion()):
+        # LCM Type: Vector3
+        self.translation = translation
+        # LCM Type: Quaternion
+        self.rotation = rotation
 
     def encode(self):
         buf = BytesIO()

@@ -10,17 +10,19 @@ import struct
 from lcm_msgs import geometry_msgs
 class BoundingBox3D(object):
 
+    msg_name = "BoundingBox3D"
+
     __slots__ = ["center", "size"]
 
     __typenames__ = ["geometry_msgs.Pose", "geometry_msgs.Vector3"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.center = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.size = geometry_msgs.Vector3()
-        """ LCM Type: geometry_msgs.Vector3 """
+    def __init__(self, center=geometry_msgs.Pose(), size=geometry_msgs.Vector3()):
+        # LCM Type: geometry_msgs.Pose
+        self.center = center
+        # LCM Type: geometry_msgs.Vector3
+        self.size = size
 
     def encode(self):
         buf = BytesIO()

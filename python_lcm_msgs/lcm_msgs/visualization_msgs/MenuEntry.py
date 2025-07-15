@@ -9,6 +9,8 @@ import struct
 
 class MenuEntry(object):
 
+    msg_name = "MenuEntry"
+
     __slots__ = ["id", "parent_id", "title", "command", "command_type"]
 
     __typenames__ = ["int32_t", "int32_t", "string", "string", "byte"]
@@ -19,17 +21,17 @@ class MenuEntry(object):
     ROSRUN = 1
     ROSLAUNCH = 2
 
-    def __init__(self):
-        self.id = 0
-        """ LCM Type: int32_t """
-        self.parent_id = 0
-        """ LCM Type: int32_t """
-        self.title = ""
-        """ LCM Type: string """
-        self.command = ""
-        """ LCM Type: string """
-        self.command_type = 0
-        """ LCM Type: byte """
+    def __init__(self, id=0, parent_id=0, title="", command="", command_type=0):
+        # LCM Type: int32_t
+        self.id = id
+        # LCM Type: int32_t
+        self.parent_id = parent_id
+        # LCM Type: string
+        self.title = title
+        # LCM Type: string
+        self.command = command
+        # LCM Type: byte
+        self.command_type = command_type
 
     def encode(self):
         buf = BytesIO()

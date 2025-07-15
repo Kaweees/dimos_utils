@@ -11,19 +11,21 @@ from . import *
 from .MultiArrayDimension import MultiArrayDimension
 class MultiArrayLayout(object):
 
+    msg_name = "MultiArrayLayout"
+
     __slots__ = ["dim_length", "dim", "data_offset"]
 
     __typenames__ = ["int32_t", "MultiArrayDimension", "int32_t"]
 
     __dimensions__ = [None, ["dim_length"], None]
 
-    def __init__(self):
-        self.dim_length = 0
-        """ LCM Type: int32_t """
-        self.dim = []
-        """ LCM Type: MultiArrayDimension[dim_length] """
-        self.data_offset = 0
-        """ LCM Type: int32_t """
+    def __init__(self, dim_length=0, dim=[], data_offset=0):
+        # LCM Type: int32_t
+        self.dim_length = dim_length
+        # LCM Type: MultiArrayDimension[dim_length]
+        self.dim = dim
+        # LCM Type: int32_t
+        self.data_offset = data_offset
 
     def encode(self):
         buf = BytesIO()

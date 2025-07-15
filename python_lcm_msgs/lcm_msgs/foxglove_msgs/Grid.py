@@ -14,35 +14,37 @@ from .Vector2 import Vector2
 from .PackedElementField import PackedElementField
 class Grid(object):
 
+    msg_name = "Grid"
+
     __slots__ = ["fields_length", "data_length", "timestamp", "frame_id", "pose", "column_count", "cell_size", "row_stride", "cell_stride", "fields", "data"]
 
     __typenames__ = ["int32_t", "int32_t", "builtin_interfaces.Time", "string", "geometry_msgs.Pose", "int32_t", "Vector2", "int32_t", "int32_t", "PackedElementField", "byte"]
 
     __dimensions__ = [None, None, None, None, None, None, None, None, None, ["fields_length"], ["data_length"]]
 
-    def __init__(self):
-        self.fields_length = 0
-        """ LCM Type: int32_t """
-        self.data_length = 0
-        """ LCM Type: int32_t """
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.frame_id = ""
-        """ LCM Type: string """
-        self.pose = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.column_count = 0
-        """ LCM Type: int32_t """
-        self.cell_size = Vector2()
-        """ LCM Type: Vector2 """
-        self.row_stride = 0
-        """ LCM Type: int32_t """
-        self.cell_stride = 0
-        """ LCM Type: int32_t """
-        self.fields = []
-        """ LCM Type: PackedElementField[fields_length] """
-        self.data = b""
-        """ LCM Type: byte[data_length] """
+    def __init__(self, fields_length=0, data_length=0, timestamp=builtin_interfaces.Time(), frame_id="", pose=geometry_msgs.Pose(), column_count=0, cell_size=Vector2(), row_stride=0, cell_stride=0, fields=[], data=b""):
+        # LCM Type: int32_t
+        self.fields_length = fields_length
+        # LCM Type: int32_t
+        self.data_length = data_length
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: string
+        self.frame_id = frame_id
+        # LCM Type: geometry_msgs.Pose
+        self.pose = pose
+        # LCM Type: int32_t
+        self.column_count = column_count
+        # LCM Type: Vector2
+        self.cell_size = cell_size
+        # LCM Type: int32_t
+        self.row_stride = row_stride
+        # LCM Type: int32_t
+        self.cell_stride = cell_stride
+        # LCM Type: PackedElementField[fields_length]
+        self.fields = fields
+        # LCM Type: byte[data_length]
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

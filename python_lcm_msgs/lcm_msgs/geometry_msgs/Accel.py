@@ -11,17 +11,19 @@ from . import *
 from .Vector3 import Vector3
 class Accel(object):
 
+    msg_name = "Accel"
+
     __slots__ = ["linear", "angular"]
 
     __typenames__ = ["Vector3", "Vector3"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.linear = Vector3()
-        """ LCM Type: Vector3 """
-        self.angular = Vector3()
-        """ LCM Type: Vector3 """
+    def __init__(self, linear=Vector3(), angular=Vector3()):
+        # LCM Type: Vector3
+        self.linear = linear
+        # LCM Type: Vector3
+        self.angular = angular
 
     def encode(self):
         buf = BytesIO()

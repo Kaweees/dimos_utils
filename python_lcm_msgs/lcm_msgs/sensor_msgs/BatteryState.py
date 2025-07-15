@@ -10,6 +10,8 @@ import struct
 from lcm_msgs import std_msgs
 class BatteryState(object):
 
+    msg_name = "BatteryState"
+
     __slots__ = ["cell_voltage_length", "cell_temperature_length", "header", "voltage", "temperature", "current", "charge", "capacity", "design_capacity", "percentage", "power_supply_status", "power_supply_health", "power_supply_technology", "present", "cell_voltage", "cell_temperature", "location", "serial_number"]
 
     __typenames__ = ["int32_t", "int32_t", "std_msgs.Header", "float", "float", "float", "float", "float", "float", "float", "byte", "byte", "byte", "boolean", "float", "float", "string", "string"]
@@ -38,43 +40,43 @@ class BatteryState(object):
     POWER_SUPPLY_TECHNOLOGY_NICD = 5
     POWER_SUPPLY_TECHNOLOGY_LIMN = 6
 
-    def __init__(self):
-        self.cell_voltage_length = 0
-        """ LCM Type: int32_t """
-        self.cell_temperature_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.voltage = 0.0
-        """ LCM Type: float """
-        self.temperature = 0.0
-        """ LCM Type: float """
-        self.current = 0.0
-        """ LCM Type: float """
-        self.charge = 0.0
-        """ LCM Type: float """
-        self.capacity = 0.0
-        """ LCM Type: float """
-        self.design_capacity = 0.0
-        """ LCM Type: float """
-        self.percentage = 0.0
-        """ LCM Type: float """
-        self.power_supply_status = 0
-        """ LCM Type: byte """
-        self.power_supply_health = 0
-        """ LCM Type: byte """
-        self.power_supply_technology = 0
-        """ LCM Type: byte """
-        self.present = False
-        """ LCM Type: boolean """
-        self.cell_voltage = []
-        """ LCM Type: float[cell_voltage_length] """
-        self.cell_temperature = []
-        """ LCM Type: float[cell_temperature_length] """
-        self.location = ""
-        """ LCM Type: string """
-        self.serial_number = ""
-        """ LCM Type: string """
+    def __init__(self, cell_voltage_length=0, cell_temperature_length=0, header=std_msgs.Header(), voltage=0.0, temperature=0.0, current=0.0, charge=0.0, capacity=0.0, design_capacity=0.0, percentage=0.0, power_supply_status=0, power_supply_health=0, power_supply_technology=0, present=False, cell_voltage=[], cell_temperature=[], location="", serial_number=""):
+        # LCM Type: int32_t
+        self.cell_voltage_length = cell_voltage_length
+        # LCM Type: int32_t
+        self.cell_temperature_length = cell_temperature_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: float
+        self.voltage = voltage
+        # LCM Type: float
+        self.temperature = temperature
+        # LCM Type: float
+        self.current = current
+        # LCM Type: float
+        self.charge = charge
+        # LCM Type: float
+        self.capacity = capacity
+        # LCM Type: float
+        self.design_capacity = design_capacity
+        # LCM Type: float
+        self.percentage = percentage
+        # LCM Type: byte
+        self.power_supply_status = power_supply_status
+        # LCM Type: byte
+        self.power_supply_health = power_supply_health
+        # LCM Type: byte
+        self.power_supply_technology = power_supply_technology
+        # LCM Type: boolean
+        self.present = present
+        # LCM Type: float[cell_voltage_length]
+        self.cell_voltage = cell_voltage
+        # LCM Type: float[cell_temperature_length]
+        self.cell_temperature = cell_temperature
+        # LCM Type: string
+        self.location = location
+        # LCM Type: string
+        self.serial_number = serial_number
 
     def encode(self):
         buf = BytesIO()

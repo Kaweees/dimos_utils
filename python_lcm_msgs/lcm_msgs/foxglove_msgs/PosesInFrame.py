@@ -11,21 +11,23 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import builtin_interfaces
 class PosesInFrame(object):
 
+    msg_name = "PosesInFrame"
+
     __slots__ = ["poses_length", "timestamp", "frame_id", "poses"]
 
     __typenames__ = ["int32_t", "builtin_interfaces.Time", "string", "geometry_msgs.Pose"]
 
     __dimensions__ = [None, None, None, ["poses_length"]]
 
-    def __init__(self):
-        self.poses_length = 0
-        """ LCM Type: int32_t """
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.frame_id = ""
-        """ LCM Type: string """
-        self.poses = []
-        """ LCM Type: geometry_msgs.Pose[poses_length] """
+    def __init__(self, poses_length=0, timestamp=builtin_interfaces.Time(), frame_id="", poses=[]):
+        # LCM Type: int32_t
+        self.poses_length = poses_length
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: string
+        self.frame_id = frame_id
+        # LCM Type: geometry_msgs.Pose[poses_length]
+        self.poses = poses
 
     def encode(self):
         buf = BytesIO()

@@ -10,29 +10,31 @@ import struct
 from lcm_msgs import std_msgs
 class Image(object):
 
+    msg_name = "Image"
+
     __slots__ = ["data_length", "header", "height", "width", "encoding", "is_bigendian", "step", "data"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "int32_t", "int32_t", "string", "byte", "int32_t", "byte"]
 
     __dimensions__ = [None, None, None, None, None, None, None, ["data_length"]]
 
-    def __init__(self):
-        self.data_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.height = 0
-        """ LCM Type: int32_t """
-        self.width = 0
-        """ LCM Type: int32_t """
-        self.encoding = ""
-        """ LCM Type: string """
-        self.is_bigendian = 0
-        """ LCM Type: byte """
-        self.step = 0
-        """ LCM Type: int32_t """
-        self.data = b""
-        """ LCM Type: byte[data_length] """
+    def __init__(self, data_length=0, header=std_msgs.Header(), height=0, width=0, encoding="", is_bigendian=0, step=0, data=b""):
+        # LCM Type: int32_t
+        self.data_length = data_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: int32_t
+        self.height = height
+        # LCM Type: int32_t
+        self.width = width
+        # LCM Type: string
+        self.encoding = encoding
+        # LCM Type: byte
+        self.is_bigendian = is_bigendian
+        # LCM Type: int32_t
+        self.step = step
+        # LCM Type: byte[data_length]
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

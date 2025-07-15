@@ -9,15 +9,17 @@ import struct
 
 class Byte(object):
 
+    msg_name = "Byte"
+
     __slots__ = ["data"]
 
     __typenames__ = ["int8_t"]
 
     __dimensions__ = [None]
 
-    def __init__(self):
-        self.data = 0
-        """ LCM Type: int8_t """
+    def __init__(self, data=0):
+        # LCM Type: int8_t
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

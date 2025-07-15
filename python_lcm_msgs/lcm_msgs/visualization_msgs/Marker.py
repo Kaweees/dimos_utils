@@ -11,6 +11,8 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 class Marker(object):
 
+    msg_name = "Marker"
+
     __slots__ = ["points_length", "colors_length", "header", "ns", "id", "type", "action", "pose", "scale", "color", "lifetime", "frame_locked", "points", "colors", "text", "mesh_resource", "mesh_use_embedded_materials"]
 
     __typenames__ = ["int32_t", "int32_t", "std_msgs.Header", "string", "int32_t", "int32_t", "int32_t", "geometry_msgs.Pose", "geometry_msgs.Vector3", "std_msgs.ColorRGBA", "std_msgs.Duration", "boolean", "geometry_msgs.Point", "std_msgs.ColorRGBA", "string", "string", "boolean"]
@@ -34,41 +36,41 @@ class Marker(object):
     DELETE = 2
     DELETEALL = 3
 
-    def __init__(self):
-        self.points_length = 0
-        """ LCM Type: int32_t """
-        self.colors_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.ns = ""
-        """ LCM Type: string """
-        self.id = 0
-        """ LCM Type: int32_t """
-        self.type = 0
-        """ LCM Type: int32_t """
-        self.action = 0
-        """ LCM Type: int32_t """
-        self.pose = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.scale = geometry_msgs.Vector3()
-        """ LCM Type: geometry_msgs.Vector3 """
-        self.color = std_msgs.ColorRGBA()
-        """ LCM Type: std_msgs.ColorRGBA """
-        self.lifetime = std_msgs.Duration()
-        """ LCM Type: std_msgs.Duration """
-        self.frame_locked = False
-        """ LCM Type: boolean """
-        self.points = []
-        """ LCM Type: geometry_msgs.Point[points_length] """
-        self.colors = []
-        """ LCM Type: std_msgs.ColorRGBA[colors_length] """
-        self.text = ""
-        """ LCM Type: string """
-        self.mesh_resource = ""
-        """ LCM Type: string """
-        self.mesh_use_embedded_materials = False
-        """ LCM Type: boolean """
+    def __init__(self, points_length=0, colors_length=0, header=std_msgs.Header(), ns="", id=0, type=0, action=0, pose=geometry_msgs.Pose(), scale=geometry_msgs.Vector3(), color=std_msgs.ColorRGBA(), lifetime=std_msgs.Duration(), frame_locked=False, points=[], colors=[], text="", mesh_resource="", mesh_use_embedded_materials=False):
+        # LCM Type: int32_t
+        self.points_length = points_length
+        # LCM Type: int32_t
+        self.colors_length = colors_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: string
+        self.ns = ns
+        # LCM Type: int32_t
+        self.id = id
+        # LCM Type: int32_t
+        self.type = type
+        # LCM Type: int32_t
+        self.action = action
+        # LCM Type: geometry_msgs.Pose
+        self.pose = pose
+        # LCM Type: geometry_msgs.Vector3
+        self.scale = scale
+        # LCM Type: std_msgs.ColorRGBA
+        self.color = color
+        # LCM Type: std_msgs.Duration
+        self.lifetime = lifetime
+        # LCM Type: boolean
+        self.frame_locked = frame_locked
+        # LCM Type: geometry_msgs.Point[points_length]
+        self.points = points
+        # LCM Type: std_msgs.ColorRGBA[colors_length]
+        self.colors = colors
+        # LCM Type: string
+        self.text = text
+        # LCM Type: string
+        self.mesh_resource = mesh_resource
+        # LCM Type: boolean
+        self.mesh_use_embedded_materials = mesh_use_embedded_materials
 
     def encode(self):
         buf = BytesIO()

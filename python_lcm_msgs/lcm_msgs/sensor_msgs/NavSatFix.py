@@ -12,6 +12,8 @@ from . import *
 from .NavSatStatus import NavSatStatus
 class NavSatFix(object):
 
+    msg_name = "NavSatFix"
+
     __slots__ = ["header", "status", "latitude", "longitude", "altitude", "position_covariance", "position_covariance_type"]
 
     __typenames__ = ["std_msgs.Header", "NavSatStatus", "double", "double", "double", "double", "byte"]
@@ -23,21 +25,21 @@ class NavSatFix(object):
     COVARIANCE_TYPE_DIAGONAL_KNOWN = 2
     COVARIANCE_TYPE_KNOWN = 3
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.status = NavSatStatus()
-        """ LCM Type: NavSatStatus """
-        self.latitude = 0.0
-        """ LCM Type: double """
-        self.longitude = 0.0
-        """ LCM Type: double """
-        self.altitude = 0.0
-        """ LCM Type: double """
-        self.position_covariance = [ 0.0 for dim0 in range(9) ]
-        """ LCM Type: double[9] """
-        self.position_covariance_type = 0
-        """ LCM Type: byte """
+    def __init__(self, header=std_msgs.Header(), status=NavSatStatus(), latitude=0.0, longitude=0.0, altitude=0.0, position_covariance=[ 0.0 for dim0 in range(9) ], position_covariance_type=0):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: NavSatStatus
+        self.status = status
+        # LCM Type: double
+        self.latitude = latitude
+        # LCM Type: double
+        self.longitude = longitude
+        # LCM Type: double
+        self.altitude = altitude
+        # LCM Type: double[9]
+        self.position_covariance = position_covariance
+        # LCM Type: byte
+        self.position_covariance_type = position_covariance_type
 
     def encode(self):
         buf = BytesIO()

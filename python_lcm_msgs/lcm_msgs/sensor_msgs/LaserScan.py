@@ -10,37 +10,39 @@ import struct
 from lcm_msgs import std_msgs
 class LaserScan(object):
 
+    msg_name = "LaserScan"
+
     __slots__ = ["ranges_length", "intensities_length", "header", "angle_min", "angle_max", "angle_increment", "time_increment", "scan_time", "range_min", "range_max", "ranges", "intensities"]
 
     __typenames__ = ["int32_t", "int32_t", "std_msgs.Header", "float", "float", "float", "float", "float", "float", "float", "float", "float"]
 
     __dimensions__ = [None, None, None, None, None, None, None, None, None, None, ["ranges_length"], ["intensities_length"]]
 
-    def __init__(self):
-        self.ranges_length = 0
-        """ LCM Type: int32_t """
-        self.intensities_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.angle_min = 0.0
-        """ LCM Type: float """
-        self.angle_max = 0.0
-        """ LCM Type: float """
-        self.angle_increment = 0.0
-        """ LCM Type: float """
-        self.time_increment = 0.0
-        """ LCM Type: float """
-        self.scan_time = 0.0
-        """ LCM Type: float """
-        self.range_min = 0.0
-        """ LCM Type: float """
-        self.range_max = 0.0
-        """ LCM Type: float """
-        self.ranges = []
-        """ LCM Type: float[ranges_length] """
-        self.intensities = []
-        """ LCM Type: float[intensities_length] """
+    def __init__(self, ranges_length=0, intensities_length=0, header=std_msgs.Header(), angle_min=0.0, angle_max=0.0, angle_increment=0.0, time_increment=0.0, scan_time=0.0, range_min=0.0, range_max=0.0, ranges=[], intensities=[]):
+        # LCM Type: int32_t
+        self.ranges_length = ranges_length
+        # LCM Type: int32_t
+        self.intensities_length = intensities_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: float
+        self.angle_min = angle_min
+        # LCM Type: float
+        self.angle_max = angle_max
+        # LCM Type: float
+        self.angle_increment = angle_increment
+        # LCM Type: float
+        self.time_increment = time_increment
+        # LCM Type: float
+        self.scan_time = scan_time
+        # LCM Type: float
+        self.range_min = range_min
+        # LCM Type: float
+        self.range_max = range_max
+        # LCM Type: float[ranges_length]
+        self.ranges = ranges
+        # LCM Type: float[intensities_length]
+        self.intensities = intensities
 
     def encode(self):
         buf = BytesIO()

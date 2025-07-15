@@ -9,15 +9,17 @@ import struct
 
 class UInt32(object):
 
+    msg_name = "UInt32"
+
     __slots__ = ["data"]
 
     __typenames__ = ["int32_t"]
 
     __dimensions__ = [None]
 
-    def __init__(self):
-        self.data = 0
-        """ LCM Type: int32_t """
+    def __init__(self, data=0):
+        # LCM Type: int32_t
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

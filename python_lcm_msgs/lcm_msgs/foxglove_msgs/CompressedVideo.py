@@ -10,23 +10,25 @@ import struct
 from lcm_msgs import builtin_interfaces
 class CompressedVideo(object):
 
+    msg_name = "CompressedVideo"
+
     __slots__ = ["data_length", "timestamp", "frame_id", "data", "format"]
 
     __typenames__ = ["int32_t", "builtin_interfaces.Time", "string", "byte", "string"]
 
     __dimensions__ = [None, None, None, ["data_length"], None]
 
-    def __init__(self):
-        self.data_length = 0
-        """ LCM Type: int32_t """
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.frame_id = ""
-        """ LCM Type: string """
-        self.data = b""
-        """ LCM Type: byte[data_length] """
-        self.format = ""
-        """ LCM Type: string """
+    def __init__(self, data_length=0, timestamp=builtin_interfaces.Time(), frame_id="", data=b"", format=""):
+        # LCM Type: int32_t
+        self.data_length = data_length
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: string
+        self.frame_id = frame_id
+        # LCM Type: byte[data_length]
+        self.data = data
+        # LCM Type: string
+        self.format = format
 
     def encode(self):
         buf = BytesIO()

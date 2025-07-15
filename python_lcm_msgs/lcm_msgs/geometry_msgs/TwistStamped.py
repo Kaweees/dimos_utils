@@ -12,17 +12,19 @@ from lcm_msgs import std_msgs
 from .Twist import Twist
 class TwistStamped(object):
 
+    msg_name = "TwistStamped"
+
     __slots__ = ["header", "twist"]
 
     __typenames__ = ["std_msgs.Header", "Twist"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.twist = Twist()
-        """ LCM Type: Twist """
+    def __init__(self, header=std_msgs.Header(), twist=Twist()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: Twist
+        self.twist = twist
 
     def encode(self):
         buf = BytesIO()

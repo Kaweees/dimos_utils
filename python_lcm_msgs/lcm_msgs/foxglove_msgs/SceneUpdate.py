@@ -8,9 +8,11 @@ from io import BytesIO
 import struct
 
 from . import *
-from .SceneEntityDeletion import SceneEntityDeletion
 from .SceneEntity import SceneEntity
+from .SceneEntityDeletion import SceneEntityDeletion
 class SceneUpdate(object):
+
+    msg_name = "SceneUpdate"
 
     __slots__ = ["deletions_length", "entities_length", "deletions", "entities"]
 
@@ -18,15 +20,15 @@ class SceneUpdate(object):
 
     __dimensions__ = [None, None, ["deletions_length"], ["entities_length"]]
 
-    def __init__(self):
-        self.deletions_length = 0
-        """ LCM Type: int32_t """
-        self.entities_length = 0
-        """ LCM Type: int32_t """
-        self.deletions = []
-        """ LCM Type: SceneEntityDeletion[deletions_length] """
-        self.entities = []
-        """ LCM Type: SceneEntity[entities_length] """
+    def __init__(self, deletions_length=0, entities_length=0, deletions=[], entities=[]):
+        # LCM Type: int32_t
+        self.deletions_length = deletions_length
+        # LCM Type: int32_t
+        self.entities_length = entities_length
+        # LCM Type: SceneEntityDeletion[deletions_length]
+        self.deletions = deletions
+        # LCM Type: SceneEntity[entities_length]
+        self.entities = entities
 
     def encode(self):
         buf = BytesIO()

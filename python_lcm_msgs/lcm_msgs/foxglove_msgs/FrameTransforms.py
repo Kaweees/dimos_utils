@@ -11,17 +11,19 @@ from . import *
 from .FrameTransform import FrameTransform
 class FrameTransforms(object):
 
+    msg_name = "FrameTransforms"
+
     __slots__ = ["transforms_length", "transforms"]
 
     __typenames__ = ["int32_t", "FrameTransform"]
 
     __dimensions__ = [None, ["transforms_length"]]
 
-    def __init__(self):
-        self.transforms_length = 0
-        """ LCM Type: int32_t """
-        self.transforms = []
-        """ LCM Type: FrameTransform[transforms_length] """
+    def __init__(self, transforms_length=0, transforms=[]):
+        # LCM Type: int32_t
+        self.transforms_length = transforms_length
+        # LCM Type: FrameTransform[transforms_length]
+        self.transforms = transforms
 
     def encode(self):
         buf = BytesIO()

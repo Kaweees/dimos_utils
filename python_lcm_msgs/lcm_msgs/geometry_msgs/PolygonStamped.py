@@ -12,17 +12,19 @@ from lcm_msgs import std_msgs
 from .Polygon import Polygon
 class PolygonStamped(object):
 
+    msg_name = "PolygonStamped"
+
     __slots__ = ["header", "polygon"]
 
     __typenames__ = ["std_msgs.Header", "Polygon"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.polygon = Polygon()
-        """ LCM Type: Polygon """
+    def __init__(self, header=std_msgs.Header(), polygon=Polygon()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: Polygon
+        self.polygon = polygon
 
     def encode(self):
         buf = BytesIO()

@@ -9,15 +9,17 @@ import struct
 
 class Bool(object):
 
+    msg_name = "Bool"
+
     __slots__ = ["data"]
 
     __typenames__ = ["boolean"]
 
     __dimensions__ = [None]
 
-    def __init__(self):
-        self.data = False
-        """ LCM Type: boolean """
+    def __init__(self, data=False):
+        # LCM Type: boolean
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

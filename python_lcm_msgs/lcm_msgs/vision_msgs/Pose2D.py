@@ -11,17 +11,19 @@ from . import *
 from .Point2D import Point2D
 class Pose2D(object):
 
+    msg_name = "Pose2D"
+
     __slots__ = ["position", "theta"]
 
     __typenames__ = ["Point2D", "double"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.position = Point2D()
-        """ LCM Type: Point2D """
-        self.theta = 0.0
-        """ LCM Type: double """
+    def __init__(self, position=Point2D(), theta=0.0):
+        # LCM Type: Point2D
+        self.position = position
+        # LCM Type: double
+        self.theta = theta
 
     def encode(self):
         buf = BytesIO()

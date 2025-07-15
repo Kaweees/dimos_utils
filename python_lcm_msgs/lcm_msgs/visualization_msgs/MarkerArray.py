@@ -11,17 +11,19 @@ from . import *
 from .Marker import Marker
 class MarkerArray(object):
 
+    msg_name = "MarkerArray"
+
     __slots__ = ["markers_length", "markers"]
 
     __typenames__ = ["int32_t", "Marker"]
 
     __dimensions__ = [None, ["markers_length"]]
 
-    def __init__(self):
-        self.markers_length = 0
-        """ LCM Type: int32_t """
-        self.markers = []
-        """ LCM Type: Marker[markers_length] """
+    def __init__(self, markers_length=0, markers=[]):
+        # LCM Type: int32_t
+        self.markers_length = markers_length
+        # LCM Type: Marker[markers_length]
+        self.markers = markers
 
     def encode(self):
         buf = BytesIO()

@@ -9,15 +9,17 @@ import struct
 
 class MeshTriangle(object):
 
+    msg_name = "MeshTriangle"
+
     __slots__ = ["vertex_indices"]
 
     __typenames__ = ["int32_t"]
 
     __dimensions__ = [[3]]
 
-    def __init__(self):
-        self.vertex_indices = [ 0 for dim0 in range(3) ]
-        """ LCM Type: int32_t[3] """
+    def __init__(self, vertex_indices=[ 0 for dim0 in range(3) ]):
+        # LCM Type: int32_t[3]
+        self.vertex_indices = vertex_indices
 
     def encode(self):
         buf = BytesIO()

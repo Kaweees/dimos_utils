@@ -12,19 +12,21 @@ from lcm_msgs import std_msgs
 from .Detection3D import Detection3D
 class Detection3DArray(object):
 
+    msg_name = "Detection3DArray"
+
     __slots__ = ["detections_length", "header", "detections"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "Detection3D"]
 
     __dimensions__ = [None, None, ["detections_length"]]
 
-    def __init__(self):
-        self.detections_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.detections = []
-        """ LCM Type: Detection3D[detections_length] """
+    def __init__(self, detections_length=0, header=std_msgs.Header(), detections=[]):
+        # LCM Type: int32_t
+        self.detections_length = detections_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: Detection3D[detections_length]
+        self.detections = detections
 
     def encode(self):
         buf = BytesIO()

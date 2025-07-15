@@ -9,15 +9,17 @@ import struct
 
 class UInt8(object):
 
+    msg_name = "UInt8"
+
     __slots__ = ["data"]
 
     __typenames__ = ["byte"]
 
     __dimensions__ = [None]
 
-    def __init__(self):
-        self.data = 0
-        """ LCM Type: byte """
+    def __init__(self, data=0):
+        # LCM Type: byte
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

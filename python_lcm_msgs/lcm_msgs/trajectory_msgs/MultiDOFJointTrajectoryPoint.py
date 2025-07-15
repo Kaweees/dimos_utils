@@ -11,27 +11,29 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 class MultiDOFJointTrajectoryPoint(object):
 
+    msg_name = "MultiDOFJointTrajectoryPoint"
+
     __slots__ = ["transforms_length", "velocities_length", "accelerations_length", "transforms", "velocities", "accelerations", "time_from_start"]
 
     __typenames__ = ["int32_t", "int32_t", "int32_t", "geometry_msgs.Transform", "geometry_msgs.Twist", "geometry_msgs.Twist", "std_msgs.Duration"]
 
     __dimensions__ = [None, None, None, ["transforms_length"], ["velocities_length"], ["accelerations_length"], None]
 
-    def __init__(self):
-        self.transforms_length = 0
-        """ LCM Type: int32_t """
-        self.velocities_length = 0
-        """ LCM Type: int32_t """
-        self.accelerations_length = 0
-        """ LCM Type: int32_t """
-        self.transforms = []
-        """ LCM Type: geometry_msgs.Transform[transforms_length] """
-        self.velocities = []
-        """ LCM Type: geometry_msgs.Twist[velocities_length] """
-        self.accelerations = []
-        """ LCM Type: geometry_msgs.Twist[accelerations_length] """
-        self.time_from_start = std_msgs.Duration()
-        """ LCM Type: std_msgs.Duration """
+    def __init__(self, transforms_length=0, velocities_length=0, accelerations_length=0, transforms=[], velocities=[], accelerations=[], time_from_start=std_msgs.Duration()):
+        # LCM Type: int32_t
+        self.transforms_length = transforms_length
+        # LCM Type: int32_t
+        self.velocities_length = velocities_length
+        # LCM Type: int32_t
+        self.accelerations_length = accelerations_length
+        # LCM Type: geometry_msgs.Transform[transforms_length]
+        self.transforms = transforms
+        # LCM Type: geometry_msgs.Twist[velocities_length]
+        self.velocities = velocities
+        # LCM Type: geometry_msgs.Twist[accelerations_length]
+        self.accelerations = accelerations
+        # LCM Type: std_msgs.Duration
+        self.time_from_start = time_from_start
 
     def encode(self):
         buf = BytesIO()

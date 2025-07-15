@@ -12,19 +12,21 @@ from lcm_msgs import std_msgs
 from .BoundingBox2D import BoundingBox2D
 class BoundingBox2DArray(object):
 
+    msg_name = "BoundingBox2DArray"
+
     __slots__ = ["boxes_length", "header", "boxes"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "BoundingBox2D"]
 
     __dimensions__ = [None, None, ["boxes_length"]]
 
-    def __init__(self):
-        self.boxes_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.boxes = []
-        """ LCM Type: BoundingBox2D[boxes_length] """
+    def __init__(self, boxes_length=0, header=std_msgs.Header(), boxes=[]):
+        # LCM Type: int32_t
+        self.boxes_length = boxes_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: BoundingBox2D[boxes_length]
+        self.boxes = boxes
 
     def encode(self):
         buf = BytesIO()

@@ -10,19 +10,21 @@ import struct
 from lcm_msgs import std_msgs
 class FluidPressure(object):
 
+    msg_name = "FluidPressure"
+
     __slots__ = ["header", "fluid_pressure", "variance"]
 
     __typenames__ = ["std_msgs.Header", "double", "double"]
 
     __dimensions__ = [None, None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.fluid_pressure = 0.0
-        """ LCM Type: double """
-        self.variance = 0.0
-        """ LCM Type: double """
+    def __init__(self, header=std_msgs.Header(), fluid_pressure=0.0, variance=0.0):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: double
+        self.fluid_pressure = fluid_pressure
+        # LCM Type: double
+        self.variance = variance
 
     def encode(self):
         buf = BytesIO()

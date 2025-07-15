@@ -9,19 +9,21 @@ import struct
 
 class MultiArrayDimension(object):
 
+    msg_name = "MultiArrayDimension"
+
     __slots__ = ["label", "size", "stride"]
 
     __typenames__ = ["string", "int32_t", "int32_t"]
 
     __dimensions__ = [None, None, None]
 
-    def __init__(self):
-        self.label = ""
-        """ LCM Type: string """
-        self.size = 0
-        """ LCM Type: int32_t """
-        self.stride = 0
-        """ LCM Type: int32_t """
+    def __init__(self, label="", size=0, stride=0):
+        # LCM Type: string
+        self.label = label
+        # LCM Type: int32_t
+        self.size = size
+        # LCM Type: int32_t
+        self.stride = stride
 
     def encode(self):
         buf = BytesIO()

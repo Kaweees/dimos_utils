@@ -9,21 +9,23 @@ import struct
 
 class Color(object):
 
+    msg_name = "Color"
+
     __slots__ = ["r", "g", "b", "a"]
 
     __typenames__ = ["double", "double", "double", "double"]
 
     __dimensions__ = [None, None, None, None]
 
-    def __init__(self):
-        self.r = 0.0
-        """ LCM Type: double """
-        self.g = 0.0
-        """ LCM Type: double """
-        self.b = 0.0
-        """ LCM Type: double """
-        self.a = 0.0
-        """ LCM Type: double """
+    def __init__(self, r=0.0, g=0.0, b=0.0, a=0.0):
+        # LCM Type: double
+        self.r = r
+        # LCM Type: double
+        self.g = g
+        # LCM Type: double
+        self.b = b
+        # LCM Type: double
+        self.a = a
 
     def encode(self):
         buf = BytesIO()

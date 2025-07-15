@@ -11,23 +11,25 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 class MapMetaData(object):
 
+    msg_name = "MapMetaData"
+
     __slots__ = ["map_load_time", "resolution", "width", "height", "origin"]
 
     __typenames__ = ["std_msgs.Time", "float", "int32_t", "int32_t", "geometry_msgs.Pose"]
 
     __dimensions__ = [None, None, None, None, None]
 
-    def __init__(self):
-        self.map_load_time = std_msgs.Time()
-        """ LCM Type: std_msgs.Time """
-        self.resolution = 0.0
-        """ LCM Type: float """
-        self.width = 0
-        """ LCM Type: int32_t """
-        self.height = 0
-        """ LCM Type: int32_t """
-        self.origin = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
+    def __init__(self, map_load_time=std_msgs.Time(), resolution=0.0, width=0, height=0, origin=geometry_msgs.Pose()):
+        # LCM Type: std_msgs.Time
+        self.map_load_time = map_load_time
+        # LCM Type: float
+        self.resolution = resolution
+        # LCM Type: int32_t
+        self.width = width
+        # LCM Type: int32_t
+        self.height = height
+        # LCM Type: geometry_msgs.Pose
+        self.origin = origin
 
     def encode(self):
         buf = BytesIO()

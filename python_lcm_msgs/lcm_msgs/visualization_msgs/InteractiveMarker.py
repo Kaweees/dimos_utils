@@ -14,31 +14,33 @@ from .InteractiveMarkerControl import InteractiveMarkerControl
 from .MenuEntry import MenuEntry
 class InteractiveMarker(object):
 
+    msg_name = "InteractiveMarker"
+
     __slots__ = ["menu_entries_length", "controls_length", "header", "pose", "name", "description", "scale", "menu_entries", "controls"]
 
     __typenames__ = ["int32_t", "int32_t", "std_msgs.Header", "geometry_msgs.Pose", "string", "string", "float", "MenuEntry", "InteractiveMarkerControl"]
 
     __dimensions__ = [None, None, None, None, None, None, None, ["menu_entries_length"], ["controls_length"]]
 
-    def __init__(self):
-        self.menu_entries_length = 0
-        """ LCM Type: int32_t """
-        self.controls_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.pose = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.name = ""
-        """ LCM Type: string """
-        self.description = ""
-        """ LCM Type: string """
-        self.scale = 0.0
-        """ LCM Type: float """
-        self.menu_entries = []
-        """ LCM Type: MenuEntry[menu_entries_length] """
-        self.controls = []
-        """ LCM Type: InteractiveMarkerControl[controls_length] """
+    def __init__(self, menu_entries_length=0, controls_length=0, header=std_msgs.Header(), pose=geometry_msgs.Pose(), name="", description="", scale=0.0, menu_entries=[], controls=[]):
+        # LCM Type: int32_t
+        self.menu_entries_length = menu_entries_length
+        # LCM Type: int32_t
+        self.controls_length = controls_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: geometry_msgs.Pose
+        self.pose = pose
+        # LCM Type: string
+        self.name = name
+        # LCM Type: string
+        self.description = description
+        # LCM Type: float
+        self.scale = scale
+        # LCM Type: MenuEntry[menu_entries_length]
+        self.menu_entries = menu_entries
+        # LCM Type: InteractiveMarkerControl[controls_length]
+        self.controls = controls
 
     def encode(self):
         buf = BytesIO()

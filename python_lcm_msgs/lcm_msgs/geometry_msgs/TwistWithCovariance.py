@@ -11,17 +11,19 @@ from . import *
 from .Twist import Twist
 class TwistWithCovariance(object):
 
+    msg_name = "TwistWithCovariance"
+
     __slots__ = ["twist", "covariance"]
 
     __typenames__ = ["Twist", "double"]
 
     __dimensions__ = [None, [36]]
 
-    def __init__(self):
-        self.twist = Twist()
-        """ LCM Type: Twist """
-        self.covariance = [ 0.0 for dim0 in range(36) ]
-        """ LCM Type: double[36] """
+    def __init__(self, twist=Twist(), covariance=[ 0.0 for dim0 in range(36) ]):
+        # LCM Type: Twist
+        self.twist = twist
+        # LCM Type: double[36]
+        self.covariance = covariance
 
     def encode(self):
         buf = BytesIO()

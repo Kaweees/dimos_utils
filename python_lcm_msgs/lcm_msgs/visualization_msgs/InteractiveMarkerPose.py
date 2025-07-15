@@ -11,19 +11,21 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 class InteractiveMarkerPose(object):
 
+    msg_name = "InteractiveMarkerPose"
+
     __slots__ = ["header", "pose", "name"]
 
     __typenames__ = ["std_msgs.Header", "geometry_msgs.Pose", "string"]
 
     __dimensions__ = [None, None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.pose = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.name = ""
-        """ LCM Type: string """
+    def __init__(self, header=std_msgs.Header(), pose=geometry_msgs.Pose(), name=""):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: geometry_msgs.Pose
+        self.pose = pose
+        # LCM Type: string
+        self.name = name
 
     def encode(self):
         buf = BytesIO()

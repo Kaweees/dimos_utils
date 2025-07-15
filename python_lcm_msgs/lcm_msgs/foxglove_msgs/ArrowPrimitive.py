@@ -12,25 +12,27 @@ from . import *
 from .Color import Color
 class ArrowPrimitive(object):
 
+    msg_name = "ArrowPrimitive"
+
     __slots__ = ["pose", "shaft_length", "shaft_diameter", "head_length", "head_diameter", "color"]
 
     __typenames__ = ["geometry_msgs.Pose", "double", "double", "double", "double", "Color"]
 
     __dimensions__ = [None, None, None, None, None, None]
 
-    def __init__(self):
-        self.pose = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.shaft_length = 0.0
-        """ LCM Type: double """
-        self.shaft_diameter = 0.0
-        """ LCM Type: double """
-        self.head_length = 0.0
-        """ LCM Type: double """
-        self.head_diameter = 0.0
-        """ LCM Type: double """
-        self.color = Color()
-        """ LCM Type: Color """
+    def __init__(self, pose=geometry_msgs.Pose(), shaft_length=0.0, shaft_diameter=0.0, head_length=0.0, head_diameter=0.0, color=Color()):
+        # LCM Type: geometry_msgs.Pose
+        self.pose = pose
+        # LCM Type: double
+        self.shaft_length = shaft_length
+        # LCM Type: double
+        self.shaft_diameter = shaft_diameter
+        # LCM Type: double
+        self.head_length = head_length
+        # LCM Type: double
+        self.head_diameter = head_diameter
+        # LCM Type: Color
+        self.color = color
 
     def encode(self):
         buf = BytesIO()

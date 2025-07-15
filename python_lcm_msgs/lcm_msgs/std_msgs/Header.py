@@ -11,19 +11,21 @@ from . import *
 from .Time import Time
 class Header(object):
 
+    msg_name = "Header"
+
     __slots__ = ["seq", "stamp", "frame_id"]
 
     __typenames__ = ["int32_t", "Time", "string"]
 
     __dimensions__ = [None, None, None]
 
-    def __init__(self):
-        self.seq = 0
-        """ LCM Type: int32_t """
-        self.stamp = Time()
-        """ LCM Type: Time """
-        self.frame_id = ""
-        """ LCM Type: string """
+    def __init__(self, seq=0, stamp=Time(), frame_id=""):
+        # LCM Type: int32_t
+        self.seq = seq
+        # LCM Type: Time
+        self.stamp = stamp
+        # LCM Type: string
+        self.frame_id = frame_id
 
     def encode(self):
         buf = BytesIO()

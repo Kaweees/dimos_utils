@@ -11,27 +11,29 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 class Imu(object):
 
+    msg_name = "Imu"
+
     __slots__ = ["header", "orientation", "orientation_covariance", "angular_velocity", "angular_velocity_covariance", "linear_acceleration", "linear_acceleration_covariance"]
 
     __typenames__ = ["std_msgs.Header", "geometry_msgs.Quaternion", "double", "geometry_msgs.Vector3", "double", "geometry_msgs.Vector3", "double"]
 
     __dimensions__ = [None, None, [9], None, [9], None, [9]]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.orientation = geometry_msgs.Quaternion()
-        """ LCM Type: geometry_msgs.Quaternion """
-        self.orientation_covariance = [ 0.0 for dim0 in range(9) ]
-        """ LCM Type: double[9] """
-        self.angular_velocity = geometry_msgs.Vector3()
-        """ LCM Type: geometry_msgs.Vector3 """
-        self.angular_velocity_covariance = [ 0.0 for dim0 in range(9) ]
-        """ LCM Type: double[9] """
-        self.linear_acceleration = geometry_msgs.Vector3()
-        """ LCM Type: geometry_msgs.Vector3 """
-        self.linear_acceleration_covariance = [ 0.0 for dim0 in range(9) ]
-        """ LCM Type: double[9] """
+    def __init__(self, header=std_msgs.Header(), orientation=geometry_msgs.Quaternion(), orientation_covariance=[ 0.0 for dim0 in range(9) ], angular_velocity=geometry_msgs.Vector3(), angular_velocity_covariance=[ 0.0 for dim0 in range(9) ], linear_acceleration=geometry_msgs.Vector3(), linear_acceleration_covariance=[ 0.0 for dim0 in range(9) ]):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: geometry_msgs.Quaternion
+        self.orientation = orientation
+        # LCM Type: double[9]
+        self.orientation_covariance = orientation_covariance
+        # LCM Type: geometry_msgs.Vector3
+        self.angular_velocity = angular_velocity
+        # LCM Type: double[9]
+        self.angular_velocity_covariance = angular_velocity_covariance
+        # LCM Type: geometry_msgs.Vector3
+        self.linear_acceleration = linear_acceleration
+        # LCM Type: double[9]
+        self.linear_acceleration_covariance = linear_acceleration_covariance
 
     def encode(self):
         buf = BytesIO()

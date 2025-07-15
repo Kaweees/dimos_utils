@@ -13,29 +13,31 @@ from lcm_msgs import builtin_interfaces
 from .PackedElementField import PackedElementField
 class PointCloud(object):
 
+    msg_name = "PointCloud"
+
     __slots__ = ["fields_length", "data_length", "timestamp", "frame_id", "pose", "point_stride", "fields", "data"]
 
     __typenames__ = ["int32_t", "int32_t", "builtin_interfaces.Time", "string", "geometry_msgs.Pose", "int32_t", "PackedElementField", "byte"]
 
     __dimensions__ = [None, None, None, None, None, None, ["fields_length"], ["data_length"]]
 
-    def __init__(self):
-        self.fields_length = 0
-        """ LCM Type: int32_t """
-        self.data_length = 0
-        """ LCM Type: int32_t """
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.frame_id = ""
-        """ LCM Type: string """
-        self.pose = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.point_stride = 0
-        """ LCM Type: int32_t """
-        self.fields = []
-        """ LCM Type: PackedElementField[fields_length] """
-        self.data = b""
-        """ LCM Type: byte[data_length] """
+    def __init__(self, fields_length=0, data_length=0, timestamp=builtin_interfaces.Time(), frame_id="", pose=geometry_msgs.Pose(), point_stride=0, fields=[], data=b""):
+        # LCM Type: int32_t
+        self.fields_length = fields_length
+        # LCM Type: int32_t
+        self.data_length = data_length
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: string
+        self.frame_id = frame_id
+        # LCM Type: geometry_msgs.Pose
+        self.pose = pose
+        # LCM Type: int32_t
+        self.point_stride = point_stride
+        # LCM Type: PackedElementField[fields_length]
+        self.fields = fields
+        # LCM Type: byte[data_length]
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

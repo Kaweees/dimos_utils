@@ -9,9 +9,11 @@ import struct
 
 from . import *
 from lcm_msgs import std_msgs
-from .ObjectHypothesisWithPose import ObjectHypothesisWithPose
 from .BoundingBox2D import BoundingBox2D
+from .ObjectHypothesisWithPose import ObjectHypothesisWithPose
 class Detection2D(object):
+
+    msg_name = "Detection2D"
 
     __slots__ = ["results_length", "header", "results", "bbox", "id"]
 
@@ -19,17 +21,17 @@ class Detection2D(object):
 
     __dimensions__ = [None, None, ["results_length"], None, None]
 
-    def __init__(self):
-        self.results_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.results = []
-        """ LCM Type: ObjectHypothesisWithPose[results_length] """
-        self.bbox = BoundingBox2D()
-        """ LCM Type: BoundingBox2D """
-        self.id = ""
-        """ LCM Type: string """
+    def __init__(self, results_length=0, header=std_msgs.Header(), results=[], bbox=BoundingBox2D(), id=""):
+        # LCM Type: int32_t
+        self.results_length = results_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: ObjectHypothesisWithPose[results_length]
+        self.results = results
+        # LCM Type: BoundingBox2D
+        self.bbox = bbox
+        # LCM Type: string
+        self.id = id
 
     def encode(self):
         buf = BytesIO()

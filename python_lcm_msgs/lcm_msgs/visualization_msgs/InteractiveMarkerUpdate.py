@@ -8,9 +8,11 @@ from io import BytesIO
 import struct
 
 from . import *
-from .InteractiveMarkerPose import InteractiveMarkerPose
 from .InteractiveMarker import InteractiveMarker
+from .InteractiveMarkerPose import InteractiveMarkerPose
 class InteractiveMarkerUpdate(object):
+
+    msg_name = "InteractiveMarkerUpdate"
 
     __slots__ = ["markers_length", "poses_length", "erases_length", "server_id", "seq_num", "type", "markers", "poses", "erases"]
 
@@ -21,25 +23,25 @@ class InteractiveMarkerUpdate(object):
     KEEP_ALIVE = 0
     UPDATE = 1
 
-    def __init__(self):
-        self.markers_length = 0
-        """ LCM Type: int32_t """
-        self.poses_length = 0
-        """ LCM Type: int32_t """
-        self.erases_length = 0
-        """ LCM Type: int32_t """
-        self.server_id = ""
-        """ LCM Type: string """
-        self.seq_num = 0
-        """ LCM Type: int64_t """
-        self.type = 0
-        """ LCM Type: byte """
-        self.markers = []
-        """ LCM Type: InteractiveMarker[markers_length] """
-        self.poses = []
-        """ LCM Type: InteractiveMarkerPose[poses_length] """
-        self.erases = []
-        """ LCM Type: string[erases_length] """
+    def __init__(self, markers_length=0, poses_length=0, erases_length=0, server_id="", seq_num=0, type=0, markers=[], poses=[], erases=[]):
+        # LCM Type: int32_t
+        self.markers_length = markers_length
+        # LCM Type: int32_t
+        self.poses_length = poses_length
+        # LCM Type: int32_t
+        self.erases_length = erases_length
+        # LCM Type: string
+        self.server_id = server_id
+        # LCM Type: int64_t
+        self.seq_num = seq_num
+        # LCM Type: byte
+        self.type = type
+        # LCM Type: InteractiveMarker[markers_length]
+        self.markers = markers
+        # LCM Type: InteractiveMarkerPose[poses_length]
+        self.poses = poses
+        # LCM Type: string[erases_length]
+        self.erases = erases
 
     def encode(self):
         buf = BytesIO()

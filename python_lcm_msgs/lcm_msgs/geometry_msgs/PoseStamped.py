@@ -12,17 +12,19 @@ from lcm_msgs import std_msgs
 from .Pose import Pose
 class PoseStamped(object):
 
+    msg_name = "PoseStamped"
+
     __slots__ = ["header", "pose"]
 
     __typenames__ = ["std_msgs.Header", "Pose"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.pose = Pose()
-        """ LCM Type: Pose """
+    def __init__(self, header=std_msgs.Header(), pose=Pose()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: Pose
+        self.pose = pose
 
     def encode(self):
         buf = BytesIO()

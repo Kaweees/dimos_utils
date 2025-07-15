@@ -12,17 +12,19 @@ from lcm_msgs import std_msgs
 from .Point import Point
 class PointStamped(object):
 
+    msg_name = "PointStamped"
+
     __slots__ = ["header", "point"]
 
     __typenames__ = ["std_msgs.Header", "Point"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.point = Point()
-        """ LCM Type: Point """
+    def __init__(self, header=std_msgs.Header(), point=Point()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: Point
+        self.point = point
 
     def encode(self):
         buf = BytesIO()

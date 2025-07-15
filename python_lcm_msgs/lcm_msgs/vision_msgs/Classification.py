@@ -12,19 +12,21 @@ from lcm_msgs import std_msgs
 from .ObjectHypothesis import ObjectHypothesis
 class Classification(object):
 
+    msg_name = "Classification"
+
     __slots__ = ["results_length", "header", "results"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "ObjectHypothesis"]
 
     __dimensions__ = [None, None, ["results_length"]]
 
-    def __init__(self):
-        self.results_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.results = []
-        """ LCM Type: ObjectHypothesis[results_length] """
+    def __init__(self, results_length=0, header=std_msgs.Header(), results=[]):
+        # LCM Type: int32_t
+        self.results_length = results_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: ObjectHypothesis[results_length]
+        self.results = results
 
     def encode(self):
         buf = BytesIO()
