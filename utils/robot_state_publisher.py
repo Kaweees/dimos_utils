@@ -10,6 +10,7 @@ from lcm_msgs.sensor_msgs import JointState
 from lcm_msgs.geometry_msgs import Transform, TransformStamped, Vector3, Quaternion
 from lcm_msgs.tf2_msgs import TFMessage
 from lcm_msgs.std_msgs import Header
+import os
 
 def quaternion_from_euler(roll, pitch, yaw):
     """
@@ -97,7 +98,7 @@ def transform_multiply(t1, t2):
     return t
 
 class Joint:
-    def __init__(self, name, parent, child, origin_xyz, origin_rpy, axis, joint_type, limit_lower=None, limit_upper=None):
+    def __init__(self, name, parent, child, origin_xyz, origin_rpy, axis, joint_type, limit_lower=None, limit_upper=None, mimic_joint=None, mimic_multiplier=1.0, mimic_offset=0.0):
         self.name = name
         self.parent = parent
         self.child = child
@@ -108,6 +109,9 @@ class Joint:
         self.position = 0.0
         self.limit_lower = limit_lower
         self.limit_upper = limit_upper
+        self.mimic_joint = mimic_joint
+        self.mimic_multiplier = mimic_multiplier
+        self.mimic_offset = mimic_offset
 
 class Link:
     def __init__(self, name):
@@ -173,10 +177,23 @@ class URDF:
                 if 'upper' in limit_elem.attrib:
                     limit_upper = float(limit_elem.get('upper'))
             
+            # Parse mimic joint information
+            mimic_joint = None
+            mimic_multiplier = 1.0
+            mimic_offset = 0.0
+            mimic_elem = joint_elem.find('mimic')
+            if mimic_elem is not None:
+                if 'joint' in mimic_elem.attrib:
+                    mimic_joint = mimic_elem.get('joint')
+                if 'multiplier' in mimic_elem.attrib:
+                    mimic_multiplier = float(mimic_elem.get('multiplier'))
+                if 'offset' in mimic_elem.attrib:
+                    mimic_offset = float(mimic_elem.get('offset'))
+            
             self.joints[joint_name] = Joint(
                 joint_name, parent_link, child_link, 
                 origin_xyz, origin_rpy, axis, joint_type,
-                limit_lower, limit_upper
+                limit_lower, limit_upper, mimic_joint, mimic_multiplier, mimic_offset
             )
     
     def get_root_link(self):
@@ -229,6 +246,13 @@ class RobotStatePublisher:
                         limit_info.append(f"upper={joint.limit_upper:.3f}")
                     print(f"  {joint_name}: {', '.join(limit_info)}")
         
+        # Print mimic joint information
+        mimic_joints = [joint for joint in self.urdf.joints.values() if joint.mimic_joint is not None]
+        if mimic_joints:
+            print(f"Found {len(mimic_joints)} mimic joints:")
+            for joint in mimic_joints:
+                print(f"  {joint.name} mimics {joint.mimic_joint} (multiplier={joint.mimic_multiplier}, offset={joint.mimic_offset})")
+        
         # Start LCM handling thread
         self.lcm_thread = Thread(target=self._lcm_thread)
         self.lcm_thread.daemon = True
@@ -238,6 +262,29 @@ class RobotStatePublisher:
         self.publish_thread = Thread(target=self._publish_transforms)
         self.publish_thread.daemon = True
         self.publish_thread.start()
+    
+    def _update_mimic_joints(self):
+        """Update positions of mimic joints based on their parent joints."""
+        for joint_name, joint in self.urdf.joints.items():
+            if joint.mimic_joint is not None:
+                # Get the position of the parent joint
+                parent_position = self.joint_state.get(joint.mimic_joint, 0.0)
+                
+                # Calculate mimic joint position: position = multiplier * parent_position + offset
+                mimic_position = joint.mimic_multiplier * parent_position + joint.mimic_offset
+                
+                # Apply joint limits if they exist
+                if self.enforce_limits:
+                    if joint.limit_lower is not None and mimic_position < joint.limit_lower:
+                        mimic_position = joint.limit_lower
+                        print(f"Limiting mimic joint {joint_name} to lower bound: {mimic_position:.3f}")
+                    
+                    if joint.limit_upper is not None and mimic_position > joint.limit_upper:
+                        mimic_position = joint.limit_upper
+                        print(f"Limiting mimic joint {joint_name} to upper bound: {mimic_position:.3f}")
+                
+                # Update the joint state
+                self.joint_state[joint_name] = mimic_position
         
     def _lcm_thread(self):
         def joint_state_handler(channel, data):
@@ -267,6 +314,9 @@ class RobotStatePublisher:
                             
                             # Update joint state with potentially limited position
                             self.joint_state[joint_name] = joint_position
+                
+                # Update mimic joint positions after processing all primary joints
+                self._update_mimic_joints()
             except Exception as e:
                 print(f"Error processing joint state message: {e}")
         
@@ -453,10 +503,11 @@ def main():
     
     # If URDF is not specified, look for common locations
     urdf_path = args.urdf
+    file_dir = os.path.dirname(os.path.abspath(__file__))
     if not urdf_path:
         # Try to find a URDF file in common locations
         potential_paths = [
-            "../assets/devkit_base_descr.urdf",
+            os.path.join(file_dir, "../assets/xarm_devkit_base_descr.urdf"),
         ]
         
         for path in potential_paths:
