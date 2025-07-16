@@ -10,17 +10,19 @@ import struct
 from lcm_msgs import geometry_msgs
 class TFMessage(object):
 
+    msg_name = "TFMessage"
+
     __slots__ = ["transforms_length", "transforms"]
 
     __typenames__ = ["int32_t", "geometry_msgs.TransformStamped"]
 
     __dimensions__ = [None, ["transforms_length"]]
 
-    def __init__(self):
-        self.transforms_length = 0
-        """ LCM Type: int32_t """
-        self.transforms = []
-        """ LCM Type: geometry_msgs.TransformStamped[transforms_length] """
+    def __init__(self, transforms_length=0, transforms=[]):
+        # LCM Type: int32_t
+        self.transforms_length = transforms_length
+        # LCM Type: geometry_msgs.TransformStamped[transforms_length]
+        self.transforms = transforms
 
     def encode(self):
         buf = BytesIO()

@@ -12,17 +12,19 @@ from lcm_msgs import std_msgs
 from .PoseWithCovariance import PoseWithCovariance
 class PoseWithCovarianceStamped(object):
 
+    msg_name = "PoseWithCovarianceStamped"
+
     __slots__ = ["header", "pose"]
 
     __typenames__ = ["std_msgs.Header", "PoseWithCovariance"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.pose = PoseWithCovariance()
-        """ LCM Type: PoseWithCovariance """
+    def __init__(self, header=std_msgs.Header(), pose=PoseWithCovariance()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: PoseWithCovariance
+        self.pose = pose
 
     def encode(self):
         buf = BytesIO()

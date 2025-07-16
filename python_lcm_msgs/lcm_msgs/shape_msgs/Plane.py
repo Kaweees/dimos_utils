@@ -9,15 +9,17 @@ import struct
 
 class Plane(object):
 
+    msg_name = "Plane"
+
     __slots__ = ["coef"]
 
     __typenames__ = ["double"]
 
     __dimensions__ = [[4]]
 
-    def __init__(self):
-        self.coef = [ 0.0 for dim0 in range(4) ]
-        """ LCM Type: double[4] """
+    def __init__(self, coef=[ 0.0 for dim0 in range(4) ]):
+        # LCM Type: double[4]
+        self.coef = coef
 
     def encode(self):
         buf = BytesIO()

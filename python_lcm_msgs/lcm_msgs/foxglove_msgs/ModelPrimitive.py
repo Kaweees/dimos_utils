@@ -12,29 +12,31 @@ from . import *
 from .Color import Color
 class ModelPrimitive(object):
 
+    msg_name = "ModelPrimitive"
+
     __slots__ = ["data_length", "pose", "scale", "color", "override_color", "url", "media_type", "data"]
 
     __typenames__ = ["int32_t", "geometry_msgs.Pose", "geometry_msgs.Vector3", "Color", "boolean", "string", "string", "byte"]
 
     __dimensions__ = [None, None, None, None, None, None, None, ["data_length"]]
 
-    def __init__(self):
-        self.data_length = 0
-        """ LCM Type: int32_t """
-        self.pose = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.scale = geometry_msgs.Vector3()
-        """ LCM Type: geometry_msgs.Vector3 """
-        self.color = Color()
-        """ LCM Type: Color """
-        self.override_color = False
-        """ LCM Type: boolean """
-        self.url = ""
-        """ LCM Type: string """
-        self.media_type = ""
-        """ LCM Type: string """
-        self.data = b""
-        """ LCM Type: byte[data_length] """
+    def __init__(self, data_length=0, pose=geometry_msgs.Pose(), scale=geometry_msgs.Vector3(), color=Color(), override_color=False, url="", media_type="", data=b""):
+        # LCM Type: int32_t
+        self.data_length = data_length
+        # LCM Type: geometry_msgs.Pose
+        self.pose = pose
+        # LCM Type: geometry_msgs.Vector3
+        self.scale = scale
+        # LCM Type: Color
+        self.color = color
+        # LCM Type: boolean
+        self.override_color = override_color
+        # LCM Type: string
+        self.url = url
+        # LCM Type: string
+        self.media_type = media_type
+        # LCM Type: byte[data_length]
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

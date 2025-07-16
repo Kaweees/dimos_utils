@@ -13,23 +13,25 @@ from . import *
 from .ChannelFloat32 import ChannelFloat32
 class PointCloud(object):
 
+    msg_name = "PointCloud"
+
     __slots__ = ["points_length", "channels_length", "header", "points", "channels"]
 
     __typenames__ = ["int32_t", "int32_t", "std_msgs.Header", "geometry_msgs.Point32", "ChannelFloat32"]
 
     __dimensions__ = [None, None, None, ["points_length"], ["channels_length"]]
 
-    def __init__(self):
-        self.points_length = 0
-        """ LCM Type: int32_t """
-        self.channels_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.points = []
-        """ LCM Type: geometry_msgs.Point32[points_length] """
-        self.channels = []
-        """ LCM Type: ChannelFloat32[channels_length] """
+    def __init__(self, points_length=0, channels_length=0, header=std_msgs.Header(), points=[], channels=[]):
+        # LCM Type: int32_t
+        self.points_length = points_length
+        # LCM Type: int32_t
+        self.channels_length = channels_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: geometry_msgs.Point32[points_length]
+        self.points = points
+        # LCM Type: ChannelFloat32[channels_length]
+        self.channels = channels
 
     def encode(self):
         buf = BytesIO()

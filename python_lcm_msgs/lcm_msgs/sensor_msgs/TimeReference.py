@@ -10,19 +10,21 @@ import struct
 from lcm_msgs import std_msgs
 class TimeReference(object):
 
+    msg_name = "TimeReference"
+
     __slots__ = ["header", "time_ref", "source"]
 
     __typenames__ = ["std_msgs.Header", "std_msgs.Time", "string"]
 
     __dimensions__ = [None, None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.time_ref = std_msgs.Time()
-        """ LCM Type: std_msgs.Time """
-        self.source = ""
-        """ LCM Type: string """
+    def __init__(self, header=std_msgs.Header(), time_ref=std_msgs.Time(), source=""):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: std_msgs.Time
+        self.time_ref = time_ref
+        # LCM Type: string
+        self.source = source
 
     def encode(self):
         buf = BytesIO()

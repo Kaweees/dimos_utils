@@ -12,19 +12,21 @@ from lcm_msgs import std_msgs
 from .Transform import Transform
 class TransformStamped(object):
 
+    msg_name = "TransformStamped"
+
     __slots__ = ["header", "child_frame_id", "transform"]
 
     __typenames__ = ["std_msgs.Header", "string", "Transform"]
 
     __dimensions__ = [None, None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.child_frame_id = ""
-        """ LCM Type: string """
-        self.transform = Transform()
-        """ LCM Type: Transform """
+    def __init__(self, header=std_msgs.Header(), child_frame_id="", transform=Transform()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: string
+        self.child_frame_id = child_frame_id
+        # LCM Type: Transform
+        self.transform = transform
 
     def encode(self):
         buf = BytesIO()

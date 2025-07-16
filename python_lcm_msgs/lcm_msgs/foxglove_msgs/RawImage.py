@@ -10,29 +10,31 @@ import struct
 from lcm_msgs import builtin_interfaces
 class RawImage(object):
 
+    msg_name = "RawImage"
+
     __slots__ = ["data_length", "timestamp", "frame_id", "width", "height", "encoding", "step", "data"]
 
     __typenames__ = ["int32_t", "builtin_interfaces.Time", "string", "int32_t", "int32_t", "string", "int32_t", "byte"]
 
     __dimensions__ = [None, None, None, None, None, None, None, ["data_length"]]
 
-    def __init__(self):
-        self.data_length = 0
-        """ LCM Type: int32_t """
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.frame_id = ""
-        """ LCM Type: string """
-        self.width = 0
-        """ LCM Type: int32_t """
-        self.height = 0
-        """ LCM Type: int32_t """
-        self.encoding = ""
-        """ LCM Type: string """
-        self.step = 0
-        """ LCM Type: int32_t """
-        self.data = b""
-        """ LCM Type: byte[data_length] """
+    def __init__(self, data_length=0, timestamp=builtin_interfaces.Time(), frame_id="", width=0, height=0, encoding="", step=0, data=b""):
+        # LCM Type: int32_t
+        self.data_length = data_length
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: string
+        self.frame_id = frame_id
+        # LCM Type: int32_t
+        self.width = width
+        # LCM Type: int32_t
+        self.height = height
+        # LCM Type: string
+        self.encoding = encoding
+        # LCM Type: int32_t
+        self.step = step
+        # LCM Type: byte[data_length]
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

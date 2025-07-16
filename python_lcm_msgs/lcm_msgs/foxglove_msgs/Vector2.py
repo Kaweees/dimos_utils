@@ -9,17 +9,19 @@ import struct
 
 class Vector2(object):
 
+    msg_name = "Vector2"
+
     __slots__ = ["x", "y"]
 
     __typenames__ = ["double", "double"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.x = 0.0
-        """ LCM Type: double """
-        self.y = 0.0
-        """ LCM Type: double """
+    def __init__(self, x=0.0, y=0.0):
+        # LCM Type: double
+        self.x = x
+        # LCM Type: double
+        self.y = y
 
     def encode(self):
         buf = BytesIO()

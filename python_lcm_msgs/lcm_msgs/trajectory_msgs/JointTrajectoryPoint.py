@@ -10,31 +10,33 @@ import struct
 from lcm_msgs import std_msgs
 class JointTrajectoryPoint(object):
 
+    msg_name = "JointTrajectoryPoint"
+
     __slots__ = ["positions_length", "velocities_length", "accelerations_length", "effort_length", "positions", "velocities", "accelerations", "effort", "time_from_start"]
 
     __typenames__ = ["int32_t", "int32_t", "int32_t", "int32_t", "double", "double", "double", "double", "std_msgs.Duration"]
 
     __dimensions__ = [None, None, None, None, ["positions_length"], ["velocities_length"], ["accelerations_length"], ["effort_length"], None]
 
-    def __init__(self):
-        self.positions_length = 0
-        """ LCM Type: int32_t """
-        self.velocities_length = 0
-        """ LCM Type: int32_t """
-        self.accelerations_length = 0
-        """ LCM Type: int32_t """
-        self.effort_length = 0
-        """ LCM Type: int32_t """
-        self.positions = []
-        """ LCM Type: double[positions_length] """
-        self.velocities = []
-        """ LCM Type: double[velocities_length] """
-        self.accelerations = []
-        """ LCM Type: double[accelerations_length] """
-        self.effort = []
-        """ LCM Type: double[effort_length] """
-        self.time_from_start = std_msgs.Duration()
-        """ LCM Type: std_msgs.Duration """
+    def __init__(self, positions_length=0, velocities_length=0, accelerations_length=0, effort_length=0, positions=[], velocities=[], accelerations=[], effort=[], time_from_start=std_msgs.Duration()):
+        # LCM Type: int32_t
+        self.positions_length = positions_length
+        # LCM Type: int32_t
+        self.velocities_length = velocities_length
+        # LCM Type: int32_t
+        self.accelerations_length = accelerations_length
+        # LCM Type: int32_t
+        self.effort_length = effort_length
+        # LCM Type: double[positions_length]
+        self.positions = positions
+        # LCM Type: double[velocities_length]
+        self.velocities = velocities
+        # LCM Type: double[accelerations_length]
+        self.accelerations = accelerations
+        # LCM Type: double[effort_length]
+        self.effort = effort
+        # LCM Type: std_msgs.Duration
+        self.time_from_start = time_from_start
 
     def encode(self):
         buf = BytesIO()

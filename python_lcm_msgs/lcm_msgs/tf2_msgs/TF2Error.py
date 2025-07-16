@@ -9,6 +9,8 @@ import struct
 
 class TF2Error(object):
 
+    msg_name = "TF2Error"
+
     __slots__ = ["error", "error_string"]
 
     __typenames__ = ["byte", "string"]
@@ -23,11 +25,11 @@ class TF2Error(object):
     TIMEOUT_ERROR = 5
     TRANSFORM_ERROR = 6
 
-    def __init__(self):
-        self.error = 0
-        """ LCM Type: byte """
-        self.error_string = ""
-        """ LCM Type: string """
+    def __init__(self, error=0, error_string=""):
+        # LCM Type: byte
+        self.error = error
+        # LCM Type: string
+        self.error_string = error_string
 
     def encode(self):
         buf = BytesIO()

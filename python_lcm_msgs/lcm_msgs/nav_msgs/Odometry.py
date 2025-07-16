@@ -11,21 +11,23 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 class Odometry(object):
 
+    msg_name = "Odometry"
+
     __slots__ = ["header", "child_frame_id", "pose", "twist"]
 
     __typenames__ = ["std_msgs.Header", "string", "geometry_msgs.PoseWithCovariance", "geometry_msgs.TwistWithCovariance"]
 
     __dimensions__ = [None, None, None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.child_frame_id = ""
-        """ LCM Type: string """
-        self.pose = geometry_msgs.PoseWithCovariance()
-        """ LCM Type: geometry_msgs.PoseWithCovariance """
-        self.twist = geometry_msgs.TwistWithCovariance()
-        """ LCM Type: geometry_msgs.TwistWithCovariance """
+    def __init__(self, header=std_msgs.Header(), child_frame_id="", pose=geometry_msgs.PoseWithCovariance(), twist=geometry_msgs.TwistWithCovariance()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: string
+        self.child_frame_id = child_frame_id
+        # LCM Type: geometry_msgs.PoseWithCovariance
+        self.pose = pose
+        # LCM Type: geometry_msgs.TwistWithCovariance
+        self.twist = twist
 
     def encode(self):
         buf = BytesIO()

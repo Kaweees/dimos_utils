@@ -1,13 +1,13 @@
 Metadata-Version: 2.4
 Name: lcm_msgs
-Version: 0.1.1
+Version: 0.1.2
 Summary: LCM generated Python bindings for ROS based types
 Author: Dimensional
 Project-URL: Homepage, https://github.com/dimensional/lcm_msgs
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 Requires-Dist: lcm
-Requires-Dist: foxglove-websocket
+Dynamic: requires-python
 
 # LCM ROS Messages
 

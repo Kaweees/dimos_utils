@@ -12,21 +12,23 @@ from lcm_msgs import geometry_msgs
 from .MeshTriangle import MeshTriangle
 class Mesh(object):
 
+    msg_name = "Mesh"
+
     __slots__ = ["triangles_length", "vertices_length", "triangles", "vertices"]
 
     __typenames__ = ["int32_t", "int32_t", "MeshTriangle", "geometry_msgs.Point"]
 
     __dimensions__ = [None, None, ["triangles_length"], ["vertices_length"]]
 
-    def __init__(self):
-        self.triangles_length = 0
-        """ LCM Type: int32_t """
-        self.vertices_length = 0
-        """ LCM Type: int32_t """
-        self.triangles = []
-        """ LCM Type: MeshTriangle[triangles_length] """
-        self.vertices = []
-        """ LCM Type: geometry_msgs.Point[vertices_length] """
+    def __init__(self, triangles_length=0, vertices_length=0, triangles=[], vertices=[]):
+        # LCM Type: int32_t
+        self.triangles_length = triangles_length
+        # LCM Type: int32_t
+        self.vertices_length = vertices_length
+        # LCM Type: MeshTriangle[triangles_length]
+        self.triangles = triangles
+        # LCM Type: geometry_msgs.Point[vertices_length]
+        self.vertices = vertices
 
     def encode(self):
         buf = BytesIO()

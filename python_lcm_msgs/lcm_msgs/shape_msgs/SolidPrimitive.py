@@ -9,6 +9,8 @@ import struct
 
 class SolidPrimitive(object):
 
+    msg_name = "SolidPrimitive"
+
     __slots__ = ["dimensions_length", "type", "dimensions"]
 
     __typenames__ = ["int32_t", "byte", "double"]
@@ -28,13 +30,13 @@ class SolidPrimitive(object):
     CONE_HEIGHT = 0
     CONE_RADIUS = 1
 
-    def __init__(self):
-        self.dimensions_length = 0
-        """ LCM Type: int32_t """
-        self.type = 0
-        """ LCM Type: byte """
-        self.dimensions = []
-        """ LCM Type: double[dimensions_length] """
+    def __init__(self, dimensions_length=0, type=0, dimensions=[]):
+        # LCM Type: int32_t
+        self.dimensions_length = dimensions_length
+        # LCM Type: byte
+        self.type = type
+        # LCM Type: double[dimensions_length]
+        self.dimensions = dimensions
 
     def encode(self):
         buf = BytesIO()

@@ -12,17 +12,19 @@ from lcm_msgs import std_msgs
 from .Vector3 import Vector3
 class Vector3Stamped(object):
 
+    msg_name = "Vector3Stamped"
+
     __slots__ = ["header", "vector"]
 
     __typenames__ = ["std_msgs.Header", "Vector3"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.vector = Vector3()
-        """ LCM Type: Vector3 """
+    def __init__(self, header=std_msgs.Header(), vector=Vector3()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: Vector3
+        self.vector = vector
 
     def encode(self):
         buf = BytesIO()

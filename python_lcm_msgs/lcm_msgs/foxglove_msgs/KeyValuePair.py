@@ -9,17 +9,19 @@ import struct
 
 class KeyValuePair(object):
 
+    msg_name = "KeyValuePair"
+
     __slots__ = ["key", "value"]
 
     __typenames__ = ["string", "string"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.key = ""
-        """ LCM Type: string """
-        self.value = ""
-        """ LCM Type: string """
+    def __init__(self, key="", value=""):
+        # LCM Type: string
+        self.key = key
+        # LCM Type: string
+        self.value = value
 
     def encode(self):
         buf = BytesIO()

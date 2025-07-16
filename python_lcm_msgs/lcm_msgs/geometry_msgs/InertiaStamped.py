@@ -12,17 +12,19 @@ from lcm_msgs import std_msgs
 from .Inertia import Inertia
 class InertiaStamped(object):
 
+    msg_name = "InertiaStamped"
+
     __slots__ = ["header", "inertia"]
 
     __typenames__ = ["std_msgs.Header", "Inertia"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.inertia = Inertia()
-        """ LCM Type: Inertia """
+    def __init__(self, header=std_msgs.Header(), inertia=Inertia()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: Inertia
+        self.inertia = inertia
 
     def encode(self):
         buf = BytesIO()

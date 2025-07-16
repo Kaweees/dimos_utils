@@ -9,6 +9,8 @@ import struct
 
 class JoyFeedback(object):
 
+    msg_name = "JoyFeedback"
+
     __slots__ = ["type", "id", "intensity"]
 
     __typenames__ = ["byte", "byte", "float"]
@@ -19,13 +21,13 @@ class JoyFeedback(object):
     TYPE_RUMBLE = 1
     TYPE_BUZZER = 2
 
-    def __init__(self):
-        self.type = 0
-        """ LCM Type: byte """
-        self.id = 0
-        """ LCM Type: byte """
-        self.intensity = 0.0
-        """ LCM Type: float """
+    def __init__(self, type=0, id=0, intensity=0.0):
+        # LCM Type: byte
+        self.type = type
+        # LCM Type: byte
+        self.id = id
+        # LCM Type: float
+        self.intensity = intensity
 
     def encode(self):
         buf = BytesIO()

@@ -9,15 +9,17 @@ import struct
 
 class Float64(object):
 
+    msg_name = "Float64"
+
     __slots__ = ["data"]
 
     __typenames__ = ["double"]
 
     __dimensions__ = [None]
 
-    def __init__(self):
-        self.data = 0.0
-        """ LCM Type: double """
+    def __init__(self, data=0.0):
+        # LCM Type: double
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

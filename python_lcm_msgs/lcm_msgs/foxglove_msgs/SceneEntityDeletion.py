@@ -10,6 +10,8 @@ import struct
 from lcm_msgs import builtin_interfaces
 class SceneEntityDeletion(object):
 
+    msg_name = "SceneEntityDeletion"
+
     __slots__ = ["timestamp", "type", "id"]
 
     __typenames__ = ["builtin_interfaces.Time", "byte", "string"]
@@ -19,13 +21,13 @@ class SceneEntityDeletion(object):
     MATCHING_ID = 0
     ALL = 1
 
-    def __init__(self):
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.type = 0
-        """ LCM Type: byte """
-        self.id = ""
-        """ LCM Type: string """
+    def __init__(self, timestamp=builtin_interfaces.Time(), type=0, id=""):
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: byte
+        self.type = type
+        # LCM Type: string
+        self.id = id
 
     def encode(self):
         buf = BytesIO()

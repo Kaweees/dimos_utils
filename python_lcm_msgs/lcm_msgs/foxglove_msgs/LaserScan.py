@@ -11,31 +11,33 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import builtin_interfaces
 class LaserScan(object):
 
+    msg_name = "LaserScan"
+
     __slots__ = ["ranges_length", "intensities_length", "timestamp", "frame_id", "pose", "start_angle", "end_angle", "ranges", "intensities"]
 
     __typenames__ = ["int32_t", "int32_t", "builtin_interfaces.Time", "string", "geometry_msgs.Pose", "double", "double", "double", "double"]
 
     __dimensions__ = [None, None, None, None, None, None, None, ["ranges_length"], ["intensities_length"]]
 
-    def __init__(self):
-        self.ranges_length = 0
-        """ LCM Type: int32_t """
-        self.intensities_length = 0
-        """ LCM Type: int32_t """
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.frame_id = ""
-        """ LCM Type: string """
-        self.pose = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.start_angle = 0.0
-        """ LCM Type: double """
-        self.end_angle = 0.0
-        """ LCM Type: double """
-        self.ranges = []
-        """ LCM Type: double[ranges_length] """
-        self.intensities = []
-        """ LCM Type: double[intensities_length] """
+    def __init__(self, ranges_length=0, intensities_length=0, timestamp=builtin_interfaces.Time(), frame_id="", pose=geometry_msgs.Pose(), start_angle=0.0, end_angle=0.0, ranges=[], intensities=[]):
+        # LCM Type: int32_t
+        self.ranges_length = ranges_length
+        # LCM Type: int32_t
+        self.intensities_length = intensities_length
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: string
+        self.frame_id = frame_id
+        # LCM Type: geometry_msgs.Pose
+        self.pose = pose
+        # LCM Type: double
+        self.start_angle = start_angle
+        # LCM Type: double
+        self.end_angle = end_angle
+        # LCM Type: double[ranges_length]
+        self.ranges = ranges
+        # LCM Type: double[intensities_length]
+        self.intensities = intensities
 
     def encode(self):
         buf = BytesIO()

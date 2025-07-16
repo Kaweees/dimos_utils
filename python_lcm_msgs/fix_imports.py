@@ -24,6 +24,7 @@ MSG_PACKAGES = [
     "stereo_msgs",
     "tf2_msgs",
     "trajectory_msgs",
+    "vision_msgs",
     "visualization_msgs",
 ]
 

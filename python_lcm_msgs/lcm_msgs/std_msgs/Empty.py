@@ -9,6 +9,8 @@ import struct
 
 class Empty(object):
 
+    msg_name = "Empty"
+
     __slots__ = []
 
     __typenames__ = []

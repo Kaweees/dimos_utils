@@ -10,6 +10,8 @@ import struct
 from lcm_msgs import builtin_interfaces
 class LocationFix(object):
 
+    msg_name = "LocationFix"
+
     __slots__ = ["timestamp", "frame_id", "latitude", "longitude", "altitude", "position_covariance", "position_covariance_type"]
 
     __typenames__ = ["builtin_interfaces.Time", "string", "double", "double", "double", "double", "byte"]
@@ -21,21 +23,21 @@ class LocationFix(object):
     DIAGONAL_KNOWN = 2
     KNOWN = 3
 
-    def __init__(self):
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.frame_id = ""
-        """ LCM Type: string """
-        self.latitude = 0.0
-        """ LCM Type: double """
-        self.longitude = 0.0
-        """ LCM Type: double """
-        self.altitude = 0.0
-        """ LCM Type: double """
-        self.position_covariance = [ 0.0 for dim0 in range(9) ]
-        """ LCM Type: double[9] """
-        self.position_covariance_type = 0
-        """ LCM Type: byte """
+    def __init__(self, timestamp=builtin_interfaces.Time(), frame_id="", latitude=0.0, longitude=0.0, altitude=0.0, position_covariance=[ 0.0 for dim0 in range(9) ], position_covariance_type=0):
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: string
+        self.frame_id = frame_id
+        # LCM Type: double
+        self.latitude = latitude
+        # LCM Type: double
+        self.longitude = longitude
+        # LCM Type: double
+        self.altitude = altitude
+        # LCM Type: double[9]
+        self.position_covariance = position_covariance
+        # LCM Type: byte
+        self.position_covariance_type = position_covariance_type
 
     def encode(self):
         buf = BytesIO()

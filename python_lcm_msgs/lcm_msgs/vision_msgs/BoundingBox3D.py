@@ -7,9 +7,10 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-import geometry_msgs
-
+from lcm_msgs import geometry_msgs
 class BoundingBox3D(object):
+
+    msg_name = "BoundingBox3D"
 
     __slots__ = ["center", "size"]
 
@@ -17,11 +18,11 @@ class BoundingBox3D(object):
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.center = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.size = geometry_msgs.Vector3()
-        """ LCM Type: geometry_msgs.Vector3 """
+    def __init__(self, center=geometry_msgs.Pose(), size=geometry_msgs.Vector3()):
+        # LCM Type: geometry_msgs.Pose
+        self.center = center
+        # LCM Type: geometry_msgs.Vector3
+        self.size = size
 
     def encode(self):
         buf = BytesIO()

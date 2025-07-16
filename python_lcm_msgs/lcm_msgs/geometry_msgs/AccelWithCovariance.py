@@ -11,17 +11,19 @@ from . import *
 from .Accel import Accel
 class AccelWithCovariance(object):
 
+    msg_name = "AccelWithCovariance"
+
     __slots__ = ["accel", "covariance"]
 
     __typenames__ = ["Accel", "double"]
 
     __dimensions__ = [None, [36]]
 
-    def __init__(self):
-        self.accel = Accel()
-        """ LCM Type: Accel """
-        self.covariance = [ 0.0 for dim0 in range(36) ]
-        """ LCM Type: double[36] """
+    def __init__(self, accel=Accel(), covariance=[ 0.0 for dim0 in range(36) ]):
+        # LCM Type: Accel
+        self.accel = accel
+        # LCM Type: double[36]
+        self.covariance = covariance
 
     def encode(self):
         buf = BytesIO()

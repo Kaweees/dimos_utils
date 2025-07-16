@@ -11,29 +11,31 @@ from lcm_msgs import std_msgs
 from lcm_msgs import sensor_msgs
 class DisparityImage(object):
 
+    msg_name = "DisparityImage"
+
     __slots__ = ["header", "image", "f", "T", "valid_window", "min_disparity", "max_disparity", "delta_d"]
 
     __typenames__ = ["std_msgs.Header", "sensor_msgs.Image", "float", "float", "sensor_msgs.RegionOfInterest", "float", "float", "float"]
 
     __dimensions__ = [None, None, None, None, None, None, None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.image = sensor_msgs.Image()
-        """ LCM Type: sensor_msgs.Image """
-        self.f = 0.0
-        """ LCM Type: float """
-        self.T = 0.0
-        """ LCM Type: float """
-        self.valid_window = sensor_msgs.RegionOfInterest()
-        """ LCM Type: sensor_msgs.RegionOfInterest """
-        self.min_disparity = 0.0
-        """ LCM Type: float """
-        self.max_disparity = 0.0
-        """ LCM Type: float """
-        self.delta_d = 0.0
-        """ LCM Type: float """
+    def __init__(self, header=std_msgs.Header(), image=sensor_msgs.Image(), f=0.0, T=0.0, valid_window=sensor_msgs.RegionOfInterest(), min_disparity=0.0, max_disparity=0.0, delta_d=0.0):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: sensor_msgs.Image
+        self.image = image
+        # LCM Type: float
+        self.f = f
+        # LCM Type: float
+        self.T = T
+        # LCM Type: sensor_msgs.RegionOfInterest
+        self.valid_window = valid_window
+        # LCM Type: float
+        self.min_disparity = min_disparity
+        # LCM Type: float
+        self.max_disparity = max_disparity
+        # LCM Type: float
+        self.delta_d = delta_d
 
     def encode(self):
         buf = BytesIO()

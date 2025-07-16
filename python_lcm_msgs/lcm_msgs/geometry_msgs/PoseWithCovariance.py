@@ -11,17 +11,19 @@ from . import *
 from .Pose import Pose
 class PoseWithCovariance(object):
 
+    msg_name = "PoseWithCovariance"
+
     __slots__ = ["pose", "covariance"]
 
     __typenames__ = ["Pose", "double"]
 
     __dimensions__ = [None, [36]]
 
-    def __init__(self):
-        self.pose = Pose()
-        """ LCM Type: Pose """
-        self.covariance = [ 0.0 for dim0 in range(36) ]
-        """ LCM Type: double[36] """
+    def __init__(self, pose=Pose(), covariance=[ 0.0 for dim0 in range(36) ]):
+        # LCM Type: Pose
+        self.pose = pose
+        # LCM Type: double[36]
+        self.covariance = covariance
 
     def encode(self):
         buf = BytesIO()

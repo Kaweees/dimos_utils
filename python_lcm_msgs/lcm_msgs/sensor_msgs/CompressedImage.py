@@ -10,21 +10,23 @@ import struct
 from lcm_msgs import std_msgs
 class CompressedImage(object):
 
+    msg_name = "CompressedImage"
+
     __slots__ = ["data_length", "header", "format", "data"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "string", "byte"]
 
     __dimensions__ = [None, None, None, ["data_length"]]
 
-    def __init__(self):
-        self.data_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.format = ""
-        """ LCM Type: string """
-        self.data = b""
-        """ LCM Type: byte[data_length] """
+    def __init__(self, data_length=0, header=std_msgs.Header(), format="", data=b""):
+        # LCM Type: int32_t
+        self.data_length = data_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: string
+        self.format = format
+        # LCM Type: byte[data_length]
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

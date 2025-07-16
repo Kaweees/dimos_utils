@@ -12,19 +12,21 @@ from lcm_msgs import std_msgs
 from .GoalStatus import GoalStatus
 class GoalStatusArray(object):
 
+    msg_name = "GoalStatusArray"
+
     __slots__ = ["status_list_length", "header", "status_list"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "GoalStatus"]
 
     __dimensions__ = [None, None, ["status_list_length"]]
 
-    def __init__(self):
-        self.status_list_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.status_list = []
-        """ LCM Type: GoalStatus[status_list_length] """
+    def __init__(self, status_list_length=0, header=std_msgs.Header(), status_list=[]):
+        # LCM Type: int32_t
+        self.status_list_length = status_list_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: GoalStatus[status_list_length]
+        self.status_list = status_list
 
     def encode(self):
         buf = BytesIO()

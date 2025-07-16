@@ -9,17 +9,19 @@ import struct
 
 class VisionClass(object):
 
+    msg_name = "VisionClass"
+
     __slots__ = ["class_id", "class_name"]
 
     __typenames__ = ["int16_t", "string"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.class_id = 0
-        """ LCM Type: int16_t """
-        self.class_name = ""
-        """ LCM Type: string """
+    def __init__(self, class_id=0, class_name=""):
+        # LCM Type: int16_t
+        self.class_id = class_id
+        # LCM Type: string
+        self.class_name = class_name
 
     def encode(self):
         buf = BytesIO()

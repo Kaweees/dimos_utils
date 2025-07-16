@@ -12,17 +12,19 @@ from lcm_msgs import std_msgs
 from .Accel import Accel
 class AccelStamped(object):
 
+    msg_name = "AccelStamped"
+
     __slots__ = ["header", "accel"]
 
     __typenames__ = ["std_msgs.Header", "Accel"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.accel = Accel()
-        """ LCM Type: Accel """
+    def __init__(self, header=std_msgs.Header(), accel=Accel()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: Accel
+        self.accel = accel
 
     def encode(self):
         buf = BytesIO()

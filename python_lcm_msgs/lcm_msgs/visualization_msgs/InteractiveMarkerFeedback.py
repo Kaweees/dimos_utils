@@ -11,6 +11,8 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 class InteractiveMarkerFeedback(object):
 
+    msg_name = "InteractiveMarkerFeedback"
+
     __slots__ = ["header", "client_id", "marker_name", "control_name", "event_type", "pose", "menu_entry_id", "mouse_point", "mouse_point_valid"]
 
     __typenames__ = ["std_msgs.Header", "string", "string", "string", "byte", "geometry_msgs.Pose", "int32_t", "geometry_msgs.Point", "boolean"]
@@ -24,25 +26,25 @@ class InteractiveMarkerFeedback(object):
     MOUSE_DOWN = 4
     MOUSE_UP = 5
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.client_id = ""
-        """ LCM Type: string """
-        self.marker_name = ""
-        """ LCM Type: string """
-        self.control_name = ""
-        """ LCM Type: string """
-        self.event_type = 0
-        """ LCM Type: byte """
-        self.pose = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.menu_entry_id = 0
-        """ LCM Type: int32_t """
-        self.mouse_point = geometry_msgs.Point()
-        """ LCM Type: geometry_msgs.Point """
-        self.mouse_point_valid = False
-        """ LCM Type: boolean """
+    def __init__(self, header=std_msgs.Header(), client_id="", marker_name="", control_name="", event_type=0, pose=geometry_msgs.Pose(), menu_entry_id=0, mouse_point=geometry_msgs.Point(), mouse_point_valid=False):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: string
+        self.client_id = client_id
+        # LCM Type: string
+        self.marker_name = marker_name
+        # LCM Type: string
+        self.control_name = control_name
+        # LCM Type: byte
+        self.event_type = event_type
+        # LCM Type: geometry_msgs.Pose
+        self.pose = pose
+        # LCM Type: int32_t
+        self.menu_entry_id = menu_entry_id
+        # LCM Type: geometry_msgs.Point
+        self.mouse_point = mouse_point
+        # LCM Type: boolean
+        self.mouse_point_valid = mouse_point_valid
 
     def encode(self):
         buf = BytesIO()

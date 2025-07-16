@@ -7,23 +7,25 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-import vision_msgs
-
+from . import *
+from .Pose2D import Pose2D
 class BoundingBox2D(object):
+
+    msg_name = "BoundingBox2D"
 
     __slots__ = ["center", "size_x", "size_y"]
 
-    __typenames__ = ["vision_msgs.Pose2D", "double", "double"]
+    __typenames__ = ["Pose2D", "double", "double"]
 
     __dimensions__ = [None, None, None]
 
-    def __init__(self):
-        self.center = vision_msgs.Pose2D()
-        """ LCM Type: vision_msgs.Pose2D """
-        self.size_x = 0.0
-        """ LCM Type: double """
-        self.size_y = 0.0
-        """ LCM Type: double """
+    def __init__(self, center=Pose2D(), size_x=0.0, size_y=0.0):
+        # LCM Type: Pose2D
+        self.center = center
+        # LCM Type: double
+        self.size_x = size_x
+        # LCM Type: double
+        self.size_y = size_y
 
     def encode(self):
         buf = BytesIO()
@@ -32,7 +34,7 @@ class BoundingBox2D(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        assert self.center._get_packed_fingerprint() == vision_msgs.Pose2D._get_packed_fingerprint()
+        assert self.center._get_packed_fingerprint() == Pose2D._get_packed_fingerprint()
         self.center._encode_one(buf)
         buf.write(struct.pack(">dd", self.size_x, self.size_y))
 
@@ -49,7 +51,7 @@ class BoundingBox2D(object):
     @classmethod
     def _decode_one(cls, buf):
         self = BoundingBox2D()
-        self.center = vision_msgs.Pose2D._decode_one(buf)
+        self.center = Pose2D._decode_one(buf)
         self.size_x, self.size_y = struct.unpack(">dd", buf.read(16))
         return self
 
@@ -57,7 +59,7 @@ class BoundingBox2D(object):
     def _get_hash_recursive(cls, parents):
         if cls in parents: return 0
         newparents = parents + [cls]
-        tmphash = (0xe2274ad6240f1c77+ vision_msgs.Pose2D._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0xe2274ad6240f1c77+ Pose2D._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None

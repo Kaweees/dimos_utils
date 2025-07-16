@@ -9,15 +9,17 @@ import struct
 
 class String(object):
 
+    msg_name = "String"
+
     __slots__ = ["data"]
 
     __typenames__ = ["string"]
 
     __dimensions__ = [None]
 
-    def __init__(self):
-        self.data = ""
-        """ LCM Type: string """
+    def __init__(self, data=""):
+        # LCM Type: string
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

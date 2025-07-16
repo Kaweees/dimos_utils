@@ -12,17 +12,19 @@ from lcm_msgs import std_msgs
 from .TwistWithCovariance import TwistWithCovariance
 class TwistWithCovarianceStamped(object):
 
+    msg_name = "TwistWithCovarianceStamped"
+
     __slots__ = ["header", "twist"]
 
     __typenames__ = ["std_msgs.Header", "TwistWithCovariance"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.twist = TwistWithCovariance()
-        """ LCM Type: TwistWithCovariance """
+    def __init__(self, header=std_msgs.Header(), twist=TwistWithCovariance()):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: TwistWithCovariance
+        self.twist = twist
 
     def encode(self):
         buf = BytesIO()

@@ -10,25 +10,27 @@ import struct
 from lcm_msgs import builtin_interfaces
 class RawAudio(object):
 
+    msg_name = "RawAudio"
+
     __slots__ = ["data_length", "timestamp", "data", "format", "sample_rate", "number_of_channels"]
 
     __typenames__ = ["int32_t", "builtin_interfaces.Time", "byte", "string", "int32_t", "int32_t"]
 
     __dimensions__ = [None, None, ["data_length"], None, None, None]
 
-    def __init__(self):
-        self.data_length = 0
-        """ LCM Type: int32_t """
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.data = b""
-        """ LCM Type: byte[data_length] """
-        self.format = ""
-        """ LCM Type: string """
-        self.sample_rate = 0
-        """ LCM Type: int32_t """
-        self.number_of_channels = 0
-        """ LCM Type: int32_t """
+    def __init__(self, data_length=0, timestamp=builtin_interfaces.Time(), data=b"", format="", sample_rate=0, number_of_channels=0):
+        # LCM Type: int32_t
+        self.data_length = data_length
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: byte[data_length]
+        self.data = data
+        # LCM Type: string
+        self.format = format
+        # LCM Type: int32_t
+        self.sample_rate = sample_rate
+        # LCM Type: int32_t
+        self.number_of_channels = number_of_channels
 
     def encode(self):
         buf = BytesIO()

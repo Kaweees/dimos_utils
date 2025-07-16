@@ -12,23 +12,25 @@ from lcm_msgs import std_msgs
 from .MultiDOFJointTrajectoryPoint import MultiDOFJointTrajectoryPoint
 class MultiDOFJointTrajectory(object):
 
+    msg_name = "MultiDOFJointTrajectory"
+
     __slots__ = ["joint_names_length", "points_length", "header", "joint_names", "points"]
 
     __typenames__ = ["int32_t", "int32_t", "std_msgs.Header", "string", "MultiDOFJointTrajectoryPoint"]
 
     __dimensions__ = [None, None, None, ["joint_names_length"], ["points_length"]]
 
-    def __init__(self):
-        self.joint_names_length = 0
-        """ LCM Type: int32_t """
-        self.points_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.joint_names = []
-        """ LCM Type: string[joint_names_length] """
-        self.points = []
-        """ LCM Type: MultiDOFJointTrajectoryPoint[points_length] """
+    def __init__(self, joint_names_length=0, points_length=0, header=std_msgs.Header(), joint_names=[], points=[]):
+        # LCM Type: int32_t
+        self.joint_names_length = joint_names_length
+        # LCM Type: int32_t
+        self.points_length = points_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: string[joint_names_length]
+        self.joint_names = joint_names
+        # LCM Type: MultiDOFJointTrajectoryPoint[points_length]
+        self.points = points
 
     def encode(self):
         buf = BytesIO()

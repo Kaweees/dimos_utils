@@ -11,19 +11,21 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 class MagneticField(object):
 
+    msg_name = "MagneticField"
+
     __slots__ = ["header", "magnetic_field", "magnetic_field_covariance"]
 
     __typenames__ = ["std_msgs.Header", "geometry_msgs.Vector3", "double"]
 
     __dimensions__ = [None, None, [9]]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.magnetic_field = geometry_msgs.Vector3()
-        """ LCM Type: geometry_msgs.Vector3 """
-        self.magnetic_field_covariance = [ 0.0 for dim0 in range(9) ]
-        """ LCM Type: double[9] """
+    def __init__(self, header=std_msgs.Header(), magnetic_field=geometry_msgs.Vector3(), magnetic_field_covariance=[ 0.0 for dim0 in range(9) ]):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: geometry_msgs.Vector3
+        self.magnetic_field = magnetic_field
+        # LCM Type: double[9]
+        self.magnetic_field_covariance = magnetic_field_covariance
 
     def encode(self):
         buf = BytesIO()

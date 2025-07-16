@@ -10,19 +10,21 @@ import struct
 from lcm_msgs import std_msgs
 class RelativeHumidity(object):
 
+    msg_name = "RelativeHumidity"
+
     __slots__ = ["header", "relative_humidity", "variance"]
 
     __typenames__ = ["std_msgs.Header", "double", "double"]
 
     __dimensions__ = [None, None, None]
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.relative_humidity = 0.0
-        """ LCM Type: double """
-        self.variance = 0.0
-        """ LCM Type: double """
+    def __init__(self, header=std_msgs.Header(), relative_humidity=0.0, variance=0.0):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: double
+        self.relative_humidity = relative_humidity
+        # LCM Type: double
+        self.variance = variance
 
     def encode(self):
         buf = BytesIO()

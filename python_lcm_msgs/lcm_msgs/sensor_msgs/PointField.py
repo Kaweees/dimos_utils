@@ -9,6 +9,8 @@ import struct
 
 class PointField(object):
 
+    msg_name = "PointField"
+
     __slots__ = ["name", "offset", "datatype", "count"]
 
     __typenames__ = ["string", "int32_t", "byte", "int32_t"]
@@ -24,15 +26,15 @@ class PointField(object):
     FLOAT32 = 7
     FLOAT64 = 8
 
-    def __init__(self):
-        self.name = ""
-        """ LCM Type: string """
-        self.offset = 0
-        """ LCM Type: int32_t """
-        self.datatype = 0
-        """ LCM Type: byte """
-        self.count = 0
-        """ LCM Type: int32_t """
+    def __init__(self, name="", offset=0, datatype=0, count=0):
+        # LCM Type: string
+        self.name = name
+        # LCM Type: int32_t
+        self.offset = offset
+        # LCM Type: byte
+        self.datatype = datatype
+        # LCM Type: int32_t
+        self.count = count
 
     def encode(self):
         buf = BytesIO()

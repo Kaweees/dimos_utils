@@ -5,5 +5,5 @@ lcm-gen 1.5.1
 """
 
 from .GoalStatus import GoalStatus as GoalStatus
-from .GoalID import GoalID as GoalID
 from .GoalStatusArray import GoalStatusArray as GoalStatusArray
+from .GoalID import GoalID as GoalID

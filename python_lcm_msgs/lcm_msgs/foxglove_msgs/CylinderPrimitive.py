@@ -12,23 +12,25 @@ from . import *
 from .Color import Color
 class CylinderPrimitive(object):
 
+    msg_name = "CylinderPrimitive"
+
     __slots__ = ["pose", "size", "bottom_scale", "top_scale", "color"]
 
     __typenames__ = ["geometry_msgs.Pose", "geometry_msgs.Vector3", "double", "double", "Color"]
 
     __dimensions__ = [None, None, None, None, None]
 
-    def __init__(self):
-        self.pose = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.size = geometry_msgs.Vector3()
-        """ LCM Type: geometry_msgs.Vector3 """
-        self.bottom_scale = 0.0
-        """ LCM Type: double """
-        self.top_scale = 0.0
-        """ LCM Type: double """
-        self.color = Color()
-        """ LCM Type: Color """
+    def __init__(self, pose=geometry_msgs.Pose(), size=geometry_msgs.Vector3(), bottom_scale=0.0, top_scale=0.0, color=Color()):
+        # LCM Type: geometry_msgs.Pose
+        self.pose = pose
+        # LCM Type: geometry_msgs.Vector3
+        self.size = size
+        # LCM Type: double
+        self.bottom_scale = bottom_scale
+        # LCM Type: double
+        self.top_scale = top_scale
+        # LCM Type: Color
+        self.color = color
 
     def encode(self):
         buf = BytesIO()

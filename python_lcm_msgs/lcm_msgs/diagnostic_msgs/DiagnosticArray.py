@@ -12,19 +12,21 @@ from lcm_msgs import std_msgs
 from .DiagnosticStatus import DiagnosticStatus
 class DiagnosticArray(object):
 
+    msg_name = "DiagnosticArray"
+
     __slots__ = ["status_length", "header", "status"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "DiagnosticStatus"]
 
     __dimensions__ = [None, None, ["status_length"]]
 
-    def __init__(self):
-        self.status_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.status = []
-        """ LCM Type: DiagnosticStatus[status_length] """
+    def __init__(self, status_length=0, header=std_msgs.Header(), status=[]):
+        # LCM Type: int32_t
+        self.status_length = status_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: DiagnosticStatus[status_length]
+        self.status = status
 
     def encode(self):
         buf = BytesIO()

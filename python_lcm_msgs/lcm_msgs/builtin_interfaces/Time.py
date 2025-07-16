@@ -9,17 +9,19 @@ import struct
 
 class Time(object):
 
+    msg_name = "Time"
+
     __slots__ = ["sec", "nanosec"]
 
     __typenames__ = ["int32_t", "int32_t"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.sec = 0
-        """ LCM Type: int32_t """
-        self.nanosec = 0
-        """ LCM Type: int32_t """
+    def __init__(self, sec=0, nanosec=0):
+        # LCM Type: int32_t
+        self.sec = sec
+        # LCM Type: int32_t
+        self.nanosec = nanosec
 
     def encode(self):
         buf = BytesIO()

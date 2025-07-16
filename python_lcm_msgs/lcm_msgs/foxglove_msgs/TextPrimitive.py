@@ -12,25 +12,27 @@ from . import *
 from .Color import Color
 class TextPrimitive(object):
 
+    msg_name = "TextPrimitive"
+
     __slots__ = ["pose", "billboard", "font_size", "scale_invariant", "color", "text"]
 
     __typenames__ = ["geometry_msgs.Pose", "boolean", "double", "boolean", "Color", "string"]
 
     __dimensions__ = [None, None, None, None, None, None]
 
-    def __init__(self):
-        self.pose = geometry_msgs.Pose()
-        """ LCM Type: geometry_msgs.Pose """
-        self.billboard = False
-        """ LCM Type: boolean """
-        self.font_size = 0.0
-        """ LCM Type: double """
-        self.scale_invariant = False
-        """ LCM Type: boolean """
-        self.color = Color()
-        """ LCM Type: Color """
-        self.text = ""
-        """ LCM Type: string """
+    def __init__(self, pose=geometry_msgs.Pose(), billboard=False, font_size=0.0, scale_invariant=False, color=Color(), text=""):
+        # LCM Type: geometry_msgs.Pose
+        self.pose = pose
+        # LCM Type: boolean
+        self.billboard = billboard
+        # LCM Type: double
+        self.font_size = font_size
+        # LCM Type: boolean
+        self.scale_invariant = scale_invariant
+        # LCM Type: Color
+        self.color = color
+        # LCM Type: string
+        self.text = text
 
     def encode(self):
         buf = BytesIO()

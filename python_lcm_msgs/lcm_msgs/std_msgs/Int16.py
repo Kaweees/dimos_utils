@@ -9,15 +9,17 @@ import struct
 
 class Int16(object):
 
+    msg_name = "Int16"
+
     __slots__ = ["data"]
 
     __typenames__ = ["int16_t"]
 
     __dimensions__ = [None]
 
-    def __init__(self):
-        self.data = 0
-        """ LCM Type: int16_t """
+    def __init__(self, data=0):
+        # LCM Type: int16_t
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

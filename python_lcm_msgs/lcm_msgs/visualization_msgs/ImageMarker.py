@@ -11,6 +11,8 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 class ImageMarker(object):
 
+    msg_name = "ImageMarker"
+
     __slots__ = ["points_length", "outline_colors_length", "header", "ns", "id", "type", "action", "position", "scale", "outline_color", "filled", "fill_color", "lifetime", "points", "outline_colors"]
 
     __typenames__ = ["int32_t", "int32_t", "std_msgs.Header", "string", "int32_t", "int32_t", "int32_t", "geometry_msgs.Point", "float", "std_msgs.ColorRGBA", "byte", "std_msgs.ColorRGBA", "std_msgs.Duration", "geometry_msgs.Point", "std_msgs.ColorRGBA"]
@@ -25,37 +27,37 @@ class ImageMarker(object):
     ADD = 0
     REMOVE = 1
 
-    def __init__(self):
-        self.points_length = 0
-        """ LCM Type: int32_t """
-        self.outline_colors_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.ns = ""
-        """ LCM Type: string """
-        self.id = 0
-        """ LCM Type: int32_t """
-        self.type = 0
-        """ LCM Type: int32_t """
-        self.action = 0
-        """ LCM Type: int32_t """
-        self.position = geometry_msgs.Point()
-        """ LCM Type: geometry_msgs.Point """
-        self.scale = 0.0
-        """ LCM Type: float """
-        self.outline_color = std_msgs.ColorRGBA()
-        """ LCM Type: std_msgs.ColorRGBA """
-        self.filled = 0
-        """ LCM Type: byte """
-        self.fill_color = std_msgs.ColorRGBA()
-        """ LCM Type: std_msgs.ColorRGBA """
-        self.lifetime = std_msgs.Duration()
-        """ LCM Type: std_msgs.Duration """
-        self.points = []
-        """ LCM Type: geometry_msgs.Point[points_length] """
-        self.outline_colors = []
-        """ LCM Type: std_msgs.ColorRGBA[outline_colors_length] """
+    def __init__(self, points_length=0, outline_colors_length=0, header=std_msgs.Header(), ns="", id=0, type=0, action=0, position=geometry_msgs.Point(), scale=0.0, outline_color=std_msgs.ColorRGBA(), filled=0, fill_color=std_msgs.ColorRGBA(), lifetime=std_msgs.Duration(), points=[], outline_colors=[]):
+        # LCM Type: int32_t
+        self.points_length = points_length
+        # LCM Type: int32_t
+        self.outline_colors_length = outline_colors_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: string
+        self.ns = ns
+        # LCM Type: int32_t
+        self.id = id
+        # LCM Type: int32_t
+        self.type = type
+        # LCM Type: int32_t
+        self.action = action
+        # LCM Type: geometry_msgs.Point
+        self.position = position
+        # LCM Type: float
+        self.scale = scale
+        # LCM Type: std_msgs.ColorRGBA
+        self.outline_color = outline_color
+        # LCM Type: byte
+        self.filled = filled
+        # LCM Type: std_msgs.ColorRGBA
+        self.fill_color = fill_color
+        # LCM Type: std_msgs.Duration
+        self.lifetime = lifetime
+        # LCM Type: geometry_msgs.Point[points_length]
+        self.points = points
+        # LCM Type: std_msgs.ColorRGBA[outline_colors_length]
+        self.outline_colors = outline_colors
 
     def encode(self):
         buf = BytesIO()

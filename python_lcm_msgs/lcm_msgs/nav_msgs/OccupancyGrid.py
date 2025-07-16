@@ -12,21 +12,23 @@ from lcm_msgs import std_msgs
 from .MapMetaData import MapMetaData
 class OccupancyGrid(object):
 
+    msg_name = "OccupancyGrid"
+
     __slots__ = ["data_length", "header", "info", "data"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "MapMetaData", "int8_t"]
 
     __dimensions__ = [None, None, None, ["data_length"]]
 
-    def __init__(self):
-        self.data_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.info = MapMetaData()
-        """ LCM Type: MapMetaData """
-        self.data = []
-        """ LCM Type: int8_t[data_length] """
+    def __init__(self, data_length=0, header=std_msgs.Header(), info=MapMetaData(), data=[]):
+        # LCM Type: int32_t
+        self.data_length = data_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: MapMetaData
+        self.info = info
+        # LCM Type: int8_t[data_length]
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

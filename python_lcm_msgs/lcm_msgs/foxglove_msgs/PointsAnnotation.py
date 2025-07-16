@@ -9,9 +9,11 @@ import struct
 
 from . import *
 from lcm_msgs import builtin_interfaces
-from .Point2 import Point2
 from .Color import Color
+from .Point2 import Point2
 class PointsAnnotation(object):
+
+    msg_name = "PointsAnnotation"
 
     __slots__ = ["points_length", "outline_colors_length", "timestamp", "type", "points", "outline_color", "outline_colors", "fill_color", "thickness"]
 
@@ -25,25 +27,25 @@ class PointsAnnotation(object):
     LINE_STRIP = 3
     LINE_LIST = 4
 
-    def __init__(self):
-        self.points_length = 0
-        """ LCM Type: int32_t """
-        self.outline_colors_length = 0
-        """ LCM Type: int32_t """
-        self.timestamp = builtin_interfaces.Time()
-        """ LCM Type: builtin_interfaces.Time """
-        self.type = 0
-        """ LCM Type: byte """
-        self.points = []
-        """ LCM Type: Point2[points_length] """
-        self.outline_color = Color()
-        """ LCM Type: Color """
-        self.outline_colors = []
-        """ LCM Type: Color[outline_colors_length] """
-        self.fill_color = Color()
-        """ LCM Type: Color """
-        self.thickness = 0.0
-        """ LCM Type: double """
+    def __init__(self, points_length=0, outline_colors_length=0, timestamp=builtin_interfaces.Time(), type=0, points=[], outline_color=Color(), outline_colors=[], fill_color=Color(), thickness=0.0):
+        # LCM Type: int32_t
+        self.points_length = points_length
+        # LCM Type: int32_t
+        self.outline_colors_length = outline_colors_length
+        # LCM Type: builtin_interfaces.Time
+        self.timestamp = timestamp
+        # LCM Type: byte
+        self.type = type
+        # LCM Type: Point2[points_length]
+        self.points = points
+        # LCM Type: Color
+        self.outline_color = outline_color
+        # LCM Type: Color[outline_colors_length]
+        self.outline_colors = outline_colors
+        # LCM Type: Color
+        self.fill_color = fill_color
+        # LCM Type: double
+        self.thickness = thickness
 
     def encode(self):
         buf = BytesIO()

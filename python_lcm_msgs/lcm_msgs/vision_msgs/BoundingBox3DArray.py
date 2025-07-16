@@ -7,25 +7,26 @@ DO NOT MODIFY BY HAND!!!!
 from io import BytesIO
 import struct
 
-import vision_msgs
-
-import std_msgs
-
+from . import *
+from lcm_msgs import std_msgs
+from .BoundingBox3D import BoundingBox3D
 class BoundingBox3DArray(object):
+
+    msg_name = "BoundingBox3DArray"
 
     __slots__ = ["boxes_length", "header", "boxes"]
 
-    __typenames__ = ["int32_t", "std_msgs.Header", "vision_msgs.BoundingBox3D"]
+    __typenames__ = ["int32_t", "std_msgs.Header", "BoundingBox3D"]
 
     __dimensions__ = [None, None, ["boxes_length"]]
 
-    def __init__(self):
-        self.boxes_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.boxes = []
-        """ LCM Type: vision_msgs.BoundingBox3D[boxes_length] """
+    def __init__(self, boxes_length=0, header=std_msgs.Header(), boxes=[]):
+        # LCM Type: int32_t
+        self.boxes_length = boxes_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: BoundingBox3D[boxes_length]
+        self.boxes = boxes
 
     def encode(self):
         buf = BytesIO()
@@ -38,7 +39,7 @@ class BoundingBox3DArray(object):
         assert self.header._get_packed_fingerprint() == std_msgs.Header._get_packed_fingerprint()
         self.header._encode_one(buf)
         for i0 in range(self.boxes_length):
-            assert self.boxes[i0]._get_packed_fingerprint() == vision_msgs.BoundingBox3D._get_packed_fingerprint()
+            assert self.boxes[i0]._get_packed_fingerprint() == BoundingBox3D._get_packed_fingerprint()
             self.boxes[i0]._encode_one(buf)
 
     @classmethod
@@ -58,14 +59,14 @@ class BoundingBox3DArray(object):
         self.header = std_msgs.Header._decode_one(buf)
         self.boxes = []
         for i0 in range(self.boxes_length):
-            self.boxes.append(vision_msgs.BoundingBox3D._decode_one(buf))
+            self.boxes.append(BoundingBox3D._decode_one(buf))
         return self
 
     @classmethod
     def _get_hash_recursive(cls, parents):
         if cls in parents: return 0
         newparents = parents + [cls]
-        tmphash = (0xb279b6ac710340a2+ std_msgs.Header._get_hash_recursive(newparents)+ vision_msgs.BoundingBox3D._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0xb279b6ac710340a2+ std_msgs.Header._get_hash_recursive(newparents)+ BoundingBox3D._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff) + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _packed_fingerprint = None

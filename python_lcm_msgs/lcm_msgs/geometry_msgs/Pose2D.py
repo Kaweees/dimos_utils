@@ -9,19 +9,21 @@ import struct
 
 class Pose2D(object):
 
+    msg_name = "Pose2D"
+
     __slots__ = ["x", "y", "theta"]
 
     __typenames__ = ["double", "double", "double"]
 
     __dimensions__ = [None, None, None]
 
-    def __init__(self):
-        self.x = 0.0
-        """ LCM Type: double """
-        self.y = 0.0
-        """ LCM Type: double """
-        self.theta = 0.0
-        """ LCM Type: double """
+    def __init__(self, x=0.0, y=0.0, theta=0.0):
+        # LCM Type: double
+        self.x = x
+        # LCM Type: double
+        self.y = y
+        # LCM Type: double
+        self.theta = theta
 
     def encode(self):
         buf = BytesIO()

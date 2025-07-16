@@ -8,10 +8,12 @@ from io import BytesIO
 import struct
 
 from . import *
-from .PointsAnnotation import PointsAnnotation
-from .CircleAnnotation import CircleAnnotation
 from .TextAnnotation import TextAnnotation
+from .CircleAnnotation import CircleAnnotation
+from .PointsAnnotation import PointsAnnotation
 class ImageAnnotations(object):
+
+    msg_name = "ImageAnnotations"
 
     __slots__ = ["circles_length", "points_length", "texts_length", "circles", "points", "texts"]
 
@@ -19,19 +21,19 @@ class ImageAnnotations(object):
 
     __dimensions__ = [None, None, None, ["circles_length"], ["points_length"], ["texts_length"]]
 
-    def __init__(self):
-        self.circles_length = 0
-        """ LCM Type: int32_t """
-        self.points_length = 0
-        """ LCM Type: int32_t """
-        self.texts_length = 0
-        """ LCM Type: int32_t """
-        self.circles = []
-        """ LCM Type: CircleAnnotation[circles_length] """
-        self.points = []
-        """ LCM Type: PointsAnnotation[points_length] """
-        self.texts = []
-        """ LCM Type: TextAnnotation[texts_length] """
+    def __init__(self, circles_length=0, points_length=0, texts_length=0, circles=[], points=[], texts=[]):
+        # LCM Type: int32_t
+        self.circles_length = circles_length
+        # LCM Type: int32_t
+        self.points_length = points_length
+        # LCM Type: int32_t
+        self.texts_length = texts_length
+        # LCM Type: CircleAnnotation[circles_length]
+        self.circles = circles
+        # LCM Type: PointsAnnotation[points_length]
+        self.points = points
+        # LCM Type: TextAnnotation[texts_length]
+        self.texts = texts
 
     def encode(self):
         buf = BytesIO()

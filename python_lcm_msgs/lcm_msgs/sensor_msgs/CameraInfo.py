@@ -12,37 +12,39 @@ from . import *
 from .RegionOfInterest import RegionOfInterest
 class CameraInfo(object):
 
+    msg_name = "CameraInfo"
+
     __slots__ = ["D_length", "header", "height", "width", "distortion_model", "D", "K", "R", "P", "binning_x", "binning_y", "roi"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "int32_t", "int32_t", "string", "double", "double", "double", "double", "int32_t", "int32_t", "RegionOfInterest"]
 
     __dimensions__ = [None, None, None, None, None, ["D_length"], [9], [9], [12], None, None, None]
 
-    def __init__(self):
-        self.D_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.height = 0
-        """ LCM Type: int32_t """
-        self.width = 0
-        """ LCM Type: int32_t """
-        self.distortion_model = ""
-        """ LCM Type: string """
-        self.D = []
-        """ LCM Type: double[D_length] """
-        self.K = [ 0.0 for dim0 in range(9) ]
-        """ LCM Type: double[9] """
-        self.R = [ 0.0 for dim0 in range(9) ]
-        """ LCM Type: double[9] """
-        self.P = [ 0.0 for dim0 in range(12) ]
-        """ LCM Type: double[12] """
-        self.binning_x = 0
-        """ LCM Type: int32_t """
-        self.binning_y = 0
-        """ LCM Type: int32_t """
-        self.roi = RegionOfInterest()
-        """ LCM Type: RegionOfInterest """
+    def __init__(self, D_length=0, header=std_msgs.Header(), height=0, width=0, distortion_model="", D=[], K=[ 0.0 for dim0 in range(9) ], R=[ 0.0 for dim0 in range(9) ], P=[ 0.0 for dim0 in range(12) ], binning_x=0, binning_y=0, roi=RegionOfInterest()):
+        # LCM Type: int32_t
+        self.D_length = D_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: int32_t
+        self.height = height
+        # LCM Type: int32_t
+        self.width = width
+        # LCM Type: string
+        self.distortion_model = distortion_model
+        # LCM Type: double[D_length]
+        self.D = D
+        # LCM Type: double[9]
+        self.K = K
+        # LCM Type: double[9]
+        self.R = R
+        # LCM Type: double[12]
+        self.P = P
+        # LCM Type: int32_t
+        self.binning_x = binning_x
+        # LCM Type: int32_t
+        self.binning_y = binning_y
+        # LCM Type: RegionOfInterest
+        self.roi = roi
 
     def encode(self):
         buf = BytesIO()

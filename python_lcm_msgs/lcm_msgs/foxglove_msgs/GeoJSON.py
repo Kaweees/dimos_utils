@@ -9,15 +9,17 @@ import struct
 
 class GeoJSON(object):
 
+    msg_name = "GeoJSON"
+
     __slots__ = ["geojson"]
 
     __typenames__ = ["string"]
 
     __dimensions__ = [None]
 
-    def __init__(self):
-        self.geojson = ""
-        """ LCM Type: string """
+    def __init__(self, geojson=""):
+        # LCM Type: string
+        self.geojson = geojson
 
     def encode(self):
         buf = BytesIO()

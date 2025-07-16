@@ -9,19 +9,21 @@ import struct
 
 class ChannelFloat32(object):
 
+    msg_name = "ChannelFloat32"
+
     __slots__ = ["values_length", "name", "values"]
 
     __typenames__ = ["int32_t", "string", "float"]
 
     __dimensions__ = [None, None, ["values_length"]]
 
-    def __init__(self):
-        self.values_length = 0
-        """ LCM Type: int32_t """
-        self.name = ""
-        """ LCM Type: string """
-        self.values = []
-        """ LCM Type: float[values_length] """
+    def __init__(self, values_length=0, name="", values=[]):
+        # LCM Type: int32_t
+        self.values_length = values_length
+        # LCM Type: string
+        self.name = name
+        # LCM Type: float[values_length]
+        self.values = values
 
     def encode(self):
         buf = BytesIO()

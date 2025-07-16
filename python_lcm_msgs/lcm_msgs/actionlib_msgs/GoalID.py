@@ -10,17 +10,19 @@ import struct
 from lcm_msgs import std_msgs
 class GoalID(object):
 
+    msg_name = "GoalID"
+
     __slots__ = ["stamp", "id"]
 
     __typenames__ = ["std_msgs.Time", "string"]
 
     __dimensions__ = [None, None]
 
-    def __init__(self):
-        self.stamp = std_msgs.Time()
-        """ LCM Type: std_msgs.Time """
-        self.id = ""
-        """ LCM Type: string """
+    def __init__(self, stamp=std_msgs.Time(), id=""):
+        # LCM Type: std_msgs.Time
+        self.stamp = stamp
+        # LCM Type: string
+        self.id = id
 
     def encode(self):
         buf = BytesIO()

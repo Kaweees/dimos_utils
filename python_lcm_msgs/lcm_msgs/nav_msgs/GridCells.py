@@ -11,23 +11,25 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 class GridCells(object):
 
+    msg_name = "GridCells"
+
     __slots__ = ["cells_length", "header", "cell_width", "cell_height", "cells"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "float", "float", "geometry_msgs.Point"]
 
     __dimensions__ = [None, None, None, None, ["cells_length"]]
 
-    def __init__(self):
-        self.cells_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.cell_width = 0.0
-        """ LCM Type: float """
-        self.cell_height = 0.0
-        """ LCM Type: float """
-        self.cells = []
-        """ LCM Type: geometry_msgs.Point[cells_length] """
+    def __init__(self, cells_length=0, header=std_msgs.Header(), cell_width=0.0, cell_height=0.0, cells=[]):
+        # LCM Type: int32_t
+        self.cells_length = cells_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: float
+        self.cell_width = cell_width
+        # LCM Type: float
+        self.cell_height = cell_height
+        # LCM Type: geometry_msgs.Point[cells_length]
+        self.cells = cells
 
     def encode(self):
         buf = BytesIO()

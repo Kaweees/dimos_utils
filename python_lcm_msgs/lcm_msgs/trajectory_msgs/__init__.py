@@ -4,7 +4,7 @@ DO NOT MODIFY BY HAND!!!!
 lcm-gen 1.5.1
 """
 
-from .JointTrajectory import JointTrajectory as JointTrajectory
-from .MultiDOFJointTrajectoryPoint import MultiDOFJointTrajectoryPoint as MultiDOFJointTrajectoryPoint
 from .MultiDOFJointTrajectory import MultiDOFJointTrajectory as MultiDOFJointTrajectory
 from .JointTrajectoryPoint import JointTrajectoryPoint as JointTrajectoryPoint
+from .JointTrajectory import JointTrajectory as JointTrajectory
+from .MultiDOFJointTrajectoryPoint import MultiDOFJointTrajectoryPoint as MultiDOFJointTrajectoryPoint

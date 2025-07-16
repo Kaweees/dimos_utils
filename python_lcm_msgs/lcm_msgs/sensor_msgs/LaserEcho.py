@@ -9,17 +9,19 @@ import struct
 
 class LaserEcho(object):
 
+    msg_name = "LaserEcho"
+
     __slots__ = ["echoes_length", "echoes"]
 
     __typenames__ = ["int32_t", "float"]
 
     __dimensions__ = [None, ["echoes_length"]]
 
-    def __init__(self):
-        self.echoes_length = 0
-        """ LCM Type: int32_t """
-        self.echoes = []
-        """ LCM Type: float[echoes_length] """
+    def __init__(self, echoes_length=0, echoes=[]):
+        # LCM Type: int32_t
+        self.echoes_length = echoes_length
+        # LCM Type: float[echoes_length]
+        self.echoes = echoes
 
     def encode(self):
         buf = BytesIO()

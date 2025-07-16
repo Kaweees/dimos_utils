@@ -11,17 +11,19 @@ from . import *
 from .Point32 import Point32
 class Polygon(object):
 
+    msg_name = "Polygon"
+
     __slots__ = ["points_length", "points"]
 
     __typenames__ = ["int32_t", "Point32"]
 
     __dimensions__ = [None, ["points_length"]]
 
-    def __init__(self):
-        self.points_length = 0
-        """ LCM Type: int32_t """
-        self.points = []
-        """ LCM Type: Point32[points_length] """
+    def __init__(self, points_length=0, points=[]):
+        # LCM Type: int32_t
+        self.points_length = points_length
+        # LCM Type: Point32[points_length]
+        self.points = points
 
     def encode(self):
         buf = BytesIO()

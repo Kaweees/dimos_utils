@@ -10,31 +10,33 @@ import struct
 from lcm_msgs import std_msgs
 class JointState(object):
 
+    msg_name = "JointState"
+
     __slots__ = ["name_length", "position_length", "velocity_length", "effort_length", "header", "name", "position", "velocity", "effort"]
 
     __typenames__ = ["int32_t", "int32_t", "int32_t", "int32_t", "std_msgs.Header", "string", "double", "double", "double"]
 
     __dimensions__ = [None, None, None, None, None, ["name_length"], ["position_length"], ["velocity_length"], ["effort_length"]]
 
-    def __init__(self):
-        self.name_length = 0
-        """ LCM Type: int32_t """
-        self.position_length = 0
-        """ LCM Type: int32_t """
-        self.velocity_length = 0
-        """ LCM Type: int32_t """
-        self.effort_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.name = []
-        """ LCM Type: string[name_length] """
-        self.position = []
-        """ LCM Type: double[position_length] """
-        self.velocity = []
-        """ LCM Type: double[velocity_length] """
-        self.effort = []
-        """ LCM Type: double[effort_length] """
+    def __init__(self, name_length=0, position_length=0, velocity_length=0, effort_length=0, header=std_msgs.Header(), name=[], position=[], velocity=[], effort=[]):
+        # LCM Type: int32_t
+        self.name_length = name_length
+        # LCM Type: int32_t
+        self.position_length = position_length
+        # LCM Type: int32_t
+        self.velocity_length = velocity_length
+        # LCM Type: int32_t
+        self.effort_length = effort_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: string[name_length]
+        self.name = name
+        # LCM Type: double[position_length]
+        self.position = position
+        # LCM Type: double[velocity_length]
+        self.velocity = velocity
+        # LCM Type: double[effort_length]
+        self.effort = effort
 
     def encode(self):
         buf = BytesIO()

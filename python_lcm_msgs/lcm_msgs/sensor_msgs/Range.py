@@ -10,6 +10,8 @@ import struct
 from lcm_msgs import std_msgs
 class Range(object):
 
+    msg_name = "Range"
+
     __slots__ = ["header", "radiation_type", "field_of_view", "min_range", "max_range", "range"]
 
     __typenames__ = ["std_msgs.Header", "byte", "float", "float", "float", "float"]
@@ -19,19 +21,19 @@ class Range(object):
     ULTRASOUND = 0
     INFRARED = 1
 
-    def __init__(self):
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.radiation_type = 0
-        """ LCM Type: byte """
-        self.field_of_view = 0.0
-        """ LCM Type: float """
-        self.min_range = 0.0
-        """ LCM Type: float """
-        self.max_range = 0.0
-        """ LCM Type: float """
-        self.range = 0.0
-        """ LCM Type: float """
+    def __init__(self, header=std_msgs.Header(), radiation_type=0, field_of_view=0.0, min_range=0.0, max_range=0.0, range=0.0):
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: byte
+        self.radiation_type = radiation_type
+        # LCM Type: float
+        self.field_of_view = field_of_view
+        # LCM Type: float
+        self.min_range = min_range
+        # LCM Type: float
+        self.max_range = max_range
+        # LCM Type: float
+        self.range = range
 
     def encode(self):
         buf = BytesIO()

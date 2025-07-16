@@ -11,6 +11,8 @@ from . import *
 from .GoalID import GoalID
 class GoalStatus(object):
 
+    msg_name = "GoalStatus"
+
     __slots__ = ["goal_id", "status", "text"]
 
     __typenames__ = ["GoalID", "byte", "string"]
@@ -28,13 +30,13 @@ class GoalStatus(object):
     RECALLED = 8
     LOST = 9
 
-    def __init__(self):
-        self.goal_id = GoalID()
-        """ LCM Type: GoalID """
-        self.status = 0
-        """ LCM Type: byte """
-        self.text = ""
-        """ LCM Type: string """
+    def __init__(self, goal_id=GoalID(), status=0, text=""):
+        # LCM Type: GoalID
+        self.goal_id = goal_id
+        # LCM Type: byte
+        self.status = status
+        # LCM Type: string
+        self.text = text
 
     def encode(self):
         buf = BytesIO()

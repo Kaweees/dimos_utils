@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lcm_msgs"
-version = "0.1.1"
+version = "0.1.2"
 description = "LCM generated Python bindings for ROS based types"
 authors = [
     {name = "Dimensional"}
@@ -13,7 +13,6 @@ readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
     "lcm",
-    "foxglove-websocket",
 ]
 
 [project.urls]

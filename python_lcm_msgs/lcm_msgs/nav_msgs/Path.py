@@ -11,19 +11,21 @@ from lcm_msgs import geometry_msgs
 from lcm_msgs import std_msgs
 class Path(object):
 
+    msg_name = "Path"
+
     __slots__ = ["poses_length", "header", "poses"]
 
     __typenames__ = ["int32_t", "std_msgs.Header", "geometry_msgs.PoseStamped"]
 
     __dimensions__ = [None, None, ["poses_length"]]
 
-    def __init__(self):
-        self.poses_length = 0
-        """ LCM Type: int32_t """
-        self.header = std_msgs.Header()
-        """ LCM Type: std_msgs.Header """
-        self.poses = []
-        """ LCM Type: geometry_msgs.PoseStamped[poses_length] """
+    def __init__(self, poses_length=0, header=std_msgs.Header(), poses=[]):
+        # LCM Type: int32_t
+        self.poses_length = poses_length
+        # LCM Type: std_msgs.Header
+        self.header = header
+        # LCM Type: geometry_msgs.PoseStamped[poses_length]
+        self.poses = poses
 
     def encode(self):
         buf = BytesIO()

@@ -9,6 +9,8 @@ import struct
 
 class NavSatStatus(object):
 
+    msg_name = "NavSatStatus"
+
     __slots__ = ["status", "service"]
 
     __typenames__ = ["int8_t", "int16_t"]
@@ -24,11 +26,11 @@ class NavSatStatus(object):
     SERVICE_COMPASS = 4
     SERVICE_GALILEO = 8
 
-    def __init__(self):
-        self.status = 0
-        """ LCM Type: int8_t """
-        self.service = 0
-        """ LCM Type: int16_t """
+    def __init__(self, status=0, service=0):
+        # LCM Type: int8_t
+        self.status = status
+        # LCM Type: int16_t
+        self.service = service
 
     def encode(self):
         buf = BytesIO()

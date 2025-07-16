@@ -11,19 +11,21 @@ from . import *
 from .MultiArrayLayout import MultiArrayLayout
 class ByteMultiArray(object):
 
+    msg_name = "ByteMultiArray"
+
     __slots__ = ["data_length", "layout", "data"]
 
     __typenames__ = ["int32_t", "MultiArrayLayout", "int8_t"]
 
     __dimensions__ = [None, None, ["data_length"]]
 
-    def __init__(self):
-        self.data_length = 0
-        """ LCM Type: int32_t """
-        self.layout = MultiArrayLayout()
-        """ LCM Type: MultiArrayLayout """
-        self.data = []
-        """ LCM Type: int8_t[data_length] """
+    def __init__(self, data_length=0, layout=MultiArrayLayout(), data=[]):
+        # LCM Type: int32_t
+        self.data_length = data_length
+        # LCM Type: MultiArrayLayout
+        self.layout = layout
+        # LCM Type: int8_t[data_length]
+        self.data = data
 
     def encode(self):
         buf = BytesIO()

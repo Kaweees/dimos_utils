@@ -11,29 +11,31 @@ from . import *
 from .Vector3 import Vector3
 class Inertia(object):
 
+    msg_name = "Inertia"
+
     __slots__ = ["m", "com", "ixx", "ixy", "ixz", "iyy", "iyz", "izz"]
 
     __typenames__ = ["double", "Vector3", "double", "double", "double", "double", "double", "double"]
 
     __dimensions__ = [None, None, None, None, None, None, None, None]
 
-    def __init__(self):
-        self.m = 0.0
-        """ LCM Type: double """
-        self.com = Vector3()
-        """ LCM Type: Vector3 """
-        self.ixx = 0.0
-        """ LCM Type: double """
-        self.ixy = 0.0
-        """ LCM Type: double """
-        self.ixz = 0.0
-        """ LCM Type: double """
-        self.iyy = 0.0
-        """ LCM Type: double """
-        self.iyz = 0.0
-        """ LCM Type: double """
-        self.izz = 0.0
-        """ LCM Type: double """
+    def __init__(self, m=0.0, com=Vector3(), ixx=0.0, ixy=0.0, ixz=0.0, iyy=0.0, iyz=0.0, izz=0.0):
+        # LCM Type: double
+        self.m = m
+        # LCM Type: Vector3
+        self.com = com
+        # LCM Type: double
+        self.ixx = ixx
+        # LCM Type: double
+        self.ixy = ixy
+        # LCM Type: double
+        self.ixz = ixz
+        # LCM Type: double
+        self.iyy = iyy
+        # LCM Type: double
+        self.iyz = iyz
+        # LCM Type: double
+        self.izz = izz
 
     def encode(self):
         buf = BytesIO()
