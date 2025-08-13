@@ -762,6 +762,265 @@ class XArmOpenFTController:
         except KeyboardInterrupt:
             print("\nShutting down...")
     
+    def run_calibration(self):
+        """Run calibration sequence for OpenFT sensor."""
+        import csv
+        from datetime import datetime
+        
+        print("\n" + "="*60)
+        print("OpenFT Calibration Sequence")
+        print("="*60)
+        print("This will move joint5 and joint6 through a calibration pattern")
+        print("Recording forces, torques, and joint positions")
+        print("Step size: 0.1 radians, Delay: 10ms")
+        print("="*60 + "\n")
+        
+        # 3-second countdown before starting
+        print("Starting calibration in:")
+        for i in range(3, 0, -1):
+            print(f"  {i}...")
+            time.sleep(1.0)
+        print("Starting calibration now!\n")
+        
+        # Calibration parameters
+        step_size = 0.1  # radians
+        delay = 0.5  # 500ms
+        
+        # Data storage
+        calibration_data = []
+        
+        # Initialize all joints to zero
+        print("Step 1: Moving all joints to zero position...")
+        initial_positions = np.zeros(self.plant.num_positions())
+        self.plant.SetPositions(self.plant_context, initial_positions)
+        self.diagram.ForcedPublish(self.diagram_context)
+        time.sleep(1.0)  # Wait for settling
+        
+        # Get joint indices
+        joint5 = self.plant.GetJointByName("joint5")
+        joint6 = self.plant.GetJointByName("joint6")
+        joint5_idx = joint5.position_start()
+        joint6_idx = joint6.position_start()
+        
+        def record_data(step_name):
+            """Record current state data."""
+            # Get joint positions
+            q = self.plant.GetPositions(self.plant_context)
+            
+            # Calculate forces and torques
+            force_world, torque_world = self.calculate_openft_wrench()
+            
+            if force_world is not None and self.openft_body:
+                # Transform to OpenFT local frame
+                openft_pose = self.plant.EvalBodyPoseInWorld(self.plant_context, self.openft_body)
+                R_world_to_openft = openft_pose.rotation().transpose()
+                force_local = R_world_to_openft @ force_world
+                torque_local = R_world_to_openft @ torque_world
+                
+                # Record data
+                data_point = {
+                    'timestamp': time.time(),
+                    'step': step_name,
+                    'joint1': q[0], 'joint2': q[1], 'joint3': q[2],
+                    'joint4': q[3], 'joint5': q[4], 'joint6': q[5],
+                    'force_local_x': force_local[0],
+                    'force_local_y': force_local[1],
+                    'force_local_z': force_local[2],
+                    'torque_local_x': torque_local[0],
+                    'torque_local_y': torque_local[1],
+                    'torque_local_z': torque_local[2],
+                    'force_world_x': force_world[0],
+                    'force_world_y': force_world[1],
+                    'force_world_z': force_world[2],
+                    'torque_world_x': torque_world[0],
+                    'torque_world_y': torque_world[1],
+                    'torque_world_z': torque_world[2],
+                }
+                calibration_data.append(data_point)
+                
+                # Print current state
+                print(f"[{step_name}] J5: {q[4]:.3f}, J6: {q[5]:.3f} | "
+                      f"F_local: [{force_local[0]:.2f}, {force_local[1]:.2f}, {force_local[2]:.2f}] | "
+                      f"T_local: [{torque_local[0]:.3f}, {torque_local[1]:.3f}, {torque_local[2]:.3f}]")
+        
+        # Record initial state
+        record_data("initial")
+        
+        # Step 2: Move joint5 to -π/2
+        print("\nStep 2: Moving joint5 to -π/2...")
+        current_j5 = 0.0
+        target_j5 = -np.pi/2
+        
+        while current_j5 > target_j5:
+            current_j5 -= step_size
+            if current_j5 < target_j5:
+                current_j5 = target_j5
+            
+            q = self.plant.GetPositions(self.plant_context)
+            q[joint5_idx] = current_j5
+            self.plant.SetPositions(self.plant_context, q)
+            
+            # Update visualizations
+            if self.gripper_com_body:
+                gripper_com_pose = self.plant.EvalBodyPoseInWorld(
+                    self.plant_context, self.gripper_com_body
+                )
+                self.meshcat.SetTransform("gripper_com_frame", gripper_com_pose)
+                self.update_force_vector()
+            
+            if self.openft_body:
+                openft_pose = self.plant.EvalBodyPoseInWorld(
+                    self.plant_context, self.openft_body
+                )
+                self.meshcat.SetTransform("openft_frame", openft_pose)
+            
+            self.diagram.ForcedPublish(self.diagram_context)
+            record_data(f"j5_to_-pi/2")
+            time.sleep(delay)
+        
+        # Step 3: Move joint6 from 0 to -π (keeping joint5 at -π/2)
+        print("\nStep 3: Moving joint6 to -π (joint5 at -π/2)...")
+        current_j6 = 0.0
+        target_j6 = -np.pi
+        
+        while current_j6 > target_j6:
+            current_j6 -= step_size
+            if current_j6 < target_j6:
+                current_j6 = target_j6
+            
+            q = self.plant.GetPositions(self.plant_context)
+            q[joint6_idx] = current_j6
+            self.plant.SetPositions(self.plant_context, q)
+            
+            # Update visualizations
+            if self.gripper_com_body:
+                gripper_com_pose = self.plant.EvalBodyPoseInWorld(
+                    self.plant_context, self.gripper_com_body
+                )
+                self.meshcat.SetTransform("gripper_com_frame", gripper_com_pose)
+                self.update_force_vector()
+            
+            if self.openft_body:
+                openft_pose = self.plant.EvalBodyPoseInWorld(
+                    self.plant_context, self.openft_body
+                )
+                self.meshcat.SetTransform("openft_frame", openft_pose)
+            
+            self.diagram.ForcedPublish(self.diagram_context)
+            record_data(f"j6_to_-pi")
+            time.sleep(delay)
+        
+        # Step 4: Move joint6 from -π to +π (keeping joint5 at -π/2)
+        print("\nStep 4: Moving joint6 to +π (joint5 at -π/2)...")
+        target_j6 = np.pi
+        
+        while current_j6 < target_j6:
+            current_j6 += step_size
+            if current_j6 > target_j6:
+                current_j6 = target_j6
+            
+            q = self.plant.GetPositions(self.plant_context)
+            q[joint6_idx] = current_j6
+            self.plant.SetPositions(self.plant_context, q)
+            
+            # Update visualizations
+            if self.gripper_com_body:
+                gripper_com_pose = self.plant.EvalBodyPoseInWorld(
+                    self.plant_context, self.gripper_com_body
+                )
+                self.meshcat.SetTransform("gripper_com_frame", gripper_com_pose)
+                self.update_force_vector()
+            
+            if self.openft_body:
+                openft_pose = self.plant.EvalBodyPoseInWorld(
+                    self.plant_context, self.openft_body
+                )
+                self.meshcat.SetTransform("openft_frame", openft_pose)
+            
+            self.diagram.ForcedPublish(self.diagram_context)
+            record_data(f"j6_to_+pi")
+            time.sleep(delay)
+        
+        # Step 5: Move joint6 back to 0 (keeping joint5 at -π/2)
+        print("\nStep 5: Moving joint6 back to 0 (joint5 at -π/2)...")
+        target_j6 = 0.0
+        
+        while current_j6 > target_j6:
+            current_j6 -= step_size
+            if current_j6 < target_j6:
+                current_j6 = target_j6
+            
+            q = self.plant.GetPositions(self.plant_context)
+            q[joint6_idx] = current_j6
+            self.plant.SetPositions(self.plant_context, q)
+            
+            # Update visualizations
+            if self.gripper_com_body:
+                gripper_com_pose = self.plant.EvalBodyPoseInWorld(
+                    self.plant_context, self.gripper_com_body
+                )
+                self.meshcat.SetTransform("gripper_com_frame", gripper_com_pose)
+                self.update_force_vector()
+            
+            if self.openft_body:
+                openft_pose = self.plant.EvalBodyPoseInWorld(
+                    self.plant_context, self.openft_body
+                )
+                self.meshcat.SetTransform("openft_frame", openft_pose)
+            
+            self.diagram.ForcedPublish(self.diagram_context)
+            record_data(f"j6_to_0")
+            time.sleep(delay)
+        
+        # Step 6: Move joint5 back to 0 (joint6 at 0)
+        print("\nStep 6: Moving joint5 back to 0...")
+        current_j5 = -np.pi/2
+        target_j5 = 0.0
+        
+        while current_j5 < target_j5:
+            current_j5 += step_size
+            if current_j5 > target_j5:
+                current_j5 = target_j5
+            
+            q = self.plant.GetPositions(self.plant_context)
+            q[joint5_idx] = current_j5
+            self.plant.SetPositions(self.plant_context, q)
+            
+            # Update visualizations
+            if self.gripper_com_body:
+                gripper_com_pose = self.plant.EvalBodyPoseInWorld(
+                    self.plant_context, self.gripper_com_body
+                )
+                self.meshcat.SetTransform("gripper_com_frame", gripper_com_pose)
+                self.update_force_vector()
+            
+            if self.openft_body:
+                openft_pose = self.plant.EvalBodyPoseInWorld(
+                    self.plant_context, self.openft_body
+                )
+                self.meshcat.SetTransform("openft_frame", openft_pose)
+            
+            self.diagram.ForcedPublish(self.diagram_context)
+            record_data(f"j5_to_0")
+            time.sleep(delay)
+        
+        # Save calibration data
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"openft_calibration_{timestamp}.csv"
+        
+        with open(filename, 'w', newline='') as csvfile:
+            if calibration_data:
+                fieldnames = calibration_data[0].keys()
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(calibration_data)
+        
+        print(f"\n{'='*60}")
+        print(f"Calibration complete!")
+        print(f"Data saved to: {filename}")
+        print(f"Total data points: {len(calibration_data)}")
+        print(f"{'='*60}\n")
+    
     def run(self):
         """Main run method."""
         if self.use_ik_control:
@@ -778,15 +1037,25 @@ def main():
         action="store_true",
         help="Use inverse kinematics control mode (default: joint control)"
     )
+    parser.add_argument(
+        "--calibrate",
+        action="store_true",
+        help="Run calibration sequence for OpenFT sensor"
+    )
     args = parser.parse_args()
     
     print("\n" + "="*60)
     print("Drake xARM6 OpenFT Gripper Control")
     print("="*60)
     
-    # Create and run controller
-    controller = XArmOpenFTController(use_ik_control=args.ik_control)
-    controller.run()
+    # Handle calibration mode
+    if args.calibrate:
+        controller = XArmOpenFTController(use_ik_control=False)
+        controller.run_calibration()
+    else:
+        # Create and run controller
+        controller = XArmOpenFTController(use_ik_control=args.ik_control)
+        controller.run()
 
 
 if __name__ == "__main__":
