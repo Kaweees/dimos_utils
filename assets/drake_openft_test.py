@@ -21,6 +21,8 @@ from pydrake.all import (
     InverseKinematics,
     Solve,
     Box,
+    Sphere,
+    Cylinder,
     Rgba,
 )
 
@@ -355,7 +357,6 @@ class XArmOpenFTController:
         )
         
         # Small sphere at origin to mark the COM position
-        from pydrake.geometry import Sphere
         self.meshcat.SetObject(
             "gripper_com_frame/origin",
             Sphere(0.01),
@@ -457,26 +458,25 @@ class XArmOpenFTController:
     
     def create_force_vector_visualization(self):
         """Create visualization for the gravity force vector."""
-        # Create a cylinder to represent the force vector
-        from pydrake.geometry import Cylinder
-        
         # Force vector (pointing down from COM)
-        force_length = 0.2  # Scale factor for visualization
+        self.force_scale = 0.025  # Scale factor: 0.025 m per Newton (so ~0.2m for 8N)
+        force_length = abs(self.gripper_mass * self.gravity[2]) * self.force_scale  # Length proportional to force
+        
+        # Create arrow shaft (cylinder)
         self.meshcat.SetObject(
             "force_vector/arrow",
-            Cylinder(0.003, force_length),
-            Rgba(1, 0.5, 0, 0.8)  # Orange color for force
+            Cylinder(0.004, force_length),  # radius, length
+            Rgba(1.0, 0.5, 0.0, 0.8)  # Orange color for force
         )
         
-        # Arrow head (cone)
-        from pydrake.geometry import Box
+        # Create arrow head (cone using a tapered box or sphere)
         self.meshcat.SetObject(
             "force_vector/head",
-            Box([0.02, 0.02, 0.02]),
-            Rgba(1, 0.5, 0, 0.8)
+            Sphere(0.01),  # Small sphere for arrow tip
+            Rgba(1.0, 0.5, 0.0, 0.9)  # Slightly more opaque orange
         )
         
-        print("Created force vector visualization")
+        print(f"Created force vector visualization (scaled: {self.force_scale} m/N)")
     
     def update_force_vector(self):
         """Update the position and orientation of the force vector."""
@@ -489,18 +489,30 @@ class XArmOpenFTController:
         )
         com_pos = com_pose_world.translation()
         
+        # Calculate force vector length based on actual force magnitude
+        force_magnitude = abs(self.gripper_mass * self.gravity[2])  # Should be ~7.9 N
+        force_length = force_magnitude * self.force_scale
+        
         # Force vector points straight down (gravity)
-        # Position the cylinder to start at COM and point down
-        force_length = 0.2  # Visualization scale
+        # The cylinder's default orientation is along the Z-axis
+        # We need to position it to start at COM and extend downward
+        
+        # Position the cylinder's center halfway down from COM
+        arrow_center = com_pos + np.array([0, 0, -force_length/2])
+        
+        # No rotation needed - cylinder default orientation is along Z
+        # Just translate it to the right position
         force_transform = RigidTransform(
-            RotationMatrix.MakeXRotation(np.pi/2),  # Rotate to point down (along -Z)
-            com_pos + np.array([0, 0, -force_length/2])  # Center of cylinder
+            RotationMatrix(),  # Identity rotation (cylinder already points along Z)
+            arrow_center
         )
         self.meshcat.SetTransform("force_vector/arrow", force_transform)
         
-        # Position arrow head at the tip
+        # Position arrow head at the tip (end of force vector)
+        head_position = com_pos + np.array([0, 0, -force_length])
         head_transform = RigidTransform(
-            com_pos + np.array([0, 0, -force_length])
+            RotationMatrix(),
+            head_position
         )
         self.meshcat.SetTransform("force_vector/head", head_transform)
     
