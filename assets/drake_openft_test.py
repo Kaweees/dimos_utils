@@ -4,6 +4,8 @@ import numpy as np
 import argparse
 import time
 import os
+import lcm
+from lcm_msgs.sensor_msgs import JointState
 from pydrake.all import (
     MultibodyPlant,
     Parser,
@@ -28,12 +30,19 @@ from pydrake.all import (
 
 
 class XArmOpenFTController:
-    def __init__(self, use_ik_control=False):
+    def __init__(self, use_ik_control=False, enable_real_robot=False):
         # Start meshcat first
         self.meshcat = StartMeshcat()
         
         # Store control mode
         self.use_ik_control = use_ik_control
+        self.enable_real_robot = enable_real_robot
+        
+        # Initialize LCM if real robot mode is enabled
+        if self.enable_real_robot:
+            self.lc = lcm.LCM()
+            self.joint_state_msg = JointState()
+            print("LCM initialized for real robot control")
         
         # Setup the simulation
         self.setup_simulation()
@@ -168,6 +177,10 @@ class XArmOpenFTController:
         """Setup sliders for direct joint control."""
         print("Setting up joint control sliders...")
         
+        # Set all joints to zero for joint control mode
+        zero_positions = np.zeros(self.plant.num_positions())
+        self.plant.SetPositions(self.plant_context, zero_positions)
+        
         # Create joint sliders
         for i, joint_name in enumerate(self.arm_joint_names):
             joint = self.plant.GetJointByName(joint_name)
@@ -178,16 +191,16 @@ class XArmOpenFTController:
                 lower = lower[0]
                 upper = upper[0]
             
-            # Get current position
-            current_pos = self.plant.GetPositions(self.plant_context)[joint.position_start()]
+            # Start at zero for joint control mode
+            initial_value = 0.0
             
-            # Add slider with current position as default
+            # Add slider with zero as default
             self.meshcat.AddSlider(
                 name=joint_name,
                 min=lower,
                 max=upper,
                 step=0.01,
-                value=current_pos
+                value=initial_value
             )
             print(f"  Added slider for {joint_name}: [{lower:.2f}, {upper:.2f}]")
         
@@ -478,6 +491,49 @@ class XArmOpenFTController:
         
         print(f"Created force vector visualization (scaled: {self.force_scale} m/N)")
     
+    def publish_joint_states(self):
+        """Publish joint states to LCM for real robot control."""
+        if not self.enable_real_robot:
+            return
+        
+        # Get current joint positions
+        q = self.plant.GetPositions(self.plant_context)
+        
+        # Prepare JointState message
+        self.joint_state_msg.header.stamp.sec = int(time.time())
+        self.joint_state_msg.header.stamp.nsec = int((time.time() - int(time.time())) * 1e9)
+        self.joint_state_msg.header.frame_id = "base_link"
+        
+        # Set joint names and positions for joints 1-6 plus drive_joint
+        joint_names = self.arm_joint_names.copy()  # ["joint1", "joint2", ..., "joint6"]
+        joint_names.append("drive_joint")  # Add gripper drive joint
+        
+        self.joint_state_msg.name = joint_names
+        self.joint_state_msg.position = []
+        
+        # Get positions for each arm joint
+        for joint_name in self.arm_joint_names:
+            joint = self.plant.GetJointByName(joint_name)
+            joint_idx = joint.position_start()
+            self.joint_state_msg.position.append(q[joint_idx])
+        
+        # Add drive_joint with fixed value of 0.85 (fully open gripper)
+        self.joint_state_msg.position.append(0.85)
+        
+        # Set message lengths
+        self.joint_state_msg.name_length = len(self.joint_state_msg.name)
+        self.joint_state_msg.position_length = len(self.joint_state_msg.position)
+        self.joint_state_msg.velocity = []
+        self.joint_state_msg.effort = []
+        self.joint_state_msg.velocity_length = 0
+        self.joint_state_msg.effort_length = 0
+        
+        # Publish to LCM
+        try:
+            self.lc.publish("joint_states#sensor_msgs.JointState", self.joint_state_msg.encode())
+        except Exception as e:
+            print(f"Error publishing joint state: {e}")
+    
     def update_force_vector(self):
         """Update the position and orientation of the force vector."""
         if not self.gripper_com_body:
@@ -585,6 +641,9 @@ class XArmOpenFTController:
                 
                 # Set all positions
                 self.plant.SetPositions(self.plant_context, current_positions)
+                
+                # Publish joint states to LCM if real robot mode is enabled
+                self.publish_joint_states()
                 
                 # Update gripper COM axes visualization
                 if self.gripper_com_body:
@@ -715,6 +774,9 @@ class XArmOpenFTController:
                     # Set new positions
                     self.plant.SetPositions(self.plant_context, q_new)
                 
+                # Publish joint states to LCM if real robot mode is enabled
+                self.publish_joint_states()
+                
                 # Update gripper COM axes visualization
                 if self.gripper_com_body:
                     gripper_com_pose = self.plant.EvalBodyPoseInWorld(
@@ -793,6 +855,7 @@ class XArmOpenFTController:
         print("Step 1: Moving all joints to zero position...")
         initial_positions = np.zeros(self.plant.num_positions())
         self.plant.SetPositions(self.plant_context, initial_positions)
+        self.publish_joint_states()  # Publish initial zero state
         self.diagram.ForcedPublish(self.diagram_context)
         time.sleep(1.0)  # Wait for settling
         
@@ -860,6 +923,9 @@ class XArmOpenFTController:
             q[joint5_idx] = current_j5
             self.plant.SetPositions(self.plant_context, q)
             
+            # Publish joint states to LCM if real robot mode is enabled
+            self.publish_joint_states()
+            
             # Update visualizations
             if self.gripper_com_body:
                 gripper_com_pose = self.plant.EvalBodyPoseInWorld(
@@ -892,6 +958,9 @@ class XArmOpenFTController:
             q[joint6_idx] = current_j6
             self.plant.SetPositions(self.plant_context, q)
             
+            # Publish joint states to LCM if real robot mode is enabled
+            self.publish_joint_states()
+            
             # Update visualizations
             if self.gripper_com_body:
                 gripper_com_pose = self.plant.EvalBodyPoseInWorld(
@@ -922,6 +991,9 @@ class XArmOpenFTController:
             q = self.plant.GetPositions(self.plant_context)
             q[joint6_idx] = current_j6
             self.plant.SetPositions(self.plant_context, q)
+            
+            # Publish joint states to LCM if real robot mode is enabled
+            self.publish_joint_states()
             
             # Update visualizations
             if self.gripper_com_body:
@@ -954,6 +1026,9 @@ class XArmOpenFTController:
             q[joint6_idx] = current_j6
             self.plant.SetPositions(self.plant_context, q)
             
+            # Publish joint states to LCM if real robot mode is enabled
+            self.publish_joint_states()
+            
             # Update visualizations
             if self.gripper_com_body:
                 gripper_com_pose = self.plant.EvalBodyPoseInWorld(
@@ -985,6 +1060,9 @@ class XArmOpenFTController:
             q = self.plant.GetPositions(self.plant_context)
             q[joint5_idx] = current_j5
             self.plant.SetPositions(self.plant_context, q)
+            
+            # Publish joint states to LCM if real robot mode is enabled
+            self.publish_joint_states()
             
             # Update visualizations
             if self.gripper_com_body:
@@ -1042,19 +1120,26 @@ def main():
         action="store_true",
         help="Run calibration sequence for OpenFT sensor"
     )
+    parser.add_argument(
+        "--real",
+        action="store_true",
+        help="Enable real robot control via LCM joint state publishing"
+    )
     args = parser.parse_args()
     
     print("\n" + "="*60)
     print("Drake xARM6 OpenFT Gripper Control")
+    if args.real:
+        print("Real Robot Mode: ENABLED - Publishing to LCM")
     print("="*60)
     
     # Handle calibration mode
     if args.calibrate:
-        controller = XArmOpenFTController(use_ik_control=False)
+        controller = XArmOpenFTController(use_ik_control=False, enable_real_robot=args.real)
         controller.run_calibration()
     else:
         # Create and run controller
-        controller = XArmOpenFTController(use_ik_control=args.ik_control)
+        controller = XArmOpenFTController(use_ik_control=args.ik_control, enable_real_robot=args.real)
         controller.run()
 
 
