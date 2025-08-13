@@ -239,24 +239,30 @@ class ForceTorqueCalibrator:
         
         return force_torque.squeeze()
     
-    def run_live_mode(self, calibration_file: str, zmq_port: int = 5555):
+    def run_live_mode(self, calibration_file: str, zmq_in_port: int = 5555, zmq_out_port: int = 5556):
         """
-        Run live calibration mode, subscribing to ZMQ sensor data.
+        Run live calibration mode, subscribing to ZMQ sensor data and publishing calibrated data.
         
         Args:
             calibration_file: Path to calibration file
-            zmq_port: ZMQ port to subscribe to
+            zmq_in_port: ZMQ port to subscribe to for raw sensor data
+            zmq_out_port: ZMQ port to publish calibrated force/torque data
         """
         # Load calibration
         self.load_calibration(calibration_file)
         
-        # Setup ZMQ
+        # Setup ZMQ subscriber for raw sensor data
         context = zmq.Context()
-        socket = context.socket(zmq.SUB)
-        socket.connect(f"tcp://localhost:{zmq_port}")
-        socket.setsockopt_string(zmq.SUBSCRIBE, "")
+        sub_socket = context.socket(zmq.SUB)
+        sub_socket.connect(f"tcp://localhost:{zmq_in_port}")
+        sub_socket.setsockopt_string(zmq.SUBSCRIBE, "")
         
-        print(f"\nListening for sensor data on port {zmq_port}...")
+        # Setup ZMQ publisher for calibrated data
+        pub_socket = context.socket(zmq.PUB)
+        pub_socket.bind(f"tcp://*:{zmq_out_port}")
+        
+        print(f"\nListening for sensor data on port {zmq_in_port}...")
+        print(f"Publishing calibrated data on port {zmq_out_port}...")
         print("Press Ctrl+C to stop\n")
         
         print("Calibrated Force-Torque Output:")
@@ -268,8 +274,8 @@ class ForceTorqueCalibrator:
             while True:
                 try:
                     # Receive data with timeout
-                    if socket.poll(100):  # 100ms timeout
-                        data_str = socket.recv_string()
+                    if sub_socket.poll(100):  # 100ms timeout
+                        data_str = sub_socket.recv_string()
                         data = json.loads(data_str)
                         
                         if 'sensor_moving_averages' in data:
@@ -282,6 +288,19 @@ class ForceTorqueCalibrator:
                                 # Calculate magnitudes
                                 force_mag = np.linalg.norm(force_torque[:3])
                                 torque_mag = np.linalg.norm(force_torque[3:])
+                                
+                                # Create output data dictionary
+                                output_data = {
+                                    'timestamp': time.time(),
+                                    'forces': force_torque[:3].tolist(),  # [Fx, Fy, Fz]
+                                    'torques': force_torque[3:].tolist(),  # [Mx, My, Mz]
+                                    'force_magnitude': float(force_mag),
+                                    'torque_magnitude': float(torque_mag),
+                                    'raw_sensors': sensor_values.tolist()
+                                }
+                                
+                                # Publish calibrated data
+                                pub_socket.send_string(json.dumps(output_data))
                                 
                                 # Print formatted output
                                 timestamp = time.strftime("%H:%M:%S")
@@ -302,7 +321,8 @@ class ForceTorqueCalibrator:
         except KeyboardInterrupt:
             print("\n\nStopping live mode...")
         finally:
-            socket.close()
+            sub_socket.close()
+            pub_socket.close()
             context.term()
 
 
@@ -327,7 +347,8 @@ Examples:
     parser.add_argument('--output', type=str, help='Output file for calibration matrix (.json or .npz)')
     parser.add_argument('--live', action='store_true', help='Run live mode with ZMQ sensor data')
     parser.add_argument('--calibration', type=str, help='Calibration file to use in live mode')
-    parser.add_argument('--port', type=int, default=5555, help='ZMQ port for sensor data (default: 5555)')
+    parser.add_argument('--in-port', type=int, default=5555, help='ZMQ port for input sensor data (default: 5555)')
+    parser.add_argument('--out-port', type=int, default=5556, help='ZMQ port for output calibrated data (default: 5556)')
     parser.add_argument('--no-bias', action='store_true', help='Calculate calibration without bias term')
     
     args = parser.parse_args()
@@ -340,7 +361,7 @@ Examples:
             print("Error: --calibration file required for live mode")
             return 1
         
-        calibrator.run_live_mode(args.calibration, args.port)
+        calibrator.run_live_mode(args.calibration, args.in_port, args.out_port)
         
     elif args.csv:
         # Calibration mode - calculate matrix from CSV
