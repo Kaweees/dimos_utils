@@ -45,8 +45,11 @@ class XArmOpenFTController:
         else:
             self.setup_joint_controls()
         
-        # Create gripper COM visualization for both modes
+        # Create visualizations for both modes
         self.create_gripper_com_visualization()
+        self.create_openft_frame_visualization()
+        self.create_world_frame_visualization()
+        self.create_force_vector_visualization()
             
         # Publish again after setting up controls
         self.diagram.ForcedPublish(self.diagram_context)
@@ -88,10 +91,12 @@ class XArmOpenFTController:
         try:
             self.end_effector_frame = self.plant.GetFrameByName("link_tcp")
             self.end_effector_body = self.plant.GetBodyByName("link_tcp")
+            print("Using link_tcp as end-effector frame")
         except:
             try:
                 self.end_effector_frame = self.plant.GetFrameByName("link6")
                 self.end_effector_body = self.plant.GetBodyByName("link6")
+                print("Using link6 as end-effector frame")
             except:
                 print("Warning: Could not find end-effector frame")
                 self.end_effector_frame = None
@@ -104,6 +109,18 @@ class XArmOpenFTController:
         except:
             print("Warning: Could not find xarm_gripper_com link")
             self.gripper_com_body = None
+        
+        # Get link_openft for force/torque calculations
+        try:
+            self.openft_body = self.plant.GetBodyByName("link_openft")
+            print("Found link_openft for force/torque calculations")
+        except:
+            print("Warning: Could not find link_openft")
+            self.openft_body = None
+        
+        # Gripper parameters
+        self.gripper_mass = 0.806  # kg
+        self.gravity = np.array([0, 0, -9.81])  # m/s^2 in world frame
         
         # Finalize the plant
         self.plant.Finalize()
@@ -124,19 +141,16 @@ class XArmOpenFTController:
         self.arm_joint_names = [f"joint{i+1}" for i in range(6)]
         self.gripper_joint_name = "drive_joint"
         
-        # Set initial positions (middle of joint ranges for visibility)
+        # Set initial positions to avoid singularities
         initial_positions = np.zeros(self.plant.num_positions())
+        # Set specific initial configuration to avoid gimbal lock
+        initial_joint_angles = [0.0, -0.5, -0.5, 0.0, -0.5, 0.0]  # Slightly bent elbow configuration
         for i, joint_name in enumerate(self.arm_joint_names):
             try:
                 joint = self.plant.GetJointByName(joint_name)
                 joint_index = joint.position_start()
-                # Set to middle of range for better initial visibility
-                lower = joint.position_lower_limit()
-                upper = joint.position_upper_limit()
-                if hasattr(lower, '__getitem__'):
-                    lower = lower[0]
-                    upper = upper[0]
-                initial_positions[joint_index] = (lower + upper) * 0.5 if i > 1 else 0
+                if i < len(initial_joint_angles):
+                    initial_positions[joint_index] = initial_joint_angles[i]
             except:
                 pass
         
@@ -243,6 +257,14 @@ class XArmOpenFTController:
         v_upper = self.plant.GetVelocityUpperLimits()
         self.diff_ik_params.set_joint_velocity_limits((v_lower, v_upper))
         
+        # Set end-effector velocity gain (higher = more aggressive tracking)
+        self.diff_ik_params.set_end_effector_velocity_gain(2.0)
+        
+        # Enable all 6 DOF for end-effector control (3 translation + 3 rotation)
+        # This ensures all rotational DOF are properly controlled
+        velocity_flag = np.ones(6, dtype=bool)  # [angular_x, angular_y, angular_z, linear_x, linear_y, linear_z]
+        self.diff_ik_params.set_end_effector_velocity_flag(velocity_flag)
+        
         # Create target visualization
         self.create_target_visualization()
     
@@ -342,6 +364,177 @@ class XArmOpenFTController:
         
         print("Created gripper COM axes visualization (darker colors)")
     
+    def create_openft_frame_visualization(self):
+        """Create visualization axes for the link_openft frame."""
+        if not self.openft_body:
+            return
+            
+        axis_length = 0.12
+        axis_radius = 0.004
+        
+        # X-axis (red) - distinct shade for OpenFT
+        self.meshcat.SetObject(
+            "openft_frame/x_axis",
+            Box([axis_length, axis_radius * 2, axis_radius * 2]),
+            Rgba(1.0, 0.3, 0.3, 0.9)
+        )
+        self.meshcat.SetTransform(
+            "openft_frame/x_axis",
+            RigidTransform([axis_length/2, 0, 0])
+        )
+        
+        # Y-axis (green) - distinct shade for OpenFT
+        self.meshcat.SetObject(
+            "openft_frame/y_axis",
+            Box([axis_radius * 2, axis_length, axis_radius * 2]),
+            Rgba(0.3, 1.0, 0.3, 0.9)
+        )
+        self.meshcat.SetTransform(
+            "openft_frame/y_axis",
+            RigidTransform([0, axis_length/2, 0])
+        )
+        
+        # Z-axis (blue) - distinct shade for OpenFT
+        self.meshcat.SetObject(
+            "openft_frame/z_axis",
+            Box([axis_radius * 2, axis_radius * 2, axis_length]),
+            Rgba(0.3, 0.3, 1.0, 0.9)
+        )
+        self.meshcat.SetTransform(
+            "openft_frame/z_axis",
+            RigidTransform([0, 0, axis_length/2])
+        )
+        
+        # Small cube at origin to mark the OpenFT sensor location
+        self.meshcat.SetObject(
+            "openft_frame/origin",
+            Box([0.015, 0.015, 0.015]),
+            Rgba(0.7, 0.7, 0.7, 0.8)  # Gray cube
+        )
+        
+        print("Created OpenFT frame axes visualization (lighter colors)")
+    
+    def create_world_frame_visualization(self):
+        """Create visualization axes for the world frame at origin."""
+        axis_length = 0.3
+        axis_radius = 0.005
+        
+        # X-axis (red) - thicker for world frame
+        self.meshcat.SetObject(
+            "world_frame/x_axis",
+            Box([axis_length, axis_radius * 2, axis_radius * 2]),
+            Rgba(1, 0, 0, 0.5)
+        )
+        self.meshcat.SetTransform(
+            "world_frame/x_axis",
+            RigidTransform([axis_length/2, 0, 0])
+        )
+        
+        # Y-axis (green) - thicker for world frame
+        self.meshcat.SetObject(
+            "world_frame/y_axis",
+            Box([axis_radius * 2, axis_length, axis_radius * 2]),
+            Rgba(0, 1, 0, 0.5)
+        )
+        self.meshcat.SetTransform(
+            "world_frame/y_axis",
+            RigidTransform([0, axis_length/2, 0])
+        )
+        
+        # Z-axis (blue) - thicker for world frame
+        self.meshcat.SetObject(
+            "world_frame/z_axis",
+            Box([axis_radius * 2, axis_radius * 2, axis_length]),
+            Rgba(0, 0, 1, 0.5)
+        )
+        self.meshcat.SetTransform(
+            "world_frame/z_axis",
+            RigidTransform([0, 0, axis_length/2])
+        )
+        
+        # Add labels
+        print("Created world frame axes visualization at origin")
+    
+    def create_force_vector_visualization(self):
+        """Create visualization for the gravity force vector."""
+        # Create a cylinder to represent the force vector
+        from pydrake.geometry import Cylinder
+        
+        # Force vector (pointing down from COM)
+        force_length = 0.2  # Scale factor for visualization
+        self.meshcat.SetObject(
+            "force_vector/arrow",
+            Cylinder(0.003, force_length),
+            Rgba(1, 0.5, 0, 0.8)  # Orange color for force
+        )
+        
+        # Arrow head (cone)
+        from pydrake.geometry import Box
+        self.meshcat.SetObject(
+            "force_vector/head",
+            Box([0.02, 0.02, 0.02]),
+            Rgba(1, 0.5, 0, 0.8)
+        )
+        
+        print("Created force vector visualization")
+    
+    def update_force_vector(self):
+        """Update the position and orientation of the force vector."""
+        if not self.gripper_com_body:
+            return
+            
+        # Get COM position
+        com_pose_world = self.plant.EvalBodyPoseInWorld(
+            self.plant_context, self.gripper_com_body
+        )
+        com_pos = com_pose_world.translation()
+        
+        # Force vector points straight down (gravity)
+        # Position the cylinder to start at COM and point down
+        force_length = 0.2  # Visualization scale
+        force_transform = RigidTransform(
+            RotationMatrix.MakeXRotation(np.pi/2),  # Rotate to point down (along -Z)
+            com_pos + np.array([0, 0, -force_length/2])  # Center of cylinder
+        )
+        self.meshcat.SetTransform("force_vector/arrow", force_transform)
+        
+        # Position arrow head at the tip
+        head_transform = RigidTransform(
+            com_pos + np.array([0, 0, -force_length])
+        )
+        self.meshcat.SetTransform("force_vector/head", head_transform)
+    
+    def calculate_openft_wrench(self):
+        """Calculate forces and torques on link_openft due to gripper weight at COM.
+        
+        Note: The force in world frame is always [0, 0, -mg] because gravity 
+        always points straight down regardless of robot orientation. The torque
+        changes based on the lever arm from link_openft to the COM.
+        """
+        if not self.gripper_com_body or not self.openft_body:
+            return None, None
+        
+        # Get poses in world frame
+        com_pose_world = self.plant.EvalBodyPoseInWorld(
+            self.plant_context, self.gripper_com_body
+        )
+        openft_pose_world = self.plant.EvalBodyPoseInWorld(
+            self.plant_context, self.openft_body
+        )
+        
+        # Force due to gravity (in world frame)
+        # This is ALWAYS [0, 0, -mg] in world frame because gravity points down
+        force_world = self.gripper_mass * self.gravity  # F = mg = [0, 0, -7.907] N
+        
+        # Position of COM relative to openft origin (in world frame)
+        r_com_to_openft = com_pose_world.translation() - openft_pose_world.translation()
+        
+        # Torque = r × F (cross product of position vector and force)
+        # This changes based on robot configuration
+        torque_world = np.cross(r_com_to_openft, force_world)
+        
+        return force_world, torque_world
+    
     def run_joint_control(self):
         """Run the joint control mode."""
         print("\n" + "="*60)
@@ -350,8 +543,12 @@ class XArmOpenFTController:
         print("Press Ctrl+C to exit")
         print("="*60 + "\n")
         
+        iteration_count = 0
+        print_interval = 100  # Print every 100 iterations (about 1 second at 10ms delay)
+        
         try:
             while True:
+                iteration_count += 1
                 # Get current positions (all DOF)
                 current_positions = self.plant.GetPositions(self.plant_context)
                 
@@ -383,6 +580,37 @@ class XArmOpenFTController:
                         self.plant_context, self.gripper_com_body
                     )
                     self.meshcat.SetTransform("gripper_com_frame", gripper_com_pose)
+                    
+                    # Update force vector visualization
+                    self.update_force_vector()
+                
+                # Update OpenFT frame axes visualization
+                if self.openft_body:
+                    openft_pose = self.plant.EvalBodyPoseInWorld(
+                        self.plant_context, self.openft_body
+                    )
+                    self.meshcat.SetTransform("openft_frame", openft_pose)
+                
+                # Calculate and print forces/torques periodically
+                if iteration_count % print_interval == 0:
+                    force_world, torque_world = self.calculate_openft_wrench()
+                    if force_world is not None and self.openft_body:
+                        print(f"\n--- OpenFT Forces & Torques ---")
+                        print(f"WORLD FRAME:")
+                        print(f"  Force:  [{force_world[0]:7.3f}, {force_world[1]:7.3f}, {force_world[2]:7.3f}] N")
+                        print(f"  Torque: [{torque_world[0]:7.4f}, {torque_world[1]:7.4f}, {torque_world[2]:7.4f}] N⋅m")
+                        
+                        # Transform to OpenFT local frame
+                        openft_pose = self.plant.EvalBodyPoseInWorld(self.plant_context, self.openft_body)
+                        R_world_to_openft = openft_pose.rotation().transpose()
+                        force_openft = R_world_to_openft @ force_world
+                        torque_openft = R_world_to_openft @ torque_world
+                        
+                        print(f"OPENFT LOCAL FRAME:")
+                        print(f"  Force:  [{force_openft[0]:7.3f}, {force_openft[1]:7.3f}, {force_openft[2]:7.3f}] N")
+                        print(f"  Torque: [{torque_openft[0]:7.4f}, {torque_openft[1]:7.4f}, {torque_openft[2]:7.4f}] N⋅m")
+                        print(f"  Force magnitude:  {np.linalg.norm(force_openft):.3f} N")
+                        print(f"  Torque magnitude: {np.linalg.norm(torque_openft):.4f} N⋅m")
                 
                 # Publish visualization
                 self.diagram.ForcedPublish(self.diagram_context)
@@ -408,8 +636,12 @@ class XArmOpenFTController:
             print("Error: No end-effector frame found!")
             return
         
+        iteration_count = 0
+        print_interval = 20  # Print every 20 iterations (about 1 second at 50ms delay)
+        
         try:
             while True:
+                iteration_count += 1
                 # Read target pose from sliders
                 target_x = self.meshcat.GetSliderValue("target_x")
                 target_y = self.meshcat.GetSliderValue("target_y")
@@ -426,6 +658,17 @@ class XArmOpenFTController:
                 
                 # Update target visualization
                 self.meshcat.SetTransform("target_frame", target_transform)
+                
+                # Debug: Check if we're in a singularity or gimbal lock situation
+                if iteration_count % print_interval == 0:
+                    ee_pose = self.plant.EvalBodyPoseInWorld(self.plant_context, self.end_effector_body)
+                    ee_rpy = RollPitchYaw(ee_pose.rotation())
+                    print(f"\n[DEBUG] Current EE: R={ee_rpy.roll_angle():.3f}, P={ee_rpy.pitch_angle():.3f}, Y={ee_rpy.yaw_angle():.3f}")
+                    print(f"[DEBUG] Target:     R={target_roll:.3f}, P={target_pitch:.3f}, Y={target_yaw:.3f}")
+                    
+                    # Check joint configuration
+                    q = self.plant.GetPositions(self.plant_context)
+                    print(f"[DEBUG] Joint angles: {q[:6]}")
                 
                 # Use differential IK to move towards target
                 result = DoDifferentialInverseKinematics(
@@ -466,6 +709,37 @@ class XArmOpenFTController:
                         self.plant_context, self.gripper_com_body
                     )
                     self.meshcat.SetTransform("gripper_com_frame", gripper_com_pose)
+                    
+                    # Update force vector visualization
+                    self.update_force_vector()
+                
+                # Update OpenFT frame axes visualization
+                if self.openft_body:
+                    openft_pose = self.plant.EvalBodyPoseInWorld(
+                        self.plant_context, self.openft_body
+                    )
+                    self.meshcat.SetTransform("openft_frame", openft_pose)
+                
+                # Calculate and print forces/torques periodically
+                if iteration_count % print_interval == 0:
+                    force_world, torque_world = self.calculate_openft_wrench()
+                    if force_world is not None and self.openft_body:
+                        print(f"\n--- OpenFT Forces & Torques ---")
+                        print(f"WORLD FRAME:")
+                        print(f"  Force:  [{force_world[0]:7.3f}, {force_world[1]:7.3f}, {force_world[2]:7.3f}] N")
+                        print(f"  Torque: [{torque_world[0]:7.4f}, {torque_world[1]:7.4f}, {torque_world[2]:7.4f}] N⋅m")
+                        
+                        # Transform to OpenFT local frame
+                        openft_pose = self.plant.EvalBodyPoseInWorld(self.plant_context, self.openft_body)
+                        R_world_to_openft = openft_pose.rotation().transpose()
+                        force_openft = R_world_to_openft @ force_world
+                        torque_openft = R_world_to_openft @ torque_world
+                        
+                        print(f"OPENFT LOCAL FRAME:")
+                        print(f"  Force:  [{force_openft[0]:7.3f}, {force_openft[1]:7.3f}, {force_openft[2]:7.3f}] N")
+                        print(f"  Torque: [{torque_openft[0]:7.4f}, {torque_openft[1]:7.4f}, {torque_openft[2]:7.4f}] N⋅m")
+                        print(f"  Force magnitude:  {np.linalg.norm(force_openft):.3f} N")
+                        print(f"  Torque magnitude: {np.linalg.norm(torque_openft):.4f} N⋅m")
                 
                 # Publish visualization
                 self.diagram.ForcedPublish(self.diagram_context)
