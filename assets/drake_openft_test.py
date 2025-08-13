@@ -5,6 +5,8 @@ import argparse
 import time
 import os
 import lcm
+import zmq
+import json
 from lcm_msgs.sensor_msgs import JointState
 from pydrake.all import (
     MultibodyPlant,
@@ -30,19 +32,34 @@ from pydrake.all import (
 
 
 class XArmOpenFTController:
-    def __init__(self, use_ik_control=False, enable_real_robot=False):
+    def __init__(self, use_ik_control=False, enable_real_robot=False, enable_sensor_collection=False):
         # Start meshcat first
         self.meshcat = StartMeshcat()
         
         # Store control mode
         self.use_ik_control = use_ik_control
         self.enable_real_robot = enable_real_robot
+        self.enable_sensor_collection = enable_sensor_collection
         
         # Initialize LCM if real robot mode is enabled
         if self.enable_real_robot:
             self.lc = lcm.LCM()
             self.joint_state_msg = JointState()
             print("LCM initialized for real robot control")
+        
+        # Initialize ZMQ for sensor data collection if enabled
+        self.sensor_data = None
+        if self.enable_sensor_collection:
+            try:
+                self.zmq_context = zmq.Context()
+                self.sensor_socket = self.zmq_context.socket(zmq.SUB)
+                self.sensor_socket.connect("tcp://localhost:5555")
+                self.sensor_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+                self.sensor_socket.setsockopt(zmq.RCVTIMEO, 100)  # 100ms timeout
+                print("ZMQ initialized for sensor data collection on port 5555")
+            except Exception as e:
+                print(f"Warning: Failed to initialize ZMQ for sensor collection: {e}")
+                self.enable_sensor_collection = False
         
         # Setup the simulation
         self.setup_simulation()
@@ -534,6 +551,33 @@ class XArmOpenFTController:
         except Exception as e:
             print(f"Error publishing joint state: {e}")
     
+    def get_latest_sensor_data(self):
+        """Get the latest sensor data from ZMQ."""
+        if not self.enable_sensor_collection:
+            return None
+        
+        latest_data = None
+        try:
+            # Drain the socket to get the latest message
+            while True:
+                try:
+                    data_str = self.sensor_socket.recv_string(zmq.NOBLOCK)
+                    latest_data = json.loads(data_str)
+                except zmq.Again:
+                    # No more messages
+                    break
+                except json.JSONDecodeError as e:
+                    print(f"Error decoding sensor JSON: {e}")
+                    
+            # Store the latest data
+            if latest_data and 'sensor_moving_averages' in latest_data:
+                self.sensor_data = latest_data
+                
+        except Exception as e:
+            print(f"Error getting sensor data: {e}")
+            
+        return self.sensor_data
+    
     def update_force_vector(self):
         """Update the position and orientation of the force vector."""
         if not self.gripper_com_body:
@@ -834,7 +878,11 @@ class XArmOpenFTController:
         print("="*60)
         print("This will move joint5 and joint6 through a calibration pattern")
         print("Recording forces, torques, and joint positions")
-        print("Step size: 0.1 radians, Delay: 10ms")
+        if self.enable_sensor_collection:
+            print("Sensor data collection: ENABLED (16 channels)")
+        else:
+            print("Sensor data collection: DISABLED (use --sensor to enable)")
+        print("Step size: 0.1 radians, Delay: 500ms")
         print("="*60 + "\n")
         
         # 3-second countdown before starting
@@ -867,6 +915,9 @@ class XArmOpenFTController:
         
         def record_data(step_name):
             """Record current state data."""
+            # Get latest sensor data if available
+            sensor_data = self.get_latest_sensor_data() if self.enable_sensor_collection else None
+            
             # Get joint positions
             q = self.plant.GetPositions(self.plant_context)
             
@@ -899,6 +950,17 @@ class XArmOpenFTController:
                     'torque_world_y': torque_world[1],
                     'torque_world_z': torque_world[2],
                 }
+                
+                # Add sensor data if available
+                if sensor_data and 'sensor_moving_averages' in sensor_data:
+                    sensor_values = sensor_data['sensor_moving_averages']
+                    # Add all 16 sensor values
+                    for i, val in enumerate(sensor_values):
+                        data_point[f'sensor_{i+1}'] = val
+                    # Also add sensor timestamp if available
+                    if 'timestamp' in sensor_data:
+                        data_point['sensor_timestamp'] = sensor_data['timestamp']
+                
                 calibration_data.append(data_point)
                 
                 # Print current state
@@ -941,8 +1003,8 @@ class XArmOpenFTController:
                 self.meshcat.SetTransform("openft_frame", openft_pose)
             
             self.diagram.ForcedPublish(self.diagram_context)
-            record_data(f"j5_to_-pi/2")
-            time.sleep(delay)
+            time.sleep(delay)  # Let sensor settle
+            record_data(f"j5_to_-pi/2")  # Record after settling
         
         # Step 3: Move joint6 from 0 to -π (keeping joint5 at -π/2)
         print("\nStep 3: Moving joint6 to -π (joint5 at -π/2)...")
@@ -976,8 +1038,8 @@ class XArmOpenFTController:
                 self.meshcat.SetTransform("openft_frame", openft_pose)
             
             self.diagram.ForcedPublish(self.diagram_context)
-            record_data(f"j6_to_-pi")
-            time.sleep(delay)
+            time.sleep(delay)  # Let sensor settle
+            record_data(f"j6_to_-pi")  # Record after settling
         
         # Step 4: Move joint6 from -π to +π (keeping joint5 at -π/2)
         print("\nStep 4: Moving joint6 to +π (joint5 at -π/2)...")
@@ -1010,8 +1072,8 @@ class XArmOpenFTController:
                 self.meshcat.SetTransform("openft_frame", openft_pose)
             
             self.diagram.ForcedPublish(self.diagram_context)
-            record_data(f"j6_to_+pi")
-            time.sleep(delay)
+            time.sleep(delay)  # Let sensor settle
+            record_data(f"j6_to_+pi")  # Record after settling
         
         # Step 5: Move joint6 back to 0 (keeping joint5 at -π/2)
         print("\nStep 5: Moving joint6 back to 0 (joint5 at -π/2)...")
@@ -1044,8 +1106,8 @@ class XArmOpenFTController:
                 self.meshcat.SetTransform("openft_frame", openft_pose)
             
             self.diagram.ForcedPublish(self.diagram_context)
-            record_data(f"j6_to_0")
-            time.sleep(delay)
+            time.sleep(delay)  # Let sensor settle
+            record_data(f"j6_to_0")  # Record after settling
         
         # Step 6: Move joint5 back to 0 (joint6 at 0)
         print("\nStep 6: Moving joint5 back to 0...")
@@ -1079,8 +1141,8 @@ class XArmOpenFTController:
                 self.meshcat.SetTransform("openft_frame", openft_pose)
             
             self.diagram.ForcedPublish(self.diagram_context)
-            record_data(f"j5_to_0")
-            time.sleep(delay)
+            time.sleep(delay)  # Let sensor settle
+            record_data(f"j5_to_0")  # Record after settling
         
         # Save calibration data
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -1125,21 +1187,36 @@ def main():
         action="store_true",
         help="Enable real robot control via LCM joint state publishing"
     )
+    parser.add_argument(
+        "--sensor",
+        action="store_true",
+        help="Enable sensor data collection via ZMQ (port 5555)"
+    )
     args = parser.parse_args()
     
     print("\n" + "="*60)
     print("Drake xARM6 OpenFT Gripper Control")
     if args.real:
         print("Real Robot Mode: ENABLED - Publishing to LCM")
+    if args.sensor:
+        print("Sensor Collection: ENABLED - Subscribing to ZMQ port 5555")
     print("="*60)
     
     # Handle calibration mode
     if args.calibrate:
-        controller = XArmOpenFTController(use_ik_control=False, enable_real_robot=args.real)
+        controller = XArmOpenFTController(
+            use_ik_control=False, 
+            enable_real_robot=args.real,
+            enable_sensor_collection=args.sensor
+        )
         controller.run_calibration()
     else:
         # Create and run controller
-        controller = XArmOpenFTController(use_ik_control=args.ik_control, enable_real_robot=args.real)
+        controller = XArmOpenFTController(
+            use_ik_control=args.ik_control, 
+            enable_real_robot=args.real,
+            enable_sensor_collection=args.sensor
+        )
         controller.run()
 
 
