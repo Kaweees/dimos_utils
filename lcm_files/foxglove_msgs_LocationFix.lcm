@@ -1,7 +1,7 @@
 package foxglove_msgs;
 
 struct LocationFix {
-    const int8_t UNKNOWN = 0;
+    const int8_t UNKNOWN = 0x0;
     const int8_t APPROXIMATED = 1;
     const int8_t DIAGONAL_KNOWN = 2;
     const int8_t KNOWN = 3;

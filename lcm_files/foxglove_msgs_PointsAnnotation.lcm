@@ -1,7 +1,7 @@
 package foxglove_msgs;
 
 struct PointsAnnotation {
-    const int8_t UNKNOWN = 0;
+    const int8_t UNKNOWN = 0x0;
     const int8_t POINTS = 1;
     const int8_t LINE_LOOP = 2;
     const int8_t LINE_STRIP = 3;

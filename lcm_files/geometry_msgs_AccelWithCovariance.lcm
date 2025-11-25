@@ -1,6 +1,6 @@
 package geometry_msgs;
 
 struct AccelWithCovariance {
-    Accel accel;
+    geometry_msgs.Accel accel;
     double covariance[36];
 }

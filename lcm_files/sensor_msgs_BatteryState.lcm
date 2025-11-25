@@ -1,12 +1,12 @@
 package sensor_msgs;
 
 struct BatteryState {
-    const int8_t POWER_SUPPLY_STATUS_UNKNOWN = 0;
+    const int8_t POWER_SUPPLY_STATUS_UNKNOWN = 0x0;
     const int8_t POWER_SUPPLY_STATUS_CHARGING = 1;
     const int8_t POWER_SUPPLY_STATUS_DISCHARGING = 2;
     const int8_t POWER_SUPPLY_STATUS_NOT_CHARGING = 3;
     const int8_t POWER_SUPPLY_STATUS_FULL = 4;
-    const int8_t POWER_SUPPLY_HEALTH_UNKNOWN = 0;
+    const int8_t POWER_SUPPLY_HEALTH_UNKNOWN = 0x0;
     const int8_t POWER_SUPPLY_HEALTH_GOOD = 1;
     const int8_t POWER_SUPPLY_HEALTH_OVERHEAT = 2;
     const int8_t POWER_SUPPLY_HEALTH_DEAD = 3;
@@ -15,7 +15,7 @@ struct BatteryState {
     const int8_t POWER_SUPPLY_HEALTH_COLD = 6;
     const int8_t POWER_SUPPLY_HEALTH_WATCHDOG_TIMER_EXPIRE = 7;
     const int8_t POWER_SUPPLY_HEALTH_SAFETY_TIMER_EXPIRE = 8;
-    const int8_t POWER_SUPPLY_TECHNOLOGY_UNKNOWN = 0;
+    const int8_t POWER_SUPPLY_TECHNOLOGY_UNKNOWN = 0x0;
     const int8_t POWER_SUPPLY_TECHNOLOGY_NIMH = 1;
     const int8_t POWER_SUPPLY_TECHNOLOGY_LION = 2;
     const int8_t POWER_SUPPLY_TECHNOLOGY_LIPO = 3;

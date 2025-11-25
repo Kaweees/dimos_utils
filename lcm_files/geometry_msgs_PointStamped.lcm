@@ -2,5 +2,5 @@ package geometry_msgs;
 
 struct PointStamped {
     std_msgs.Header header;
-    Point point;
+    geometry_msgs.Point point;
 }

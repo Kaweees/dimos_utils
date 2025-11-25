@@ -2,5 +2,5 @@ package geometry_msgs;
 
 struct AccelStamped {
     std_msgs.Header header;
-    Accel accel;
+    geometry_msgs.Accel accel;
 }

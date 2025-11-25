@@ -3,5 +3,5 @@ package vision_msgs;
 struct Detection2DArray {
     int32_t detections_length;
     std_msgs.Header header;
-    Detection2D detections[detections_length];
+    vision_msgs.Detection2D detections[detections_length];
 }

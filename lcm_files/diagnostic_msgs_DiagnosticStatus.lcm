@@ -1,7 +1,7 @@
 package diagnostic_msgs;
 
 struct DiagnosticStatus {
-    const int8_t OK = 0;
+    const int8_t OK = 0x0;
     const int8_t WARN = 1;
     const int8_t ERROR = 2;
     const int8_t STALE = 3;
@@ -11,5 +11,5 @@ struct DiagnosticStatus {
     string name;
     string message;
     string hardware_id;
-    KeyValue values[values_length];
+    diagnostic_msgs.KeyValue values[values_length];
 }

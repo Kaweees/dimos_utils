@@ -2,5 +2,5 @@ package geometry_msgs;
 
 struct Polygon {
     int32_t points_length;
-    Point32 points[points_length];
+    geometry_msgs.Point32 points[points_length];
 }

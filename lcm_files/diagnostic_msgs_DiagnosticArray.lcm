@@ -3,5 +3,5 @@ package diagnostic_msgs;
 struct DiagnosticArray {
     int32_t status_length;
     std_msgs.Header header;
-    DiagnosticStatus status[status_length];
+    diagnostic_msgs.DiagnosticStatus status[status_length];
 }

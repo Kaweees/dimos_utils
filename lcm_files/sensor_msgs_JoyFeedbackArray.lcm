@@ -2,5 +2,5 @@ package sensor_msgs;
 
 struct JoyFeedbackArray {
     int32_t array_length;
-    JoyFeedback array[array_length];
+    sensor_msgs.JoyFeedback array[array_length];
 }

@@ -5,5 +5,5 @@ struct JointTrajectory {
     int32_t points_length;
     std_msgs.Header header;
     string joint_names[joint_names_length];
-    JointTrajectoryPoint points[points_length];
+    trajectory_msgs.JointTrajectoryPoint points[points_length];
 }

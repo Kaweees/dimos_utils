@@ -2,5 +2,5 @@ package geometry_msgs;
 
 struct InertiaStamped {
     std_msgs.Header header;
-    Inertia inertia;
+    geometry_msgs.Inertia inertia;
 }

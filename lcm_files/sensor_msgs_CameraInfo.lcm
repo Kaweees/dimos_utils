@@ -12,5 +12,5 @@ struct CameraInfo {
     double P[12];
     int32_t binning_x;
     int32_t binning_y;
-    RegionOfInterest roi;
+    sensor_msgs.RegionOfInterest roi;
 }

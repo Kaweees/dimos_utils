@@ -1,6 +1,6 @@
 package geometry_msgs;
 
 struct Twist {
-    Vector3 linear;
-    Vector3 angular;
+    geometry_msgs.Vector3 linear;
+    geometry_msgs.Vector3 angular;
 }

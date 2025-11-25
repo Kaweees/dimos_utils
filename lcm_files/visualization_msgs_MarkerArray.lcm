@@ -2,5 +2,5 @@ package visualization_msgs;
 
 struct MarkerArray {
     int32_t markers_length;
-    Marker markers[markers_length];
+    visualization_msgs.Marker markers[markers_length];
 }

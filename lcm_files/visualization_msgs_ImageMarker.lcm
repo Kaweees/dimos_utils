@@ -1,12 +1,12 @@
 package visualization_msgs;
 
 struct ImageMarker {
-    const int8_t CIRCLE = 0;
+    const int8_t CIRCLE = 0x0;
     const int8_t LINE_STRIP = 1;
     const int8_t LINE_LIST = 2;
     const int8_t POLYGON = 3;
     const int8_t POINTS = 4;
-    const int8_t ADD = 0;
+    const int8_t ADD = 0x0;
     const int8_t REMOVE = 1;
 
     int32_t points_length;

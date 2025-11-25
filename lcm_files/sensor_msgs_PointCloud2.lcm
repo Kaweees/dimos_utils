@@ -6,7 +6,7 @@ struct PointCloud2 {
     std_msgs.Header header;
     int32_t height;
     int32_t width;
-    PointField fields[fields_length];
+    sensor_msgs.PointField fields[fields_length];
     boolean is_bigendian;
     int32_t point_step;
     int32_t row_step;

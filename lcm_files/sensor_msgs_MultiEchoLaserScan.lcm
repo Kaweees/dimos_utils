@@ -11,6 +11,6 @@ struct MultiEchoLaserScan {
     float scan_time;
     float range_min;
     float range_max;
-    LaserEcho ranges[ranges_length];
-    LaserEcho intensities[intensities_length];
+    sensor_msgs.LaserEcho ranges[ranges_length];
+    sensor_msgs.LaserEcho intensities[intensities_length];
 }

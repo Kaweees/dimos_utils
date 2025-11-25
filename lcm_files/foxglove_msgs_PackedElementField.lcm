@@ -1,7 +1,7 @@
 package foxglove_msgs;
 
 struct PackedElementField {
-    const int8_t UNKNOWN = 0;
+    const int8_t UNKNOWN = 0x0;
     const int8_t UINT8 = 1;
     const int8_t INT8 = 2;
     const int8_t UINT16 = 3;

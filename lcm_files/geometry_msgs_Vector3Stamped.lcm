@@ -2,5 +2,5 @@ package geometry_msgs;
 
 struct Vector3Stamped {
     std_msgs.Header header;
-    Vector3 vector;
+    geometry_msgs.Vector3 vector;
 }

@@ -1,7 +1,7 @@
 package visualization_msgs;
 
 struct InteractiveMarkerFeedback {
-    const int8_t KEEP_ALIVE = 0;
+    const int8_t KEEP_ALIVE = 0x0;
     const int8_t POSE_UPDATE = 1;
     const int8_t MENU_SELECT = 2;
     const int8_t BUTTON_CLICK = 3;

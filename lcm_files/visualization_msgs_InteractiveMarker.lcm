@@ -8,6 +8,6 @@ struct InteractiveMarker {
     string name;
     string description;
     float scale;
-    MenuEntry menu_entries[menu_entries_length];
-    InteractiveMarkerControl controls[controls_length];
+    visualization_msgs.MenuEntry menu_entries[menu_entries_length];
+    visualization_msgs.InteractiveMarkerControl controls[controls_length];
 }

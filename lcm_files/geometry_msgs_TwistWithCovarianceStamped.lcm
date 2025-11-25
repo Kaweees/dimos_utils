@@ -2,5 +2,5 @@ package geometry_msgs;
 
 struct TwistWithCovarianceStamped {
     std_msgs.Header header;
-    TwistWithCovariance twist;
+    geometry_msgs.TwistWithCovariance twist;
 }

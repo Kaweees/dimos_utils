@@ -1,7 +1,7 @@
 package visualization_msgs;
 
 struct Marker {
-    const int8_t ARROW = 0;
+    const int8_t ARROW = 0x0;
     const int8_t CUBE = 1;
     const int8_t SPHERE = 2;
     const int8_t CYLINDER = 3;
@@ -13,8 +13,8 @@ struct Marker {
     const int8_t TEXT_VIEW_FACING = 9;
     const int8_t MESH_RESOURCE = 10;
     const int8_t TRIANGLE_LIST = 11;
-    const int8_t ADD = 0;
-    const int8_t MODIFY = 0;
+    const int8_t ADD = 0x0;
+    const int8_t MODIFY = 0x0;
     const int8_t DELETE = 2;
     const int8_t DELETEALL = 3;
 

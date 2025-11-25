@@ -1,7 +1,7 @@
 package visualization_msgs;
 
 struct MenuEntry {
-    const int8_t FEEDBACK = 0;
+    const int8_t FEEDBACK = 0x0;
     const int8_t ROSRUN = 1;
     const int8_t ROSLAUNCH = 2;
 

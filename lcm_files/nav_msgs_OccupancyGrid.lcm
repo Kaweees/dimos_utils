@@ -3,6 +3,6 @@ package nav_msgs;
 struct OccupancyGrid {
     int32_t data_length;
     std_msgs.Header header;
-    MapMetaData info;
+    nav_msgs.MapMetaData info;
     int8_t data[data_length];
 }

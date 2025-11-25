@@ -1,6 +1,6 @@
 package geometry_msgs;
 
 struct Wrench {
-    Vector3 force;
-    Vector3 torque;
+    geometry_msgs.Vector3 force;
+    geometry_msgs.Vector3 torque;
 }

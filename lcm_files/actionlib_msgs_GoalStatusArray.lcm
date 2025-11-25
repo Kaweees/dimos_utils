@@ -3,5 +3,5 @@ package actionlib_msgs;
 struct GoalStatusArray {
     int32_t status_list_length;
     std_msgs.Header header;
-    GoalStatus status_list[status_list_length];
+    actionlib_msgs.GoalStatus status_list[status_list_length];
 }

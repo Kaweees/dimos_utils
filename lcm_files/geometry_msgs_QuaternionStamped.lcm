@@ -2,5 +2,5 @@ package geometry_msgs;
 
 struct QuaternionStamped {
     std_msgs.Header header;
-    Quaternion quaternion;
+    geometry_msgs.Quaternion quaternion;
 }

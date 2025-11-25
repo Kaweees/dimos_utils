@@ -1,7 +1,7 @@
 package foxglove_msgs;
 
 struct LinePrimitive {
-    const int8_t LINE_STRIP = 0;
+    const int8_t LINE_STRIP = 0x0;
     const int8_t LINE_LOOP = 1;
     const int8_t LINE_LIST = 2;
 
